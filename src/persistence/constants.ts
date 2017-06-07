@@ -1,3 +1,3 @@
 export default {
-    FIELD_META_KEY: '_ghotiFieldMeta'
+    MODEL_META_KEY: '_ghotiFieldMeta'
 }

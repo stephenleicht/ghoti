@@ -1,15 +1,20 @@
+import { pick } from 'lodash';
 import * as mongoose from 'mongoose';
+import * as stackTrace from 'stack-trace';
 
-import { FieldMeta, FieldMetaMap } from './PersistedField';
+
+import { FieldMeta, ModelMeta } from './PersistedField';
 
 import constants from './constants';
 
 export default function Model() {
     return function modelDecorator<T extends new (...args: any[]) => {}>(target: T): T {
-        const fieldMetaMap: FieldMetaMap = Reflect.getMetadata(constants.FIELD_META_KEY, target.prototype.constructor);
+        const modelMeta: ModelMeta = Reflect.getMetadata(constants.MODEL_META_KEY, target.prototype.constructor);
+
+        modelMeta.fileName = stackTrace.get()[3].getFileName();
 
         const schema = Object
-                        .entries(fieldMetaMap)
+                        .entries(modelMeta.fields)
                         .reduce((agg, [key, fieldMeta]) => {
                             return {
                                 ...agg,
@@ -19,39 +24,22 @@ export default function Model() {
 
         const mongooseModel = mongoose.model(target.name, new mongoose.Schema(<any>schema));
 
-        const original = target;
+        return class extends target {
+            static displayName = `Model<${target.name}>`
+            static mongooseModel = mongooseModel;
 
+            _mongooseInstance: any;
 
-        const WrappedCtor = class WrappedCtor extends target {
-            static mongooseModel = mongooseModel
-
-            _mongooseInstance: any
-
-            constructor(...args: any[]) {
+            constructor(...args: any[]){
                 super(...args);
 
-                this._mongooseInstance = new WrappedCtor.mongooseModel();
+                const fieldValues = pick(this, Object.keys(modelMeta));
+
+                this._mongooseInstance = new mongooseModel(fieldValues);
+
+                buildProperties(modelMeta, this);
             }
         }
-
-        buildProperties(fieldMetaMap, WrappedCtor.prototype);
-
-        return WrappedCtor;
-
-        // the new constructor behaviour
-        // const wrappedCtor: any = function (this: any, ...args: any[]) {
-        //     this._mongooseInstance = new mongooseModel();
-
-        //     buildProperties(fieldMetaMap, target.constructor);
-
-        //     return original.constructor.apply(this, args)
-        // }
-
-        // wrappedCtor.mongooseModel = mongooseModel;
-
-        // wrappedCtor.prototype = original.prototype;
-
-        // return wrappedCtor;
     }
 }
 

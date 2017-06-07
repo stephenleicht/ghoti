@@ -9,22 +9,25 @@ export type FieldMeta = {
     isID: boolean,
 };
 
-export type FieldMetaMap = {
-    [key: string]: FieldMeta
+export type ModelMeta = {
+    fileName: string,
+    fields: {[key: string]: FieldMeta}
 }
 
 export function addTypeMeta(target: any, propertyKey: string, type: any, isID: boolean) {
-        const currentMetaData = <FieldMetaMap>Reflect.getMetadata(constants.FIELD_META_KEY, target);
+        const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
-            ...currentMetaData,
+            ...modelMeta.fields,
             [propertyKey]: {
                 type,
                 isID,
             }
         };
 
-        Reflect.defineMetadata(constants.FIELD_META_KEY, newMeta, target)
+        modelMeta.fields = newMeta;
+
+        Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
 export default function PersistedField(options?: PersistedFieldOptions): PropertyDecorator {
