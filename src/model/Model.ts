@@ -2,16 +2,18 @@ import { pick } from 'lodash';
 import * as mongoose from 'mongoose';
 import * as stackTrace from 'stack-trace';
 
-
 import { FieldMeta, ModelMeta } from './PersistedField';
 
 import constants from './constants';
 
 export default function Model() {
     return function modelDecorator<T extends new (...args: any[]) => {}>(target: T): T {
+        console.log('THIS_IS_GHOTI')
         const modelMeta: ModelMeta = Reflect.getMetadata(constants.MODEL_META_KEY, target.prototype.constructor);
 
+        //TODO: Find the first file that isn't part of reflect-metadata, this seems like it could be pretty brittle.
         modelMeta.fileName = stackTrace.get()[3].getFileName();
+        modelMeta.name = target.prototype.constructor.name;
 
         const schema = Object
                         .entries(modelMeta.fields)
@@ -43,8 +45,8 @@ export default function Model() {
     }
 }
 
-function buildProperties(fieldMetaMap: FieldMetaMap, target: any) {
-    Object.entries(fieldMetaMap).forEach(([key, fieldMeta]) => {
+function buildProperties(modelMeta: ModelMeta, target: any) {
+    Object.entries(modelMeta.fields).forEach(([key, fieldMeta]) => {
         if(fieldMeta.isID) {
             Object.defineProperty(target, 'id', {
                 get: () => target._mongooseInstance['_id'].toString(),
