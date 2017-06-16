@@ -6,8 +6,8 @@
   "author": "Stephen Leicht",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf ./dist && tsc",
-    "build:watch": "rimraf ./dist && tsc -w"
+    "build": "rimraf ./dist && mkdir -p ./dist/model/Model && cp ./src/model/Model/package.json ./dist/model/Model/package.json && tsc",
+    "build:watch": "rimraf ./dist && mkdir -p ./dist/model/Model && cp ./src/model/Model/package.json ./dist/model/Model/package.json && tsc -w"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.65",

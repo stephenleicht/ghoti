@@ -15,8 +15,8 @@ const getPackedBundlePath = (tempDir: string) => `${tempDir}/ghotiMeta.bundle.js
 
 function buildMetaFileString(metaData: ModelMeta[]): string {
     return `//Auto generated admin bundle file, do not manually edit.
-        require('reflect-metadata');
-        ${metaData.map((meta) =>  `const ${meta.name} = require('${meta.fileName}')`).join('\n')}
+        import 'reflect-metadata';
+        ${metaData.map((meta) =>  `import ${meta.name} from'${meta.fileName}'`).join('\n')}
 
         window.__ghotiMeta__ = {
             models: {
@@ -29,6 +29,8 @@ function buildMetaFileString(metaData: ModelMeta[]): string {
 async function generatePackedBundle(tempDir: string): Promise<boolean> {
     try {
         const stats = await webpack(getWebpackConfig(getRawBundlePath(tempDir), getPackedBundlePath(tempDir)));
+
+         console.log(stats.toString());
         return true;
     }
     catch(err) {

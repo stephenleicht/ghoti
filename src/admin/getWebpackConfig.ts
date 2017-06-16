@@ -14,12 +14,13 @@ export default function getWebpackConfig(entryPath: string, outputPath: string) 
         // Enable sourcemaps for debugging webpack's output.
         devtool: "inline-source-map",
 
+        context: process.cwd(),
         resolve: {
             // Add '.ts' and '.tsx' as resolvable extensions.
             extensions: [".ts", ".tsx", ".js", ".json"],
-            modules: [
-                '../node_modules'
-            ]
+            alias: {
+                'reflect-metadata': require.resolve('reflect-metadata')
+            }
         },
 
         module: {
