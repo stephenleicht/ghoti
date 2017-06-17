@@ -1,5 +1,7 @@
-import { processMetaData } from './admin/bundler';
+import 'reflect-metadata';
+import * as express from 'express';
 
+import { processMetaData } from './admin/bundler';
 import { GhotiOptions } from './GhotiOptions';
 
 
@@ -11,6 +13,7 @@ class Ghoti {
     };
 
     private configuration: GhotiOptions
+    private app: express.Application
 
     configure(options: Partial<GhotiOptions>) {
         this.configuration = {
@@ -24,7 +27,20 @@ class Ghoti {
         // Consolidate all model metadata,
         // build admin bundle from model metadata
         // Start server, listening on port from configuration
-        console.log('RUN!')
+        
+        this.app = express();
+
+        const router = express.Router();
+
+        router.get('/', (req, res) => {
+            res.send('Hello world')
+        })
+
+        this.app.use(router);
+
+        this.app.listen(this.configuration.port, () => {
+            console.log(`Express server running on ${this.configuration.port}`)
+        })
     }
 }
 
