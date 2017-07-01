@@ -1,8 +1,24 @@
 import * as React from 'react';
 
-import { FormElement } from './FormElement';
+import FormElement, { FormElementProps, FormElementExternalProps } from './FormElement';
 
-export default class TextInput extends React.Component<FormElement<string>, {}> {
+interface TextInputProps extends FormElementProps<string> {
+    required?: boolean
+    minLength?: number,
+}
+
+@FormElement({
+    validators: {
+        required: (props: TextInputProps) => {
+            if(!props.required) {
+                return true;
+            }
+
+            return !!props.value;
+        }
+    }
+})
+export default class TextInput extends React.Component<TextInputProps & FormElementExternalProps, {}> {
     render() {
         const { 
             onChange = () => {},

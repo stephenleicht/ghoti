@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
@@ -12,6 +13,11 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".json"],
     },
+    plugins: [
+        new webpack.WatchIgnorePlugin([
+            /css\.d\.ts$/
+        ]),
+    ],
 
     module: {
         rules: [

@@ -17,13 +17,15 @@ export default class App extends React.Component<{}, AppState> {
                     outside: 'outside',
                     inside: 'inside',
                     extraInner: 'extraInner'
-                }
+                },
+                fields: {},
             }
         };
 
     }
 
     onFormStateChange = (newFormState: FormState) => {
+        console.log('changing formState');
         this.setState({ formState: newFormState });
     }
 
@@ -31,14 +33,14 @@ export default class App extends React.Component<{}, AppState> {
         return (
             <div>
                 <Form formState={this.state.formState} onChange={this.onFormStateChange}>
-                    <input type="text" name="outside" />
+                    <TextInput name="outside" />
                     <div>
-                        <input type="text" name="inside" />
+                        <TextInput name="inside" />
 
                         <div>
-                            <input type="text" name="extraInner" />
+                            <TextInput name="extraInner" />
                         </div>
-                        <TextInput name="textInput" />
+                        <TextInput name="textInput" required/>
                     </div>
                 </Form>
             </div>

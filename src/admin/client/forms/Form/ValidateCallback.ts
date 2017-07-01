@@ -1,0 +1,1 @@
+export type ValidateCallback = () => boolean | Promise<boolean>

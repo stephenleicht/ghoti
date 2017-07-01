@@ -11,7 +11,7 @@ const writeFile = util.promisify(fs.writeFile);
 const webpack = util.promisify(webpackRaw);
 
 const getRawBundlePath = (tempDir: string) => `${tempDir}/metaBundleRaw.js`;
-const getPackedBundlePath = (tempDir: string) => `${tempDir}/ghotiMeta.bundle.js`;
+export const getMetaBundlePath = (tempDir: string) => `${tempDir}/ghotiMeta.bundle.js`;
 
 function buildMetaFileString(metaData: ModelMeta[]): string {
     return `//Auto generated admin bundle file, do not manually edit.
@@ -28,7 +28,7 @@ function buildMetaFileString(metaData: ModelMeta[]): string {
 
 async function generatePackedBundle(tempDir: string): Promise<boolean> {
     try {
-        const stats = await webpack(getWebpackConfig(getRawBundlePath(tempDir), getPackedBundlePath(tempDir)));
+        const stats = await webpack(getWebpackConfig(getRawBundlePath(tempDir), getMetaBundlePath(tempDir)));
 
          console.log(stats.toString());
         return true;

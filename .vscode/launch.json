@@ -8,9 +8,9 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/src/example/app.ts",
+            "program": "/mnt/c/Users/steph/Projects/ghoti/src/example/app.ts",
             "outFiles": [
-                "${workspaceRoot}/dist/**/*.js"
+                "/mnt/c/Users/steph/Projects/ghoti/dist/**/*.js"
             ]
         }
     ]
