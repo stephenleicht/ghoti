@@ -1,6 +1,7 @@
 import { FormFieldMeta } from './FormFieldMeta';
 
 export interface FormState {
+    isValid: boolean,
     value: {
         [key: string]: any
     },

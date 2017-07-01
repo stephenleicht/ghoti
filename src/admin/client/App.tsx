@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import Form, { FormState } from './forms/Form';
 import TextInput from './forms/TextInput';
+import TestComposite from './TestComposite';
+
 
 interface AppState {
     formState: FormState
@@ -13,6 +15,7 @@ export default class App extends React.Component<{}, AppState> {
 
         this.state = {
             formState: {
+                isValid: true,
                 value: {
                     outside: 'outside',
                     inside: 'inside',
@@ -41,6 +44,8 @@ export default class App extends React.Component<{}, AppState> {
                             <TextInput name="extraInner" />
                         </div>
                         <TextInput name="textInput" required/>
+
+                        <TestComposite name="composite"/>
                     </div>
                 </Form>
             </div>

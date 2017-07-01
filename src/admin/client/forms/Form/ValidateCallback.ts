@@ -1,1 +1,1 @@
-export type ValidateCallback = () => boolean | Promise<boolean>
+export type ValidateCallback = () => {[validatorKey: string]: boolean}

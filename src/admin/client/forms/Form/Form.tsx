@@ -15,7 +15,7 @@ interface FormProps {
 }
 
 export interface FormContext {
-    register: (fieldName: string, validateCallback: ValidateCallback) => void,
+    register: (path: string[], validateCallback: ValidateCallback) => void,
 }
 
 export default class Form extends React.Component<FormProps, {}> {
@@ -23,7 +23,7 @@ export default class Form extends React.Component<FormProps, {}> {
         register: PropTypes.func,
     }
 
-    pendingRegistrations: Array<{ fieldName: string, validateCallback: ValidateCallback }> = []
+    pendingRegistrations: Array<{ path: string[], validateCallback: ValidateCallback }> = []
 
     getChildContext(): FormContext {
         return {
@@ -31,23 +31,34 @@ export default class Form extends React.Component<FormProps, {}> {
         }
     }
 
-    registerChild = (fieldName: string, validateCallback: ValidateCallback) => {
+    registerChild = (path: string[], validateCallback: ValidateCallback) => {
         this.pendingRegistrations.push({
-            fieldName,
+            path,
             validateCallback,
         });
     }
 
     componentDidMount() {
         const { formState } = this.props;
+    
+        const newFormState = this.processRegistrations();
+        this.pendingRegistrations = [];
+
+        this.props.onChange(newFormState);
+    }
+
+    processRegistrations(): FormState {
+        const { formState } = this.props;
 
         const currentFields = formState.fields;
         const newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
-            let currentFieldMeta = agg[registration.fieldName];
-            if (!agg[registration.fieldName]) {
+            const pathKey = registration.path.join('.');
+            let currentFieldMeta = agg[pathKey];
+            if (!agg[pathKey]) {
                 currentFieldMeta = {
                     isPristine: true,
                     isValid: true,
+                    errors: undefined,
                     validate: registration.validateCallback
                 }
             }
@@ -60,17 +71,17 @@ export default class Form extends React.Component<FormProps, {}> {
 
             return {
                 ...agg,
-                [registration.fieldName]: currentFieldMeta
+                [pathKey]: currentFieldMeta
             }
 
         }, currentFields);
 
-        this.props.onChange({
+        return {
             ...formState,
-            fields: newFieldMeta
-        });
-    }
+            fields: newFieldMeta,
+        };
 
+    }
     onChildChange = (childName: string, newValue: any) => {
         if (newValue.target && newValue.target instanceof HTMLElement) {
             newValue = newValue.target.value;
@@ -117,19 +128,39 @@ export default class Form extends React.Component<FormProps, {}> {
     validate() {
         const newFieldState = Object
             .entries(this.props.formState.fields)
-            .map(([key, fieldMeta]) => [key, fieldMeta.validate()])
-            .reduce((agg, [key, validationResult]: [string, boolean]) => {
+            .map(([key, fieldMeta]) => ([
+                key,
+                fieldMeta.validate()
+            ]))
+            .reduce((agg, [key, validationResult]: [string, {[key: string]: boolean}]) => {
+                let allValid = true;
+                let errors: {[errorKey: string]: boolean} = {};
+                Object.entries(validationResult)
+                .forEach(([key, isValid]) => {
+                    allValid = allValid && isValid;
+                    
+                    if(!isValid) {
+                        errors[key] = true;
+                    }
+                })
+
                 agg[key] = {
                     ...agg[key],
-                    isValid: validationResult
+                    isValid: allValid,
+                    errors,
                 }
                 return agg;
             }, {...this.props.formState.fields});
 
+            const formIsValid = Object.values(newFieldState).every((field) => field.isValid);
+
             this.props.onChange({
                 ...this.props.formState,
+                isValid: formIsValid,
                 fields: newFieldState
             });
+
+
     }
 
     render() {
