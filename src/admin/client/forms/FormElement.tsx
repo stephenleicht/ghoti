@@ -4,16 +4,10 @@ import { ValidateCallback } from './Form/ValidateCallback';
 
 import { FormContext } from './Form/Form';
 
-
-
-
 export interface FormElementProps<T> {
+    name: string,
     value?: T,
     onChange?: (newValue: T) => void
-}
-
-export interface FormElementExternalProps {
-    name: string,
 }
 
 interface FormElementOptions {
@@ -24,8 +18,8 @@ interface FormElementOptions {
 
 export default function FormElement(options: FormElementOptions = {}) {
 
-    return function<TOriginalProps extends {}>(WrappedComponent: React.ComponentClass<TOriginalProps & FormElementProps<any>>) {
-        return class extends React.Component<TOriginalProps & FormElementExternalProps & FormElementProps<any>, {}> {
+    return function wrapFormElement<T extends FormElementProps<any>>(ComponentToWrap: React.ComponentClass<T>) {
+        return class WrappedComponent extends React.Component<T, {}> {
             context: FormContext & {
                 parentPath: string[],
             }
@@ -85,7 +79,7 @@ export default function FormElement(options: FormElementOptions = {}) {
                     injectedOnChange = this.onChangeWrapper;
                 }
 
-                return <WrappedComponent {...other} onChange={injectedOnChange} />
+                return <ComponentToWrap {...other} onChange={injectedOnChange} />
             }
         } 
     }

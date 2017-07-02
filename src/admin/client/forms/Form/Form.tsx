@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { FormState } from './FormState';
-import { FormElementProps, FormElementExternalProps } from '../FormElement';
+import { FormElementProps } from '../FormElement';
 import { ValidateCallback } from './ValidateCallback';
 import { FormFieldMeta } from './FormFieldMeta';
 
@@ -11,7 +11,8 @@ import * as styles from './Form.css';
 interface FormProps {
     children: React.ReactNode,
     formState: FormState,
-    onChange: (newState: FormState) => void
+    onChange: (newState: FormState) => void,
+    onSubmit?: (value: Object) => void,
 }
 
 export interface FormContext {
@@ -50,6 +51,18 @@ export default class Form extends React.Component<FormProps, {}> {
         this.props.onChange(newFormState);
     }
 
+    componentDidUpdate(prevProps: FormProps) {
+        if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
+            const fields = this.props.formState.fields;
+
+            const pendingFields = Object.entries(fields)
+            .filter(([, field]) => field.pendingValidation)
+            .map(([key]) => key);
+
+            this.validateByField(pendingFields);
+        }
+    }
+
     processRegistrations(): FormState {
         const { formState } = this.props;
 
@@ -61,6 +74,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 currentFieldMeta = {
                     isPristine: true,
                     isValid: true,
+                    pendingValidation: true,
                     errors: undefined,
                     validate: registration.validateCallback
                 }
@@ -81,6 +95,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
         return {
             ...formState,
+            pendingValidation: true,
             fields: newFieldMeta,
         };
     }
@@ -92,6 +107,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
         const newFieldMeta = this.changeQueue.reduce((agg, field) => {
             agg[field].isPristine = false;
+            agg[field].pendingValidation = true;
             return agg;
         }, {...this.props.formState.fields})
 
@@ -100,6 +116,7 @@ export default class Form extends React.Component<FormProps, {}> {
         this.props.onChange({
             ...this.props.formState,
             isPristine: false,
+            pendingValidation: true,
             value: {
                 ...this.props.formState.value,
                 [childName]: newValue
@@ -124,7 +141,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 }
 
                 if (child.props.hasOwnProperty('name')) {
-                    const namedChild = child as React.ReactElement<FormElementProps<any> & FormElementExternalProps>;
+                    const namedChild = child as React.ReactElement<FormElementProps<any>>;
 
                     propsToAdd = {
                         ...propsToAdd,
@@ -138,11 +155,16 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     validate() {
-        const newFieldState = Object
-            .entries(this.props.formState.fields)
-            .map(([key, fieldMeta]) => ([
-                key,
-                fieldMeta.validate()
+        this.validateByField(Object.keys(this.props.formState.fields));
+    }
+
+    validateByField(fields: string[]) {
+        const { formState }  = this.props;
+
+        const newFieldState = fields
+            .map((field) => ([
+                field,
+                formState.fields[field].validate()
             ]))
             .reduce((agg, [key, validationResult]: [string, {[key: string]: boolean}]) => {
                 let allValid = true;
@@ -158,6 +180,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
                 agg[key] = {
                     ...agg[key],
+                    pendingValidation: false,
                     isValid: allValid,
                     errors: allValid ? undefined : errors,
                 }
@@ -168,6 +191,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
             this.props.onChange({
                 ...this.props.formState,
+                pendingValidation: false,
                 isValid: formIsValid,
                 fields: newFieldState
             });
@@ -177,11 +201,19 @@ export default class Form extends React.Component<FormProps, {}> {
         this.changeQueue.push(fieldName);
     }
 
+    onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        
+        if (this.props.formState.isValid && this.props.onSubmit) {
+            this.props.onSubmit(this.props.formState.value);
+        }
+    }
+
     render() {
         return (
-            <div className={styles.test}>
+            <form className={styles.test} onSubmit={this.onFormSubmit}>
                 {this.prepareChildren(this.props.children)}
-            </div>
+            </form>
         );
     }
 }

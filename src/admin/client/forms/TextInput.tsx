@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps, FormElementExternalProps } from './FormElement';
+import FormElement, { FormElementProps } from './FormElement';
 
 interface TextInputProps extends FormElementProps<string> {
     required?: boolean
@@ -18,7 +18,7 @@ interface TextInputProps extends FormElementProps<string> {
         }
     }
 })
-export default class TextInput extends React.Component<TextInputProps & FormElementExternalProps, {}> {
+export default class TextInput extends React.Component<TextInputProps, {}> {
     render() {
         const { 
             onChange = () => {},

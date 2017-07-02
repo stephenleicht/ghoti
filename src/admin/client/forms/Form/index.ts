@@ -1,2 +1,2 @@
 export { default as default } from './Form';
-export { FormState } from './FormState';
+export { FormState, createFormState } from './FormState';

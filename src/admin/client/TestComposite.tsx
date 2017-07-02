@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormElement, { FormElementProps, FormElementExternalProps } from './forms/FormElement';
+import FormElement, { FormElementProps } from './forms/FormElement';
 
 import TextInput from './forms/TextInput';
 
@@ -9,14 +9,22 @@ type CompositeValue = {
     valueTwo: string,
 }
 
-@FormElement()
-export default class CompositeInput extends React.Component<FormElementProps<CompositeValue> & FormElementExternalProps, {}> {
-    onChange = (field: keyof CompositeValue, newValue: string) => {
-        const currentValue = this.props.value || {} as CompositeValue
-        this.props.onChange({
+interface CompositeInputProps extends FormElementProps<CompositeValue> {
+    test?: string
+}
+
+class CompositeInput extends React.Component<CompositeInputProps, {}> {
+
+    onChange = (field: keyof CompositeValue, newFieldValue: string) => {
+        const currentValue = this.props.value || {} as CompositeValue;
+        const newValue = {
             ...currentValue,
-            [field]: newValue
-        })
+            [field]: newFieldValue
+        };
+
+        if (this.props.onChange) {
+            this.props.onChange(newValue);
+        }
     }
 
     render() {
@@ -33,3 +41,5 @@ export default class CompositeInput extends React.Component<FormElementProps<Com
         )
     }
 } 
+
+export default FormElement()(CompositeInput)

@@ -7,6 +7,7 @@ type PersistedFieldOptions = {
 export type FieldMeta = {
     type: any,
     isID: boolean,
+    editable: boolean,
 };
 
 export type ModelMeta = {
@@ -15,7 +16,7 @@ export type ModelMeta = {
     fields: {[key: string]: FieldMeta}
 }
 
-export function addTypeMeta(target: any, propertyKey: string, type: any, isID: boolean) {
+export function addTypeMeta(target: any, propertyKey: string, type: any, isID: boolean, editable: boolean) {
         const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
@@ -23,6 +24,7 @@ export function addTypeMeta(target: any, propertyKey: string, type: any, isID: b
             [propertyKey]: {
                 type,
                 isID,
+                editable,
             }
         };
 
@@ -37,6 +39,6 @@ export default function PersistedField(options?: PersistedFieldOptions): Propert
 
         type = type || (options && options.type);
 
-        addTypeMeta(target.constructor, propertyKey, type, false);
+        addTypeMeta(target.constructor, propertyKey, type, false, true);
     }
 }

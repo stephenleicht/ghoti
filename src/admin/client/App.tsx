@@ -1,54 +1,15 @@
 import * as React from 'react';
 
-import Form, { FormState } from './forms/Form';
-import TextInput from './forms/TextInput';
-import TestComposite from './TestComposite';
+import Form, { FormState, createFormState } from './forms/Form';
+import ModelEditor from './editor/ModelEditor';
 
+const model = (window as any).__ghotiMeta__.models.Person;
 
-interface AppState {
-    formState: FormState
-}
-
-export default class App extends React.Component<{}, AppState> {
-    constructor() {
-        super();
-
-        this.state = {
-            formState: {
-                isValid: true,
-                isPristine: true,
-                value: {
-                    outside: 'outside',
-                    inside: 'inside',
-                    extraInner: 'extraInner'
-                },
-                fields: {},
-            }
-        };
-
-    }
-
-    onFormStateChange = (newFormState: FormState) => {
-        console.log('changing formState');
-        this.setState({ formState: newFormState });
-    }
-
+export default class App extends React.Component<{}, {}> {
     render() {
         return (
             <div>
-                <Form formState={this.state.formState} onChange={this.onFormStateChange}>
-                    <TextInput name="outside" />
-                    <div>
-                        <TextInput name="inside" />
-
-                        <div>
-                            <TextInput name="extraInner" />
-                        </div>
-                        <TextInput name="textInput" required/>
-
-                        <TestComposite name="composite"/>
-                    </div>
-                </Form>
+                <ModelEditor model={model} ></ModelEditor>
             </div>
         )
     }
