@@ -16,6 +16,7 @@ export default class App extends React.Component<{}, AppState> {
         this.state = {
             formState: {
                 isValid: true,
+                isPristine: true,
                 value: {
                     outside: 'outside',
                     inside: 'inside',

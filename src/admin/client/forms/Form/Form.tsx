@@ -16,18 +16,21 @@ interface FormProps {
 
 export interface FormContext {
     register: (path: string[], validateCallback: ValidateCallback) => void,
+    addToChangeQueue: (fieldName: string) => void,
 }
 
 export default class Form extends React.Component<FormProps, {}> {
     static childContextTypes = {
         register: PropTypes.func,
+        addToChangeQueue: PropTypes.func,
     }
-
     pendingRegistrations: Array<{ path: string[], validateCallback: ValidateCallback }> = []
+    changeQueue: string[] = []
 
     getChildContext(): FormContext {
         return {
-            register: this.registerChild
+            register: this.registerChild,
+            addToChangeQueue: this.addToChangeQueue,
         }
     }
 
@@ -80,19 +83,28 @@ export default class Form extends React.Component<FormProps, {}> {
             ...formState,
             fields: newFieldMeta,
         };
-
     }
+
     onChildChange = (childName: string, newValue: any) => {
         if (newValue.target && newValue.target instanceof HTMLElement) {
             newValue = newValue.target.value;
         }
 
+        const newFieldMeta = this.changeQueue.reduce((agg, field) => {
+            agg[field].isPristine = false;
+            return agg;
+        }, {...this.props.formState.fields})
+
+        this.changeQueue = [];
+
         this.props.onChange({
             ...this.props.formState,
+            isPristine: false,
             value: {
                 ...this.props.formState.value,
                 [childName]: newValue
-            }
+            },
+            fields: newFieldMeta
         });
     }
 
@@ -147,7 +159,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 agg[key] = {
                     ...agg[key],
                     isValid: allValid,
-                    errors,
+                    errors: allValid ? undefined : errors,
                 }
                 return agg;
             }, {...this.props.formState.fields});
@@ -159,8 +171,10 @@ export default class Form extends React.Component<FormProps, {}> {
                 isValid: formIsValid,
                 fields: newFieldState
             });
+    }
 
-
+    addToChangeQueue = (fieldName: string) => {
+        this.changeQueue.push(fieldName);
     }
 
     render() {

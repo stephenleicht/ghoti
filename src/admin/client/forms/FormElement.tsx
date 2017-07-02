@@ -2,6 +2,9 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { ValidateCallback } from './Form/ValidateCallback';
 
+import { FormContext } from './Form/Form';
+
+
 
 
 export interface FormElementProps<T> {
@@ -23,18 +26,18 @@ export default function FormElement(options: FormElementOptions = {}) {
 
     return function<TOriginalProps extends {}>(WrappedComponent: React.ComponentClass<TOriginalProps & FormElementProps<any>>) {
         return class extends React.Component<TOriginalProps & FormElementExternalProps & FormElementProps<any>, {}> {
-            context: {
-                register: (path: string[], validateCallback: ValidateCallback) => void,
-                parentPath?: Array<string>
+            context: FormContext & {
+                parentPath: string[],
             }
 
             static contextTypes = {
                 register: PropTypes.func,
+                addToChangeQueue: PropTypes.func,
                 parentPath: PropTypes.arrayOf(PropTypes.string)
             }
 
             static childContextTypes = {
-                parentPath: PropTypes.string,
+                parentPath: PropTypes.arrayOf(PropTypes.string),
             }
 
             getChildContext() {
@@ -52,9 +55,9 @@ export default function FormElement(options: FormElementOptions = {}) {
                 return [...(parentPath ? parentPath : []), this.props.name]
             }
 
-            validate = () => {
+            validate: ValidateCallback = () => {
                 if (!options.validators) {
-                    return true;
+                    return {}
                 }
 
                 const validationResults = Object
@@ -68,9 +71,21 @@ export default function FormElement(options: FormElementOptions = {}) {
                 return validationResults;
             }
 
+            onChangeWrapper = (newValue: any) => {
+                this.context.addToChangeQueue(this.path.join('.'));
+                if (this.props.onChange) {
+                    this.props.onChange(newValue);
+                }
+            }
+
             render(){
-                const { name, ...other } = this.props;
-                return <WrappedComponent {...other} />
+                const { name, onChange, ...other } = this.props;
+                let injectedOnChange;
+                if (onChange) {
+                    injectedOnChange = this.onChangeWrapper;
+                }
+
+                return <WrappedComponent {...other} onChange={injectedOnChange} />
             }
         } 
     }
