@@ -7,6 +7,11 @@ import {constants as modelConstants, ModelMeta} from '../model';
 
 import getWebpackConfig from './getWebpackConfig';
 
+import { createLogger } from '../logging';
+
+const logger = createLogger('bundler');
+
+
 const writeFile = util.promisify(fs.writeFile);
 const webpack = util.promisify(webpackRaw);
 
@@ -30,7 +35,6 @@ async function generatePackedBundle(tempDir: string): Promise<boolean> {
     try {
         const stats = await webpack(getWebpackConfig(getRawBundlePath(tempDir), getMetaBundlePath(tempDir)));
 
-         console.log(stats.toString());
         return true;
     }
     catch(err) {
@@ -42,12 +46,16 @@ async function generatePackedBundle(tempDir: string): Promise<boolean> {
 export async function processMetaData(models: any[], tempDir: string): Promise<boolean> {
     const metaData: ModelMeta[] = models.map(model => Reflect.getMetadata(modelConstants.MODEL_META_KEY, model.prototype.constructor));
 
+    logger.info('Processing model metadata');
     const metaFileString = buildMetaFileString(metaData);
 
     try {
+        logger.info('Writing raw bundle to temp location', {tempDir});
         await writeFile(getRawBundlePath(tempDir), metaFileString);
 
+        logger.info('Generating bundle with webpack...')
         await generatePackedBundle(tempDir);
+        logger.info('Bundle generation complete.');
         return true;
     }
     catch(err) {

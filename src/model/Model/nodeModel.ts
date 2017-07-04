@@ -1,6 +1,8 @@
 import { pick } from 'lodash';
 import * as mongoose from 'mongoose';
 import * as stackTrace from 'stack-trace';
+import * as pluralize from 'pluralize';
+
 
 import { FieldMeta, ModelMeta } from '../PersistedField';
 
@@ -13,6 +15,7 @@ export default function Model() {
         //TODO: Find the first file that isn't part of reflect-metadata, this seems like it could be pretty brittle.
         modelMeta.fileName = stackTrace.get()[3].getFileName();
         modelMeta.name = target.prototype.constructor.name;
+        modelMeta.namePlural = pluralize.plural(modelMeta.name);
 
         const schema = Object
                         .entries(modelMeta.fields)
@@ -28,17 +31,24 @@ export default function Model() {
         return class extends target {
             static displayName = `Model<${target.name}>`
             static mongooseModel = mongooseModel;
+            static modelMeta = modelMeta;
 
             _mongooseInstance: any;
 
             constructor(...args: any[]){
                 super(...args);
 
-                const fieldValues = pick(this, Object.keys(modelMeta));
+                const fieldValues = pick(this, Object.keys(modelMeta.fields));
 
                 this._mongooseInstance = new mongooseModel(fieldValues);
 
                 buildProperties(modelMeta, this);
+            }
+
+            toJSON() {
+                const copy = Object.assign({}, this);
+                delete copy._mongooseInstance;
+                return copy;
             }
         }
     }
@@ -47,7 +57,7 @@ export default function Model() {
 function buildProperties(modelMeta: ModelMeta, target: any) {
     Object.entries(modelMeta.fields).forEach(([key, fieldMeta]) => {
         if(fieldMeta.isID) {
-            Object.defineProperty(target, 'id', {
+            Object.defineProperty(target, key, {
                 get: () => target._mongooseInstance['_id'].toString(),
             })
         }

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import FormElement, { FormElementProps } from './forms/FormElement';
+import FormElement, { FormElementProps } from '../forms/FormElement';
 
-import TextInput from './forms/TextInput';
+import TextInput from '../forms/TextInput';
 
 
 type CompositeValue = {

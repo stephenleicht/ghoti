@@ -22,7 +22,7 @@ function getEditorMarkupForModel(model: any) {
             return (
                 <div key={key}>
                     <label>{key}</label>
-                    <Component name={key} required/>
+                    <Component name={key}/>
                 </div>
             )
         })

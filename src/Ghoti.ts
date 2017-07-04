@@ -1,8 +1,12 @@
 import 'reflect-metadata';
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as mongoose from 'mongoose';
 
 import { processMetaData } from './admin/bundler';
-import { configureAdminServer } from "./admin/adminServer";
+import { configureAdminServer } from "./admin/configureAdminServer";
+import configureAPI from './api/configureAPI';
+
 
 import { GhotiOptions } from './GhotiOptions';
 
@@ -27,6 +31,8 @@ export class Ghoti {
     async run() {
         const { tempDir, models, port } = this.configuration;
 
+        mongoose.connect('mongodb://localhost:27017/ghoti');
+
         try {
             await processMetaData(models, tempDir);
         }
@@ -40,9 +46,13 @@ export class Ghoti {
         
         this.app = express();
 
-        const adminRouter = configureAdminServer(this);
+        this.app.use(bodyParser.json());
 
-        this.app.use('/ghoti', adminRouter);
+        const adminRouter = configureAdminServer(this);
+        const apiRouter = configureAPI(this);
+
+        this.app.use('/admin', adminRouter);
+        this.app.use('/api', apiRouter);
 
 
         this.app.listen(port, () => {

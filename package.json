@@ -9,6 +9,7 @@
     "watch": "gulp watch"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.16.4",
     "@types/del": "^2.2.32",
     "@types/express": "^4.0.36",
     "@types/gulp": "^4.0.4",
@@ -17,6 +18,7 @@
     "@types/merge2": "^0.3.30",
     "@types/mongoose": "^4.7.18",
     "@types/node": "^8.0.7",
+    "@types/pluralize": "^0.0.27",
     "@types/prop-types": "^15.5.1",
     "@types/react": "^15.0.34",
     "@types/react-dom": "^15.5.1",
@@ -24,6 +26,7 @@
     "@types/run-sequence": "^0.0.29",
     "@types/stack-trace": "^0.0.28",
     "@types/webpack": "^3.0.1",
+    "@types/winston": "^2.3.3",
     "awesome-typescript-loader": "^3.2.1",
     "css-loader": "^0.28.4",
     "del": "^3.0.0",
@@ -36,15 +39,18 @@
     "typings-for-css-modules-loader": "^1.5.0"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "core-js": "^2.4.1",
     "express": "^4.15.3",
     "lodash": "^4.17.4",
     "mongoose": "^4.11.0",
+    "pluralize": "^5.0.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "reflect-metadata": "^0.1.10",
     "stack-trace": "^0.0.10",
-    "webpack": "^2.6.1"
+    "webpack": "^2.6.1",
+    "winston": "^2.3.1"
   }
 }

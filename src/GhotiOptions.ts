@@ -1,5 +1,5 @@
 export type GhotiOptions = {
-    models: Array<any>,
+    models: any[],
     port: number,
     tempDir: string,
 }
