@@ -8,7 +8,7 @@ import { defaultComponentsByType } from './defaultComponentsByType';
 
 
 function getEditorMarkupForModel(model: any) {
-    const modelMeta: ModelMeta = Reflect.getMetadata(modelContstants.MODEL_META_KEY, model);
+    const modelMeta: ModelMeta = model.modelMeta;
 
     const fields = Object.entries(modelMeta.fields)
         .filter(([key, f]) => f.editable)
@@ -36,6 +36,7 @@ function getEditorMarkupForModel(model: any) {
 
 interface ModelEditorProps {
     model: any,
+    onSubmit: (value: any) => void,
 }
 
 interface ModelEditorState {
@@ -55,18 +56,14 @@ export default class ModelEditor extends React.Component<ModelEditorProps, Model
         this.setState({formState: newFormState});
     }
 
-    onFormSubmit = (value: any) => {
-        console.log('form value', value);
-    }
-
     render() {
-        const { model } = this.props;
+        const { model, onSubmit } = this.props;
         const { formState } = this.state;
 
         return (
             <div>
                 <h3>Editor header, save buttons etc can be here.</h3>
-                <Form formState={formState} onChange={this.onFormChange} onSubmit={this.onFormSubmit} >
+                <Form formState={formState} onChange={this.onFormChange} onSubmit={onSubmit} >
                     {getEditorMarkupForModel(model)}
                     <button type="submit">Submit</button>
                 </Form>

@@ -7,8 +7,8 @@ export default function getMarkupForAdminUI() {
 </head>
 <body>
     <div id="app"></div>
-    <script src="/ghoti/generated/ghotiMeta.bundle.js"></script>
-    <script src="/ghoti/js/main.js"></script>
+    <script src="/admin/generated/ghotiMeta.bundle.js"></script>
+    <script src="/admin/js/main.js"></script>
 </body>
 </html>`
 }

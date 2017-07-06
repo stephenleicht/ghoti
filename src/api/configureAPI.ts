@@ -32,7 +32,7 @@ export default function configureAPI(ghoti: Ghoti) {
             return agg;
         }
 
-        agg[modelMeta.name.toLowerCase()] = {
+        agg[modelMeta.namePlural.toLowerCase()] = {
             modelMeta,
             type: model,
         };
@@ -41,18 +41,16 @@ export default function configureAPI(ghoti: Ghoti) {
 
     const router = express.Router();
 
-    const middleWare: express.RequestHandler =  function modelMiddleware(req: RequestWithModel, res, next) {
-        const model = modelsByName[req.params.model];
+    router.param('model', (req: RequestWithModel, res, next) => {
+         const model = modelsByName[req.params.model.toLowerCase()];
         if(!model) {
-            res.send(404);
+            res.sendStatus(404);
             return;
         }
 
         req.model = model;
         next();
-    }
-
-    router.use(middleWare);
+    });
 
     router.post('/models/:model', async (req: RequestWithModel, res) => {
         const instance = new req.model.type(req.body);
