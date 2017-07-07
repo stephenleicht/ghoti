@@ -62,7 +62,7 @@ export default class ModelEditor extends React.Component<ModelEditorProps, Model
 
         return (
             <div>
-                <h3>Editor header, save buttons etc can be here.</h3>
+                <h1>Add {model.modelMeta.name}</h1>
                 <Form formState={formState} onChange={this.onFormChange} onSubmit={onSubmit} >
                     {getEditorMarkupForModel(model)}
                     <button type="submit">Submit</button>
