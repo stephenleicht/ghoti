@@ -9,7 +9,8 @@ import { createModel } from './api';
 import 'normalize.css';
 import * as styles from './App.css';
 
-const model = (window as any).__ghotiMeta__.models.Person;
+
+const models = (window as any).__ghotiMeta__.models
 
 interface AppState {
     saved: boolean,
@@ -24,7 +25,7 @@ export default class App extends React.Component<{}, AppState> {
         }
     }
     onSubmit = async (newValue: any) => {
-        await createModel(model.modelMeta, newValue);
+        await createModel(models.Person.modelMeta, newValue);
         
         this.setState({saved: true});
     }
@@ -32,11 +33,13 @@ export default class App extends React.Component<{}, AppState> {
     render() {
         const { saved } = this.state;
 
+        const personModel = models.Person;
+
         return (
             <div className={styles.appWrapper}>
-                <Navigation />
+                <Navigation models={models} />
                 <div className={styles.content}>
-                    <ModelEditor model={model} onSubmit={this.onSubmit} />
+                    <ModelEditor model={personModel} onSubmit={this.onSubmit} />
                 </div>
             </div>
         )
