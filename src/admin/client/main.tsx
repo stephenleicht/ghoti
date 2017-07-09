@@ -8,6 +8,4 @@ const app = document.getElementById('app');
 
 const ghotiMeta = (window as any).__ghotiMeta__;
 
-console.log(ghotiMeta);
-
-ReactDOM.render(<App />, app);
+ReactDOM.render(<App models={ghotiMeta.models} />, app);

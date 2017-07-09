@@ -1,8 +1,16 @@
 import * as React from 'react';
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+} from 'react-router-dom';
 
 import Form, { FormState, createFormState } from './forms/Form';
 import ModelEditor from './editor/ModelEditor';
 import Navigation from './components/Navigation';
+import ModelListPage from './components/ModelListPage';
+import ViewModelPage from './components/ViewModelPage';
+import CreateModelPage from './components/CreateModelPage';
 
 import { createModel } from './api';
 
@@ -16,7 +24,13 @@ interface AppState {
     saved: boolean,
 }
 
-export default class App extends React.Component<{}, AppState> {
+interface AppProps {
+    models: {
+        [modelName: string]: any
+    }
+}
+
+export default class App extends React.Component<AppProps, AppState> {
     constructor() {
         super();
 
@@ -26,22 +40,28 @@ export default class App extends React.Component<{}, AppState> {
     }
     onSubmit = async (newValue: any) => {
         await createModel(models.Person.modelMeta, newValue);
-        
-        this.setState({saved: true});
+
+        this.setState({ saved: true });
     }
 
     render() {
         const { saved } = this.state;
+        const { models } = this.props;
 
         const personModel = models.Person;
 
         return (
-            <div className={styles.appWrapper}>
-                <Navigation models={models} />
-                <div className={styles.content}>
-                    <ModelEditor model={personModel} onSubmit={this.onSubmit} />
+            <Router basename="/admin">
+                <div className={styles.appWrapper}>
+                    <Navigation models={models} />
+                    <Route path="/users" render={() => <div>Users Route</div>} />
+                    <Switch>
+                        <Route exact path="/models/:modelName" component={ModelListPage} />
+                        <Route path="/models/:modelName/create" component={CreateModelPage} />
+                        <Route path="/models/:modelName/:id" component={ViewModelPage} />
+                    </Switch>
                 </div>
-            </div>
+            </Router>
         )
     }
 }
