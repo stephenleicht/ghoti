@@ -1,4 +1,6 @@
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
+
 import {
     BrowserRouter as Router,
     Route,
@@ -12,13 +14,7 @@ import ModelListPage from './components/ModelListPage';
 import ViewModelPage from './components/ViewModelPage';
 import CreateModelPage from './components/CreateModelPage';
 
-import { createModel } from './api';
-
-import 'normalize.css';
 import * as styles from './App.css';
-
-
-const models = (window as any).__ghotiMeta__.models
 
 interface AppState {
     saved: boolean,
@@ -31,21 +27,7 @@ interface AppProps {
 }
 
 export default class App extends React.Component<AppProps, AppState> {
-    constructor() {
-        super();
-
-        this.state = {
-            saved: false,
-        }
-    }
-    onSubmit = async (newValue: any) => {
-        await createModel(models.Person.modelMeta, newValue);
-
-        this.setState({ saved: true });
-    }
-
     render() {
-        const { saved } = this.state;
         const { models } = this.props;
 
         const personModel = models.Person;
@@ -55,13 +37,18 @@ export default class App extends React.Component<AppProps, AppState> {
                 <div className={styles.appWrapper}>
                     <Navigation models={models} />
                     <Route path="/users" render={() => <div>Users Route</div>} />
-                    <Switch>
-                        <Route exact path="/models/:modelName" component={ModelListPage} />
-                        <Route path="/models/:modelName/create" component={CreateModelPage} />
-                        <Route path="/models/:modelName/:id" component={ViewModelPage} />
-                    </Switch>
+                    <Route path="/models/:modelName" render={({match, ...rest}) => {
+                        const model = models[match.params.modelName];
+                        return (
+                            <Switch>
+                                <Route exact path="/models/:modelName" render={() => <ModelListPage model={model} />} />
+                                <Route path="/models/:modelName/create" render={() => <CreateModelPage model={model} match={match} {...rest}/>} />
+                                <Route path="/models/:modelName/:id" render={() => <ViewModelPage model={model} />} />
+                            </Switch>
+                        )
+                    }}/>
                 </div>
             </Router>
-        )
+        );
     }
 }

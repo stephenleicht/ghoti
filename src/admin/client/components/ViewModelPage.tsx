@@ -2,12 +2,16 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 
-export default class ModelListPage extends React.Component<RouteComponentProps<{modelName: string}>, {}> {
+interface ViewModelPageProps {
+    model: any,
+}
+
+export default class ViewModelPage extends React.Component<ViewModelPageProps, {}> {
     render() {
-        const { match } = this.props;
+        const { model } = this.props;
         return (
             <div>
-                View Model {match.params.modelName}
+                View Model {model.modelMeta.name}
             </div>
         )
     }

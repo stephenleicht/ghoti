@@ -25,7 +25,7 @@ function buildMetaFileString(metaData: ModelMeta[]): string {
 
         window.__ghotiMeta__ = {
             models: {
-                ${metaData.map(meta => `${meta.name}: ${meta.name}`).join('\n')}
+                ${metaData.map(meta => `${meta.namePlural.toLowerCase()}: ${meta.name}`).join(',\n')}
             }
         }
     `;
