@@ -61,6 +61,4 @@ typings/
 
 dist/
 
-src/example/
-
 *.css.d.ts
