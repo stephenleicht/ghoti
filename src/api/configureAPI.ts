@@ -2,7 +2,7 @@ import * as express from 'express';
 
 import { Ghoti } from '../Ghoti';
 import { ModelMeta } from '../model/PersistedField';
-import { save } from '../persistence//EntityManager';
+import { save, findByID } from '../persistence/EntityManager';
 
 import { createLogger } from '../logging';
 
@@ -16,7 +16,7 @@ type ModelsByName = {
 }
 
 interface RequestWithModel extends express.Request {
-    model:  {
+    model: {
         modelMeta: ModelMeta,
         type: any
     }
@@ -28,7 +28,7 @@ export default function configureAPI(ghoti: Ghoti) {
     const modelsByName: ModelsByName = models.reduce((agg, model) => {
         const modelMeta: ModelMeta = model.modelMeta;
         if (!modelMeta) {
-            logger.warn('Could not find modelMeta field on registered model.', {model});
+            logger.warn('Could not find modelMeta field on registered model.', { model });
             return agg;
         }
 
@@ -42,8 +42,8 @@ export default function configureAPI(ghoti: Ghoti) {
     const router = express.Router();
 
     router.param('model', (req: RequestWithModel, res, next) => {
-         const model = modelsByName[req.params.model.toLowerCase()];
-        if(!model) {
+        const model = modelsByName[req.params.model.toLowerCase()];
+        if (!model) {
             res.sendStatus(404);
             return;
         }
@@ -54,22 +54,32 @@ export default function configureAPI(ghoti: Ghoti) {
 
     router.post('/models/:model', async (req: RequestWithModel, res) => {
         const instance = new req.model.type(req.body);
-        
+
         try {
             await save(instance);
         }
-        catch(err) {
+        catch (err) {
             logger.error(err.stack);
         }
-    
+
         res.send(JSON.stringify(instance));
     });
 
-    router.get('/models/:model/:id', async (req, res) => {
+    router.get('/models/:model/:id', async (req: RequestWithModel, res) => {
         const model = modelsByName[req.params.model];
-        if(!model) {
+        if (!model) {
             res.send(404);
             return;
+        }
+
+        try {
+            const instance = await findByID(model.type, req.params.id);
+
+            res.send(JSON.stringify(instance));    
+        }
+        catch(err) {
+            res.status(500);
+            res.send(err);
         }
     })
 

@@ -1,4 +1,4 @@
-import { pick } from 'lodash';
+import { pick, toPlainObject } from 'lodash';
 import * as mongoose from 'mongoose';
 import * as stackTrace from 'stack-trace';
 import * as pluralize from 'pluralize';
@@ -18,13 +18,13 @@ export default function Model() {
         modelMeta.namePlural = pluralize.plural(modelMeta.name);
 
         const schema = Object
-                        .entries(modelMeta.fields)
-                        .reduce((agg, [key, fieldMeta]) => {
-                            return {
-                                ...agg,
-                                [key]: fieldMeta.type
-                            }
-                        }, {});
+            .entries(modelMeta.fields)
+            .reduce((agg, [key, fieldMeta]) => {
+                return {
+                    ...agg,
+                    [key]: fieldMeta.type
+                }
+            }, {});
 
         const mongooseModel = mongoose.model(target.name, new mongoose.Schema(<any>schema));
 
@@ -35,18 +35,19 @@ export default function Model() {
 
             _mongooseInstance: any;
 
-            constructor(...args: any[]){
+            constructor(...args: any[]) {
                 super(...args);
 
-                const fieldValues = pick(this, Object.keys(modelMeta.fields));
+                const fieldKeys = Object.keys(modelMeta.fields);
+                const fieldValues: { [key: string]: any } = pick(this, fieldKeys);
 
                 this._mongooseInstance = new mongooseModel(fieldValues);
 
-                buildProperties(modelMeta, this);
+                buildProperties(modelMeta, mongooseModel, this);
             }
 
             toJSON() {
-                const copy = Object.assign({}, this);
+                const copy = toPlainObject(this);
                 delete copy._mongooseInstance;
                 return copy;
             }
@@ -54,11 +55,12 @@ export default function Model() {
     }
 }
 
-function buildProperties(modelMeta: ModelMeta, target: any) {
+function buildProperties(modelMeta: ModelMeta, mongooseModel: mongoose.Model<mongoose.Document>, target: any) {
     Object.entries(modelMeta.fields).forEach(([key, fieldMeta]) => {
-        if(fieldMeta.isID) {
+        if (fieldMeta.isID) {
             Object.defineProperty(target, key, {
-                get: () => target._mongooseInstance['_id'].toString(),
+                set: (value: any) => target._mongooseInstance['id'] = new mongoose.Types.ObjectId(value),
+                get: () => target._mongooseInstance['id'].toString(),
             })
         }
         else {
@@ -69,6 +71,5 @@ function buildProperties(modelMeta: ModelMeta, target: any) {
                 }
             })
         }
-        
     });
 }
