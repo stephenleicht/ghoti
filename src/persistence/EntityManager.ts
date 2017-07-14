@@ -24,12 +24,7 @@ export function findByID<T extends new (...args: any[]) => T>(model: T, id: stri
             }
             
             const { _id, ...dbValues} = doc;
-            const idKey = Object.keys(anyModel.modelMeta.fields).find(key => anyModel.modelMeta.fields[key].isID);
 
-            if (idKey) {
-                dbValues[idKey] = _id.toString();
-            }
-            
             resolve(new model(dbValues));
         })
     })
