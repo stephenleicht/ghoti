@@ -1,13 +1,9 @@
 import 'reflect-metadata';
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
+import { Application } from 'express';
 
+import createExpressApp from './server/createExpressApp';
 import { processMetaData } from './admin/bundler';
-import { configureAdminServer } from "./admin/configureAdminServer";
-import configureAPI from './api/configureAPI';
-
-
 import { GhotiOptions } from './GhotiOptions';
 
 
@@ -19,7 +15,7 @@ export class Ghoti {
     };
 
     configuration: GhotiOptions
-    private app: express.Application
+    private app: Application
 
     configure(options: Partial<GhotiOptions>) {
         this.configuration = {
@@ -36,24 +32,11 @@ export class Ghoti {
         try {
             await processMetaData(models, tempDir);
         }
-        catch(err) {
+        catch (err) {
             console.log(err.stack);
         }
 
-        // Consolidate all model metadata,
-        // build admin bundle from model metadata
-        // Start server, listening on port from configuration
-        
-        this.app = express();
-
-        this.app.use(bodyParser.json());
-
-        const adminRouter = configureAdminServer(this);
-        const apiRouter = configureAPI(this);
-
-        this.app.use('/admin', adminRouter);
-        this.app.use('/api', apiRouter);
-
+        this.app = createExpressApp(this.configuration);
 
         this.app.listen(port, () => {
             console.log(`Express server running on ${port}`)
