@@ -7,7 +7,11 @@ import { getModelList, deleteByID } from '../api';
 import { ModelMeta } from '../../../model/PersistedField';
 import getIDKey from '../../../model/getIDKey';
 
-interface ModelListPageProps {
+interface ModelListPageParams {
+    modelName: string
+}
+
+interface ModelListPageProps extends RouteComponentProps<ModelListPageParams> {
     model: any,
 }
 
@@ -27,8 +31,20 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
         this.getList()
     }
 
-    async getList() {
-        const modelsList = await getModelList(this.props.model.modelMeta);
+    componentWillReceiveProps(nextProps: ModelListPageProps) {
+        if (nextProps.location === this.props.location) {
+            return;
+        }
+
+        if (nextProps.match.params.modelName === this.props.match.params.modelName) {
+            return;
+        }
+
+        this.getList(nextProps.model);
+    }
+
+    async getList(model = this.props.model) {
+        const modelsList = await getModelList(model.modelMeta);
 
         this.setState({
             modelsList,
@@ -59,10 +75,12 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
                 <br />
                 <table>
                     <thead>
-                        {fieldKeysNoID.map((key) => (
-                            <td key={key}>{key}</td>
-                        ))}
-                        <td></td>
+                        <tr>
+                            {fieldKeysNoID.map((key) => (
+                                <td key={key}>{key}</td>
+                            ))}
+                            <td></td>
+                        </tr>
                     </thead>
                     <tbody>
                         {modelsList
