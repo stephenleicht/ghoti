@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-
+import {FormState, createFormState} from '../forms/Form';
 import ModelEditor from '../editor/ModelEditor';
 
 import { createModel } from '../api';
@@ -11,7 +11,7 @@ interface CreateModelPageProps extends RouteComponentProps<any> {
 }
 
 interface CreateModelState {
-    saved: boolean,
+    formState: FormState,
 }
 
 
@@ -20,8 +20,8 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
         super();
 
         this.state = {
-            saved: false,
-        }
+            formState: createFormState({}),
+        };
     }
 
     onSubmit = async (newValue: any) => {
@@ -33,12 +33,17 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
     }
 
     render() {
-        const { saved } = this.state;
+        const { formState } = this.state;
         const { model } = this.props;
         return (
             <div>
-                {saved && <h4>Model Saved!</h4>}
-                <ModelEditor model={model} onSubmit={this.onSubmit} />
+                <h1>Add {model.modelMeta.name}</h1>
+                <ModelEditor
+                    model={model}
+                    onSubmit={this.onSubmit} 
+                    formState={formState}
+                    onChange={(newState: FormState) => this.setState({formState: newState})}  
+                />
             </div>
         )
     }

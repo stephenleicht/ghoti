@@ -36,34 +36,18 @@ function getEditorMarkupForModel(model: any) {
 
 interface ModelEditorProps {
     model: any,
+    formState: FormState,
+    onChange: (newValue: FormState) => void,
     onSubmit: (value: any) => void,
 }
 
-interface ModelEditorState {
-    formState: FormState,
-}
-
-export default class ModelEditor extends React.Component<ModelEditorProps, ModelEditorState> {
-    constructor() {
-        super();
-
-        this.state = {
-            formState: createFormState({})
-        };
-    }
-
-    onFormChange = (newFormState: FormState) => {
-        this.setState({formState: newFormState});
-    }
-
+export default class ModelEditor extends React.Component<ModelEditorProps, {}> {
     render() {
-        const { model, onSubmit } = this.props;
-        const { formState } = this.state;
+        const { model, formState, onSubmit, onChange } = this.props;
 
         return (
             <div>
-                <h1>Add {model.modelMeta.name}</h1>
-                <Form formState={formState} onChange={this.onFormChange} onSubmit={onSubmit} >
+                <Form formState={formState} onChange={onChange} onSubmit={onSubmit} >
                     {getEditorMarkupForModel(model)}
                     <button type="submit">Submit</button>
                 </Form>

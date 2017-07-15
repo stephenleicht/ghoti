@@ -37,13 +37,19 @@ export default class App extends React.Component<AppProps, AppState> {
                 <div className={styles.appWrapper}>
                     <Navigation models={models} />
                     <Route path="/users" render={() => <div>Users Route</div>} />
-                    <Route path="/models/:modelName" render={({match, ...rest}) => {
+                    <Route path="/models/:modelName" render={({match}) => {
                         const model = models[match.params.modelName];
                         return (
                             <Switch>
-                                <Route exact path="/models/:modelName" render={() => <ModelListPage model={model} />} />
-                                <Route path="/models/:modelName/create" render={() => <CreateModelPage model={model} match={match} {...rest}/>} />
-                                <Route path="/models/:modelName/:id" render={() => <ViewModelPage model={model} />} />
+                                <Route exact path="/models/:modelName" render={(props) => (
+                                    <ModelListPage model={model} {...props} />
+                                )} />
+                                <Route path="/models/:modelName/create" render={(props) => (
+                                    <CreateModelPage model={model} {...props}/>
+                                )} />
+                                <Route path="/models/:modelName/:id" render={(props) => (
+                                    <ViewModelPage model={model} {...props} />
+                                )} />
                             </Switch>
                         )
                     }}/>

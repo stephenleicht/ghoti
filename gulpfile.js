@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
+const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const runSequence = require('run-sequence');
 const merge = require('merge2');
@@ -34,7 +35,9 @@ gulp.task('build-library', () => {
 
     return merge([
         gulp.src(files.library)
+            .pipe(sourcemaps.init())
             .pipe(tsProject())
+            .pipe(sourcemaps.write())
             .pipe(gulp.dest('dist')),
 
         gulp.src(files.packageJsons)

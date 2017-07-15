@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 import * as stackTrace from 'stack-trace';
 import * as pluralize from 'pluralize';
 
-
+import getIDKey from '../getIDKey';
 import { FieldMeta, ModelMeta } from '../PersistedField';
 
 import constants from '../constants';
@@ -29,7 +29,7 @@ export default function Model() {
         const mongooseModel = mongoose.model(target.name, new mongoose.Schema(<any>schema));
 
         const fieldKeys = Object.keys(modelMeta.fields);
-        const idKey = fieldKeys.find(key => modelMeta.fields[key].isID);
+        const idKey = getIDKey(modelMeta);
 
         return class ModelWrapper extends target {
             static displayName = `Model<${target.name}>`
@@ -57,12 +57,13 @@ export default function Model() {
                             return (target as any)[name];
                         }
                     },
-                    set(target, name, value, receiver) {
+                    set(target: {[key: string]: any}, name, value, receiver) {
                         if (name === idKey || name === '_id') {
-                            target._mongooseInstance._id = value;
+                            // target._mongooseInstance._id = value;
                         }
                         else if (!!modelMeta.fields[name]) {
                             target._mongooseInstance[name] = value;
+                            target[name] = value;
                         }
                         else {
                             (target as any)[name] = value;
@@ -71,12 +72,12 @@ export default function Model() {
                         return true;
                     },
                     // ownKeys(target) {
-                    //     const keys = Reflect.ownKeys(target);
-                    //     if( idKey && !keys.includes(idKey)) {
-                    //         keys.push(idKey);
-                    //     }
-                    //     return keys;
+                    //     const keys = new Set([...Reflect.ownKeys(target), ...Object.keys(modelMeta.fields)]);
+                    //     return Array.from(keys);
                     // },
+                    // has(target, name) {
+                    //     return true;
+                    // }
                     // getOwnPropertyDescriptor(target, name) {
                     //     if( name === idKey) {
                     //         return {enumerable: true, value: target._mongooseInstance._id.toString()}
