@@ -1,4 +1,5 @@
 import { ModelMeta } from '../../model/PersistedField';
+import { SessionSummary } from '../../api/SessionSummary';
 
 export async function createModel(modelMeta: ModelMeta, value: any) {
     const result = await fetch(`/api/models/${modelMeta.namePlural}`, {
@@ -63,5 +64,23 @@ export async function authenticate(username: string, password: string) {
         credentials: 'include'
     })
 
-    return res.json();
+    if(res.status === 401) {
+        return false;
+    }
+
+    return res.ok;
+}
+
+export async function getSessionInfo() {
+    const res = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include'
+    });
+
+    if(res.status === 401) {
+        return false;
+    }
+
+    const session: SessionSummary = await res.json();
+    return session;
 }

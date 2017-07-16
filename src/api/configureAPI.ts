@@ -61,6 +61,14 @@ export default function configureAPI(config: GhotiOptions) {
             res.send(JSON.stringify(req.user));
         }
     );
+    router.get('/auth/session', authorize, (req, res) => {
+        const sessionInfo = {
+            id: req.sessionID,
+            user: req.user
+        };
+
+        res.send(JSON.stringify(sessionInfo));
+    })
 
     router.use('/models*', authorize);
     router.param('model', getModelParamHandler(models));
