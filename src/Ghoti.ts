@@ -8,10 +8,13 @@ import { GhotiOptions } from './GhotiOptions';
 
 
 export class Ghoti {
-    static defaultOptions = {
+    static defaultOptions: GhotiOptions = {
         models: [],
         port: 3000,
         tempDir: '/tmp/ghoti',
+        mongoConnectionString: 'mongodb://localhost:27017/ghoti',
+        username: 'ghoti',
+        password: 'password'
     };
 
     configuration: GhotiOptions
@@ -25,9 +28,9 @@ export class Ghoti {
     }
 
     async run() {
-        const { tempDir, models, port } = this.configuration;
+        const { tempDir, models, port, mongoConnectionString } = this.configuration;
 
-        mongoose.connect('mongodb://localhost:27017/ghoti');
+        mongoose.connect(mongoConnectionString);
 
         try {
             await processMetaData(models, tempDir);
