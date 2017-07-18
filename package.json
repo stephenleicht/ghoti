@@ -1,7 +1,7 @@
 {
   "name": "ghoti",
-  "version": "0.0.1",
-  "description": "Experimental CMS for another side project",
+  "version": "0.1.0",
+  "description": "Experimental CMS written in typescript for node and mongodb",
   "author": "Stephen Leicht",
   "license": "MIT",
   "scripts": {
