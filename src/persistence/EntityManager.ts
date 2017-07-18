@@ -33,7 +33,13 @@ export function findByID<T extends new (...args: any[]) => T>(model: T, id: stri
     return new Promise<T | undefined>((resolve, reject) => {
         const anyModel: any = model as any;
         const modelMeta: ModelMeta = anyModel.modelMeta;
-        anyModel.mongooseModel.findById(id, '-__v').exec((err: any, doc: any) => {
+        const query = anyModel.mongooseModel.findById(id, '-__v');
+
+        if(modelMeta.refFields) {
+            query.populate(modelMeta.refFields.join(' '));
+        }
+        
+        query.exec((err: any, doc: any) => {
             if (err) {
                 reject(err);
                 return;

@@ -1,5 +1,7 @@
 import { ID, Model, Field } from "../model";
 
+import Person from './Person';
+
 export interface FishOptions {
     name: string,
     color: string,
@@ -18,7 +20,7 @@ export default class Fish {
     color: string
 
     @Field()
-    gender: string
+    link: Person
 
     constructor(options: FishOptions){
         Object.assign(this, options);

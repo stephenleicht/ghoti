@@ -17,13 +17,26 @@ export default function Model() {
         modelMeta.fileName = stackTrace.get()[3].getFileName();
         modelMeta.name = target.prototype.constructor.name;
         modelMeta.namePlural = pluralize.plural(modelMeta.name);
+        modelMeta.refFields = [];
 
         const schema = Object
             .entries(modelMeta.fields)
             .reduce((agg, [key, fieldMeta]) => {
+                let schemaType;
+                if(!!fieldMeta.type.modelMeta) {
+                    modelMeta.refFields.push(key);
+                    schemaType = {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: fieldMeta.type.modelMeta.name
+                    };
+                }
+                else {
+                    schemaType = fieldMeta.type;
+                }
+
                 return {
                     ...agg,
-                    [key]: fieldMeta.type
+                    [key]: schemaType
                 }
             }, {});
 
