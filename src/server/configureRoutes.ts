@@ -6,7 +6,7 @@ import { GhotiOptions } from '../GhotiOptions';
 import { configureAdminServer } from "../admin/configureAdminServer";
 import configureAPI from '../api/configureAPI';
 
-export default function configureRoutes(config: GhotiOptions) {
+export default function configureRoutes(config: GhotiOptions): Router {
     const router = Router();
     const adminRouter = configureAdminServer(config);
     const apiRouter = configureAPI(config);

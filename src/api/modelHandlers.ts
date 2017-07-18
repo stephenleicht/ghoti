@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { omit } from 'lodash';
 
-import { ModelMeta } from '../model/PersistedField';
+import { ModelMeta } from '../model';
 import getIDKey from '../model/getIDKey';
 import { save, update, findByID, find, deleteByID } from '../persistence/EntityManager';
 import { createLogger } from '../logging';
@@ -15,7 +15,7 @@ type ModelsByName = {
     }
 }
 
-interface RequestWithModel extends Request {
+export interface RequestWithModel extends Request {
     model: {
         modelMeta: ModelMeta,
         type: any

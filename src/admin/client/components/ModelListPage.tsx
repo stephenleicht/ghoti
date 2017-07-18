@@ -4,18 +4,18 @@ import * as PropTypes from 'prop-types';
 import { RouteComponentProps, Link } from 'react-router-dom';
 
 import { getModelList, deleteByID } from '../api';
-import { ModelMeta } from '../../../model/PersistedField';
+import { ModelMeta } from '../../../model';
 import getIDKey from '../../../model/getIDKey';
 
-interface ModelListPageParams {
+export interface ModelListPageParams {
     modelName: string
 }
 
-interface ModelListPageProps extends RouteComponentProps<ModelListPageParams> {
+export interface ModelListPageProps extends RouteComponentProps<ModelListPageParams> {
     model: any,
 }
 
-interface ModelListPageState {
+export interface ModelListPageState {
     modelsList: any[]
 }
 

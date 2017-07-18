@@ -2,6 +2,7 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "sourceMap": true,
+        "declaration": true,
         "strict": true,
         "module": "commonjs",
         "target": "ES2017",

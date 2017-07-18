@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import * as passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
@@ -52,10 +52,10 @@ function configureAuthentication(actualUsername: string, actualPassword: string)
     ));
 }
 
-export default function configureAPI(config: GhotiOptions) {
+export default function configureAPI(config: GhotiOptions): Router {
     const models = config.models;
 
-    const router = express.Router();
+    const router = Router();
 
     configureAuthentication(config.username, config.password)
 

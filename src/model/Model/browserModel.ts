@@ -1,8 +1,8 @@
 import { pick } from 'lodash';
 import * as pluralize from 'pluralize';
 
-
-import { FieldMeta, ModelMeta } from '../PersistedField';
+import { FieldMeta } from '../FieldMeta';
+import { ModelMeta } from '../ModelMeta';
 
 import constants from '../constants';
 

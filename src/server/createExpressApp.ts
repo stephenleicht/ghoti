@@ -8,7 +8,7 @@ import * as passport from 'passport';
 import { GhotiOptions } from '../GhotiOptions';
 import configureRoutes from './configureRoutes';
 
-export default function createExpressApp(config: GhotiOptions) {
+export default function createExpressApp(config: GhotiOptions): express.Express {
     const app = express();
 
     app.use(cookieParser());

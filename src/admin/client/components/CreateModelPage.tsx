@@ -6,7 +6,7 @@ import ModelEditor from '../editor/ModelEditor';
 
 import { createModel } from '../api';
 
-interface CreateModelPageProps extends RouteComponentProps<any> {
+export interface CreateModelPageProps extends RouteComponentProps<any> {
     model: any,
 }
 

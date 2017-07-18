@@ -4,7 +4,8 @@ import * as stackTrace from 'stack-trace';
 import * as pluralize from 'pluralize';
 
 import getIDKey from '../getIDKey';
-import { FieldMeta, ModelMeta } from '../PersistedField';
+import { ModelMeta } from '../ModelMeta';
+import { FieldMeta } from '../FieldMeta';
 
 import constants from '../constants';
 

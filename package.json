@@ -5,6 +5,8 @@
   "author": "Stephen Leicht",
   "license": "MIT",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/browser.js",
   "scripts": {
     "build": "gulp build",
     "watch": "gulp watch"

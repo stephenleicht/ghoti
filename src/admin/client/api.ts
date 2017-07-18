@@ -1,4 +1,4 @@
-import { ModelMeta } from '../../model/PersistedField';
+import { ModelMeta } from '../../model';
 import { SessionSummary } from '../../api/SessionSummary';
 
 export async function createModel(modelMeta: ModelMeta, value: any) {

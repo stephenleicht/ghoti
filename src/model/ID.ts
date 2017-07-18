@@ -1,6 +1,6 @@
 import constants from './constants';
 
-import { addTypeMeta } from './PersistedField';
+import { addTypeMeta } from './Field';
 
 export default function ID(): PropertyDecorator {
     return (target: any, propertyKey: string): any  =>{

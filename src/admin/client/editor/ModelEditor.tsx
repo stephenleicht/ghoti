@@ -1,6 +1,6 @@
 import * as React from 'react';
 import modelContstants from '../../../model/constants';
-import { ModelMeta } from '../../../model/PersistedField';
+import { ModelMeta } from '../../../model';
 
 import Form, { FormState, createFormState } from '../forms/Form';
 
@@ -34,7 +34,7 @@ function getEditorMarkupForModel(model: any) {
     );
 }
 
-interface ModelEditorProps {
+export interface ModelEditorProps {
     model: any,
     formState: FormState,
     onChange: (newValue: FormState) => void,

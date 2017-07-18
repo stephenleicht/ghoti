@@ -1,6 +1,6 @@
-import { ID, Model, PersistedField } from "../model";
+import { ID, Model, Field } from "../model";
 
-interface PersonOptions {
+export interface PersonOptions {
     firstName: string,
     lastName: string,
     favoriteColor?: string,
@@ -11,19 +11,19 @@ export default class Person {
     @ID()
     id: string
 
-    @PersistedField()
+    @Field()
     firstName: string
 
-    @PersistedField()
+    @Field()
     lastName: string
 
-    @PersistedField()
+    @Field()
     favoriteColor: string
 
-    @PersistedField()
+    @Field()
     gender: string
 
-    @PersistedField()
+    @Field()
     hairColor: string
 
     get fullName() {

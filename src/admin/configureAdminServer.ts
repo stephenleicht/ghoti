@@ -6,7 +6,7 @@ import getMarkup from "./getMarkup";
 import { Ghoti } from "../Ghoti";
 import { GhotiOptions } from '../GhotiOptions';
 
-export function configureAdminServer(config: GhotiOptions) {
+export function configureAdminServer(config: GhotiOptions): express.Router{
     const router = express.Router();
 
     const jsPath = path.resolve(__dirname, './client');

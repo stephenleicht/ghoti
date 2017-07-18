@@ -1,6 +1,6 @@
-import { ID, Model, PersistedField } from "../model";
+import { ID, Model, Field } from "../model";
 
-interface FishOptions {
+export interface FishOptions {
     name: string,
     color: string,
     gender?: string,
@@ -11,13 +11,13 @@ export default class Fish {
     @ID()
     id: string
 
-    @PersistedField()
+    @Field()
     name: string
 
-    @PersistedField()
+    @Field()
     color: string
 
-    @PersistedField()
+    @Field()
     gender: string
 
     constructor(options: FishOptions){

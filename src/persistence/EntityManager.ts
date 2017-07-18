@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { omit } from 'lodash';
 
-import { ModelMeta } from '../model/PersistedField'
+import { ModelMeta } from '../model/ModelMeta'
 
 export function save<T>(model: T) {
     return new Promise((resolve, reject) => {

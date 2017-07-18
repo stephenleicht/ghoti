@@ -1,20 +1,8 @@
 import constants from './constants';
+import { ModelMeta } from './ModelMeta';
 
-type PersistedFieldOptions = {
+export type FieldOptions = {
     type: any
-}
-
-export type FieldMeta = {
-    type: any,
-    isID: boolean,
-    editable: boolean,
-};
-
-export type ModelMeta = {
-    name: string,
-    namePlural: string,
-    fileName: string,
-    fields: {[key: string]: FieldMeta}
 }
 
 export function addTypeMeta(target: any, propertyKey: string, type: any, isID: boolean, editable: boolean) {
@@ -34,7 +22,7 @@ export function addTypeMeta(target: any, propertyKey: string, type: any, isID: b
         Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
-export default function PersistedField(options?: PersistedFieldOptions): PropertyDecorator {
+export default function Field(options?: FieldOptions): PropertyDecorator {
     return (target: any, propertyKey: string) => {
         let type = Reflect.getMetadata('design:type', target, propertyKey);
 
