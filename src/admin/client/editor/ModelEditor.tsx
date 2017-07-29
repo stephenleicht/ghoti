@@ -13,11 +13,10 @@ function getEditorMarkupForModel(model: any) {
     const fields = Object.entries(modelMeta.fields)
         .filter(([key, f]) => f.editable)
         .map(([key, f]) => {
-            let Component = defaultComponentsByType.get(f.type);
+            const Component = defaultComponentsByType.get(f.type);
 
             if (!Component) {
-                Component = defaultComponentsByType.get(String);
-                // return <div>No editor for type</div>
+                return <div>No editor for type</div>
             }
 
             return (

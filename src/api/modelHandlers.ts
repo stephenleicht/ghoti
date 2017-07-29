@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 
 import { ModelMeta } from '../model';
 import getIDKey from '../model/getIDKey';
-import { save, update, findByID, find, deleteByID } from '../persistence/EntityManager';
+import entityManager from '../persistence/EntityManager';
 import { createLogger } from '../logging';
 
 const logger = createLogger('modelHandlers');
@@ -50,31 +50,22 @@ export function getModelParamHandler(models: any[]) {
 }
 
 export async function createModelHandler(req: RequestWithModel, res: Response) {
-    const instance = new req.model.type(req.body);
-
     try {
-        await save(instance);
+        const savedInstance = await entityManager.save(req.model, req.body);
+        res.send(JSON.stringify(savedInstance))
     }
     catch (err) {
         logger.error(err.stack);
+        res.status(500);
+        res.send(undefined);
     }
 
-    res.send(JSON.stringify(instance));
+    
 }
 
 export async function updateModelHandler(req: RequestWithModel, res: Response) {
     try {
-        const { type, modelMeta } = req.model;
-        const instance = await findByID(req.model.type, req.params.id);
-        if (!instance) {
-            res.sendStatus(404);
-        }
-
-        const idKey = getIDKey(modelMeta);
-
-        const toUpdate = omit(req.body, idKey);
-        Object.assign(instance, toUpdate);
-        await save(instance);
+        const instance = await entityManager.updateByID(req.model, req.params.id, req.body);
         res.send(JSON.stringify(instance));
     }
     catch (err) {
@@ -85,30 +76,32 @@ export async function updateModelHandler(req: RequestWithModel, res: Response) {
 
 export async function getModelListHandler(req: RequestWithModel, res: Response) {
     try {
-        const instances = await find(req.model.type, {});
+        const instances = await entityManager.find(req.model.type, {});
         res.send(JSON.stringify(instances));
     }
     catch (err) {
         res.status(500);
         res.send(err);
+        logger.error(err.stack);
     }
 }
 
 export async function getModelByIDHandler(req: RequestWithModel, res: Response) {
     try {
-        const instance = await findByID(req.model.type, req.params.id);
+        const instance = await entityManager.findByID(req.model.type, req.params.id);
 
         res.send(JSON.stringify(instance));
     }
     catch (err) {
         res.status(500);
         res.send(err);
+        logger.error(err.stack);
     }
 }
 
 export async function deleteModelByIDHandler(req: RequestWithModel, res: Response) {
     try {
-        const result = await deleteByID(req.model.type, req.params.id);
+        const result = await entityManager.deleteByID(req.model, req.params.id);
 
         res.send(JSON.stringify({ result }));
     }

@@ -1,10 +1,15 @@
 import 'reflect-metadata';
-import * as mongoose from 'mongoose';
+import { MongoClient } from 'mongodb';
 import { Application } from 'express';
 
+import entityManager, { EntityManager } from './persistence/EntityManager';
 import createExpressApp from './server/createExpressApp';
 import { processMetaData } from './admin/bundler';
 import { GhotiOptions } from './GhotiOptions';
+
+import createLogger from './logging/createLogger';
+
+const logger = createLogger('Ghoti');
 
 
 export class Ghoti {
@@ -30,9 +35,15 @@ export class Ghoti {
     async run() {
         const { tempDir, models, port, mongoConnectionString } = this.configuration;
 
-        mongoose.connect(mongoConnectionString);
-
+        logger.info('Starting ghoti...');
         try {
+            const connectionResult = await entityManager.connect(mongoConnectionString);
+
+            if (!connectionResult) {
+                logger.info('Unable to connect to database');
+                return;
+            }
+
             await processMetaData(models, tempDir);
         }
         catch (err) {

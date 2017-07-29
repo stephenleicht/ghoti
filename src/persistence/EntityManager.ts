@@ -1,105 +1,108 @@
-import { Model } from 'mongoose';
-import { omit } from 'lodash';
+import { MongoClient, Db, ObjectID } from 'mongodb';
+
+import { omit, pick } from 'lodash';
 
 import { ModelMeta } from '../model/ModelMeta'
+import createLogger from '../logging/createLogger';
 
-export function save<T>(model: T) {
-    return new Promise((resolve, reject) => {
-        (<any>model)._mongooseInstance.save((err: any) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+const logger = createLogger('Entity Manager');
 
-            resolve(true);
-        })
-    })
-}
+export class EntityManager {
+    private db: Db
 
-export function update<T>(model: T) {
-    return new Promise((resolve, reject) => {
-        (<any>model)._mongooseInstance.update((err: any) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+    async connect(mongoConnectionString: string): Promise<boolean> {
+        try {
+            logger.info('Connecting to mongodb');
+            this.db = await MongoClient.connect(mongoConnectionString);
+            logger.info('Successfully connected to mongodb');
 
-            resolve(true);
-        })
-    })
-}
-
-export function findByID<T extends new (...args: any[]) => T>(model: T, id: string): Promise<T | undefined> {
-    return new Promise<T | undefined>((resolve, reject) => {
-        const anyModel: any = model as any;
-        const modelMeta: ModelMeta = anyModel.modelMeta;
-        const query = anyModel.mongooseModel.findById(id, '-__v');
-
-        if(modelMeta.refFields) {
-            query.populate(modelMeta.refFields.join(' '));
+            return true;
         }
-        
-        query.exec((err: any, doc: any) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+        catch (err) {
+            logger.error('Error while connecting to mongodb', err.stack);
+            return false;
+        }
+    }
 
-            if (!doc) {
-                resolve(undefined);
-                return;
-            }
+    async find(model: any, query: any) {
+        const modelMeta: ModelMeta = model.modelMeta;
+        const col = this.db.collection(modelMeta.namePlural);
 
-            const instance = createModelInstanceFromMongooseInstance(model, doc);
+        const rawResult = await col.find(query).toArray();
 
-            resolve(instance);
+        const result = rawResult.map((v) => {
+            const { _id, ...rest } = v;
+            rest[modelMeta.idKey] = _id.toString();
+            return rest;
         })
-    })
+
+        return result;
+    }
+
+    async findByID(model: any, id: string) {
+        const modelMeta: ModelMeta = model.modelMeta;
+        const col = this.db.collection(modelMeta.namePlural);
+
+        try {
+            const rawResult = await col.findOne({ _id: new ObjectID(id) });
+            const { _id, ...rest } = rawResult;
+            rest[modelMeta.idKey] = _id.toString();
+
+            return rest;
+        }
+        catch (err) {
+            logger.error(err.stack);
+            return null;
+        }
+    }
+
+    async save(model: any, instance: any) {
+        const modelMeta: ModelMeta = model.modelMeta;
+
+        const toSave = pick(instance, Object.keys(modelMeta.fields));
+
+        const col = this.db.collection(modelMeta.namePlural);
+        const result = await col.insertOne(toSave);
+
+        if (result.insertedCount === 0) {
+            return null;
+        }
+
+        const savedInstance = await this.findByID(model, result.insertedId.toString());
+        return savedInstance;
+    }
+
+    async deleteByID(model: any, id: string) {
+        const modelMeta: ModelMeta = model.modelMeta;
+        const col = this.db.collection(modelMeta.namePlural);
+
+        try {
+            const result = await col.findOneAndDelete({ _id: new ObjectID(id) });
+            return true;
+        }
+        catch (err) {
+            logger.error(err.stack);
+            return false;
+        }
+    }
+
+    async updateByID(model: any, id: string, newValue: any) {
+        const modelMeta: ModelMeta = model.modelMeta;
+        const col = this.db.collection(modelMeta.namePlural);
+
+        const fields = Object.keys(modelMeta.fields).filter(f => !modelMeta.fields[f].isID);
+
+        const toSave = pick(newValue, fields);
+
+        const result = await col.findOneAndUpdate({_id: new ObjectID(id)}, {$set: toSave});
+
+        if (!result.ok) {
+            return null;
+        }
+
+        return result.value;
+    }
+
 }
 
-export function find(model: any, query: any) {
-    return new Promise((resolve, reject) => {
-        const anyModel: any = model as any;
-        const modelMeta: ModelMeta = anyModel.modelMeta;
-        anyModel.mongooseModel.find({}, '-__v').exec((err: any, docs: any) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            if (!docs) {
-                resolve(undefined);
-                return;
-            }
-
-            const instances = docs.map((doc: any) => createModelInstanceFromMongooseInstance(model, doc))
-
-            resolve(instances);
-        })
-    })
-}
-
-export function deleteByID(model: any, id: string) {
-    return new Promise((resolve, reject) => {
-        const anyModel: any = model as any;
-        const modelMeta: ModelMeta = anyModel.modelMeta;
-        anyModel.mongooseModel.findByIdAndRemove(id).exec((err: any, docs: any) => {
-            if (err) {
-                reject(false);
-                return;
-            }
-
-            resolve(true);
-        })
-    })
-}
-
-function createModelInstanceFromMongooseInstance(model: any, _mongooseInstance: any) {
-    const instance = new model();
-    instance._mongooseInstance = _mongooseInstance;
-
-    const toMerge = omit(_mongooseInstance.toObject(), '_id');
-    Object.assign(instance, toMerge);
-
-    return instance;
-}
+export default new EntityManager();
