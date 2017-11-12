@@ -3,45 +3,29 @@ import * as React from 'react';
 import FormElement, { FormElementProps } from './FormElement';
 import { SyntheticEvent } from 'react';
 
-export interface NumberInputProps extends FormElementProps<string> {
-    required?: boolean
-    onChange: (value: String) => void,
+export interface NumberInputProps extends FormElementProps {
+    onChange: (value: number | string) => void,
 }
 
-@FormElement({
-    validators: {
-        required: (props: TextInputProps) => {
-            if(!props.required) {
-                return true;
-            }
-
-            return !!props.value;
-        },
-        isNumber: (props: TextInputProps): boolean => {
-            if(!props.value) {
-                return false;
-            }
-
-            return !!Number.parseInt(props.value);
-        }
-    }
-})
-export default class NumberInput extends React.Component<NumberInputProps, {}> {
-    static defaultProps = {
-        onChange: () => {},
-    }
-
-    onChange = (e) => {
+class NumberInput extends React.Component<NumberInputProps, {}> {
+    onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
 
         const parsed = Number.parseInt(value);
 
-        this.props.onChange(!!parsed ? parsed : value);
+        let retVal;
+        if(parsed === undefined) {
+            retVal = value;
+        }
+        else {
+            retVal = parsed;
+        }
+
+        this.props.onChange(retVal);
     }
     
     render() {
         const { 
-            onChange
             value = ''
         } = this.props;
 
@@ -55,3 +39,22 @@ export default class NumberInput extends React.Component<NumberInputProps, {}> {
         )
     }
 }
+
+export default FormElement({
+    validators: {
+        required: (props: NumberInputProps) => {
+            if(!props.required) {
+                return true;
+            }
+
+            return !!props.value;
+        },
+        isNumber: (props: NumberInputProps): boolean => {
+            if(!props.value) {
+                return false;
+            }
+
+            return !!Number.parseInt(props.value);
+        }
+    }
+})(NumberInput);

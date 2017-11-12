@@ -4,10 +4,11 @@ import { ValidateCallback } from './Form/ValidateCallback';
 
 import { FormContext } from './Form/Form';
 
-export interface FormElementProps<T> {
+export interface FormElementProps {
     name: string,
-    value?: T,
-    onChange?: (newValue: T) => void
+    value?: any,
+    required: boolean,
+    onChange?: (newValue: any) => void
 }
 
 export interface FormElementOptions {
@@ -18,9 +19,12 @@ export interface FormElementOptions {
 
 export default function FormElement(options: FormElementOptions = {}) {
 
-    return function wrapFormElement<T extends FormElementProps<any>>(ComponentToWrap: React.ComponentClass<T>) {
-        return class WrappedComponent extends React.Component<T, {}> {
-            static defaultProps: any;
+    return function wrapFormElement<T>(ComponentToWrap: React.ComponentClass<T>): React.ComponentClass<T & FormElementProps> {
+        return class WrappedComponent extends React.Component<T & FormElementProps, {}> {
+            static defaultProps: any = {
+                required: false,
+                onChange: () => {},
+            }
             
             context: FormContext & {
                 parentPath: string[],

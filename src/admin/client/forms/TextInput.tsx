@@ -2,23 +2,11 @@ import * as React from 'react';
 
 import FormElement, { FormElementProps } from './FormElement';
 
-interface TextInputProps extends FormElementProps<string> {
-    required?: boolean
+interface TextInputProps extends FormElementProps {
     minLength?: number,
 }
 
-@FormElement({
-    validators: {
-        required: (props: TextInputProps) => {
-            if(!props.required) {
-                return true;
-            }
-
-            return !!props.value;
-        }
-    }
-})
-export default class TextInput extends React.Component<TextInputProps, {}> {
+class TextInput extends React.Component<TextInputProps, {}> {
     render() {
         const { 
             onChange = () => {},
@@ -35,3 +23,15 @@ export default class TextInput extends React.Component<TextInputProps, {}> {
         )
     }
 }
+
+FormElement({
+    validators: {
+        required: (props: TextInputProps) => {
+            if(!props.required) {
+                return true;
+            }
+
+            return !!props.value;
+        }
+    }
+})(TextInput);
