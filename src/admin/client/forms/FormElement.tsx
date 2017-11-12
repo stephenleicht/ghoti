@@ -10,7 +10,7 @@ export interface FormElementProps<T> {
     onChange?: (newValue: T) => void
 }
 
-interface FormElementOptions {
+export interface FormElementOptions {
     validators?: {
         [key: string]: (props: any) => boolean
     }
@@ -20,6 +20,8 @@ export default function FormElement(options: FormElementOptions = {}) {
 
     return function wrapFormElement<T extends FormElementProps<any>>(ComponentToWrap: React.ComponentClass<T>) {
         return class WrappedComponent extends React.Component<T, {}> {
+            static defaultProps: any;
+            
             context: FormContext & {
                 parentPath: string[],
             }
