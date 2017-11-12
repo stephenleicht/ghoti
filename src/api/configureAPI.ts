@@ -74,7 +74,7 @@ export default function configureAPI(config: GhotiOptions): Router {
         res.send(JSON.stringify(sessionInfo));
     })
 
-    router.use('/models*', authorize);
+    // router.use('/models*', authorize);
     router.param('model', getModelParamHandler(models));
     router.post('/models/:model', createModelHandler);
     router.get('/models/:model', getModelListHandler);

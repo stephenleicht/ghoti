@@ -6,7 +6,7 @@ import TextInput from '../forms/TextInput';
 import NumberInput from '../forms/NumberInput';
 
 
-const defaults = new Map<any, React.ComponentClass<FormElementProps<any>>>([
+const defaults = new Map<any, React.ComponentClass<any>>([
     [String, TextInput],
     [Number, NumberInput]
 ]);
