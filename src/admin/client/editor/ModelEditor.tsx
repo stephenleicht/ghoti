@@ -4,6 +4,8 @@ import { ModelMeta } from '../../../model';
 
 import Form, { FormState, createFormState } from '../forms/Form';
 
+import EmbededModel from './EmbededModel';
+
 import { defaultComponentsByType } from './defaultComponentsByType';
 
 
@@ -13,25 +15,31 @@ function getEditorMarkupForModel(model: any) {
     const fields = Object.entries(modelMeta.fields)
         .filter(([key, f]) => f.editable)
         .map(([key, f]) => {
+            if (!!f.type.modelMeta) {
+                return (
+                    <EmbededModel key={key} name={key}>
+                        <label>{key}</label>
+                        {getEditorMarkupForModel(f.type)}
+                    </EmbededModel>
+                )
+            }
+
             const Component = defaultComponentsByType.get(f.type);
 
             if (!Component) {
-                return <div>No editor for type</div>
+                return <div>No editor for type {f.type.toString()}</div>
             }
 
             return (
-                <div key={key}>
-                    <label>{key}</label>
-                    <Component name={key}/>
+                <div>
+                    <label key={`${key}-label`}>{key}</label>
+                    <Component key={`${key}-component`} name={key} />
                 </div>
             )
+
         })
 
-    return (
-        <div>
-            {fields}
-        </div>
-    );
+    return fields;
 }
 
 export interface ModelEditorProps {
@@ -48,7 +56,10 @@ export default class ModelEditor extends React.Component<ModelEditorProps, {}> {
         return (
             <div>
                 <Form formState={formState} onChange={onChange} onSubmit={onSubmit} >
-                    {getEditorMarkupForModel(model)}
+                    <div>
+                        {getEditorMarkupForModel(model)}
+                    </div>
+
                     <button type="submit">Submit</button>
                 </Form>
             </div>
