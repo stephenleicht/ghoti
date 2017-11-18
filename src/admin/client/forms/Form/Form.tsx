@@ -18,12 +18,16 @@ interface FormProps {
 export interface FormContext {
     register: (path: string[], validateCallback: ValidateCallback) => void,
     addToChangeQueue: (fieldName: string) => void,
+    onChangeNotifier: (name: string, newValue: any) => void,
+    getValue: (fieldName: string) => any,
 }
 
 export default class Form extends React.Component<FormProps, {}> {
     static childContextTypes = {
         register: PropTypes.func,
         addToChangeQueue: PropTypes.func,
+        onChangeNotifier: PropTypes.func,
+        getValue: PropTypes.func,
     }
     pendingRegistrations: Array<{ path: string[], validateCallback: ValidateCallback }> = []
     changeQueue: string[] = []
@@ -32,6 +36,8 @@ export default class Form extends React.Component<FormProps, {}> {
         return {
             register: this.registerChild,
             addToChangeQueue: this.addToChangeQueue,
+            onChangeNotifier: this.onChildChange,
+            getValue: this.getChildValue,
         }
     }
 
@@ -125,6 +131,12 @@ export default class Form extends React.Component<FormProps, {}> {
         });
     }
 
+    getChildValue = (fieldName: string) => {
+        if(this.props.formState && this.props.formState.value) {
+            return this.props.formState.value[fieldName];
+        }
+    }
+
     prepareChildren(children: React.ReactNode) {
         return React.Children.toArray(children)
             .map((child: React.ReactChild) => {
@@ -212,7 +224,7 @@ export default class Form extends React.Component<FormProps, {}> {
     render() {
         return (
             <form className={styles.test} onSubmit={this.onFormSubmit}>
-                {this.prepareChildren(this.props.children)}
+                {this.props.children}
             </form>
         );
     }

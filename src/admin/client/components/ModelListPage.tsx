@@ -57,6 +57,15 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
         this.getList();
     }
 
+    renderDisplayValue(fieldName: string, value: any) {
+        if(this.props.model.modelMeta.fields[fieldName].type.modelMeta) {
+            //TODO: have some sort of display value configuration on ghoti model
+            return '{}';
+        }
+        
+        return value[fieldName];
+    }
+
     render() {
         const { model } = this.props;
         const { modelsList } = this.state;
@@ -68,7 +77,7 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
         const modelMeta: ModelMeta = model.modelMeta;
         const idKey = getIDKey(modelMeta);
 
-        const fieldKeysNoID = Object.keys(modelMeta.fields).filter(key => key !== idKey);
+        const renderableFields = Object.keys(modelMeta.fields).filter(key => key !== idKey);
         return (
             <div>
                 <Link to={`/models/${modelMeta.namePlural}/create`}>Create {modelMeta.name}</Link>
@@ -76,7 +85,7 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
                 <table>
                     <thead>
                         <tr>
-                            {fieldKeysNoID.map((key) => (
+                            {renderableFields.map((key) => (
                                 <td key={key}>{key}</td>
                             ))}
                             <td></td>
@@ -86,9 +95,9 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
                         {modelsList
                             .map(m => (
                                 <tr key={m[idKey]}>
-                                    {fieldKeysNoID.map(key => (
+                                    {renderableFields.map(key => (
                                         <td key={key}>
-                                            <Link to={`/models/${modelMeta.namePlural}/${m[idKey]}`}>{m[key]}</Link>
+                                            <Link to={`/models/${modelMeta.namePlural}/${m[idKey]}`}>{this.renderDisplayValue(key, m)}</Link>
                                         </td>
                                     ))}
                                     <td>

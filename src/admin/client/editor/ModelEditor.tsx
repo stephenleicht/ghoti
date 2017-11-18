@@ -9,7 +9,7 @@ import EmbededModel from './EmbededModel';
 import { defaultComponentsByType } from './defaultComponentsByType';
 
 
-function getEditorMarkupForModel(model: any) {
+function getEditorMarkupForModel(model: any) : React.ReactElement<any> | Array<React.ReactElement<any>>{
     const modelMeta: ModelMeta = model.modelMeta;
 
     const fields = Object.entries(modelMeta.fields)
