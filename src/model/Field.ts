@@ -5,7 +5,7 @@ export type FieldOptions = {
     type: any
 }
 
-export function addTypeMeta(target: any, propertyKey: string, type: any, isID: boolean, editable: boolean) {
+export function addTypeMeta(target: any, propertyKey: string | symbol, type: any, isID: boolean, editable: boolean) {
         const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
@@ -23,7 +23,7 @@ export function addTypeMeta(target: any, propertyKey: string, type: any, isID: b
 }
 
 export default function Field(options?: FieldOptions): PropertyDecorator {
-    return (target: any, propertyKey: string) => {
+    return (target: any, propertyKey: string | symbol) => {
         let type = Reflect.getMetadata('design:type', target, propertyKey);
 
         type = type || (options && options.type);

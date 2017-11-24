@@ -6,22 +6,22 @@ import ModelEditor from '../editor/ModelEditor';
 
 import { getModelByID, updateModel } from '../api';
 
-interface ViewModelPageParams {
+export interface ViewModelPageParams {
     id: string
 }
 
-interface ViewModelPageProps extends RouteComponentProps<ViewModelPageParams>{
+export interface ViewModelPageProps extends RouteComponentProps<ViewModelPageParams>{
     model: any,
 }
 
-interface ViewModelState {
+export interface ViewModelState {
     formState?: FormState,
 }
 
 
 export default class ViewModelPage extends React.Component<ViewModelPageProps, ViewModelState> {
-    constructor() {
-        super();
+    constructor(props: ViewModelPageProps) {
+        super(props);
 
         this.state = {
             formState: undefined,

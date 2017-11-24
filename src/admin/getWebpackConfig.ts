@@ -1,6 +1,7 @@
 import * as path from 'path';
+import {Configuration} from 'webpack';
 
-export default function getWebpackConfig(entryPath: string, outputPath: string) {
+export default function getWebpackConfig(entryPath: string, outputPath: string): Configuration {
     const outputFileName = path.basename(outputPath);
     const outputDirName = path.dirname(outputPath);
 

@@ -7,14 +7,14 @@ import TextInput from '../forms/TextInput';
 
 import { authenticate } from '../api';
 
-interface LoginPageState {
+export interface LoginPageState {
     formState: FormState,
     error: boolean,
 }
 
 export default class LoginPage extends React.Component<RouteComponentProps<{}>, LoginPageState> {
-    constructor() {
-        super();
+    constructor(props: RouteComponentProps<{}>) {
+        super(props);
 
         this.state = {
             formState: createFormState({}),

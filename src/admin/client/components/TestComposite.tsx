@@ -9,7 +9,7 @@ type CompositeValue = {
     valueTwo: string,
 }
 
-interface CompositeInputProps extends FormElementProps<CompositeValue> {
+export interface CompositeInputProps extends FormElementProps {
     test?: string
 }
 

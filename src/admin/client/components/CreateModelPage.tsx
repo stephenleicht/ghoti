@@ -16,8 +16,8 @@ interface CreateModelState {
 
 
 class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelState> {
-    constructor() {
-        super();
+    constructor(props: CreateModelPageProps) {
+        super(props);
 
         this.state = {
             formState: createFormState({}),

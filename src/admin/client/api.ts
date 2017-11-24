@@ -4,12 +4,12 @@ import { SessionSummary } from '../../api/SessionSummary';
 export async function createModel(modelMeta: ModelMeta, value: any) {
     const result = await fetch(`/api/models/${modelMeta.namePlural}`, {
         method: 'POST',
-        headers: {
+        headers: new Headers({
             'Content-Type': 'application/json'
-        },
+        }),
         body: JSON.stringify(value),
         credentials: 'include'
-    });
+    } as RequestInit);
 
     return result.json();
 }
@@ -17,9 +17,9 @@ export async function createModel(modelMeta: ModelMeta, value: any) {
 export async function updateModel(modelMeta: ModelMeta, id: string, value: any) {
     const result = await fetch(`/api/models/${modelMeta.namePlural}/${id}`, {
         method: 'PUT',
-        headers: {
+        headers: new Headers({
             'Content-Type': 'application/json'
-        },
+        }),
         body: JSON.stringify(value),
         credentials: 'include'
     });
@@ -57,9 +57,9 @@ export async function deleteByID(modelMeta: ModelMeta, id: string) {
 export async function authenticate(username: string, password: string) {
     const res = await fetch('/api/login', {
         method: 'POST',
-        headers: {
+        headers: new Headers({
             'Content-Type': 'application/json'
-        },
+        }),
         body: JSON.stringify({username, password}),
         credentials: 'include'
     })

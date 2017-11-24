@@ -14,8 +14,8 @@ interface AuthenticatedRouteProps extends RouteProps{}
 
 
 class AuthenticatedRoute extends React.Component<any, AuthenticatedRouteState> {
-    constructor() {
-        super();
+    constructor(props: AuthenticatedRouteProps) {
+        super(props);
 
         this.state = {
             isAuthenticating: true,

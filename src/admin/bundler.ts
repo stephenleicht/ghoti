@@ -33,7 +33,8 @@ function buildMetaFileString(metaData: ModelMeta[]): string {
 
 async function generatePackedBundle(tempDir: string): Promise<boolean> {
     try {
-        const stats = await webpack(getWebpackConfig(getRawBundlePath(tempDir), getMetaBundlePath(tempDir)));
+        const webpackConfig = getWebpackConfig(getRawBundlePath(tempDir), getMetaBundlePath(tempDir));
+        const stats = await webpack([webpackConfig]);
 
         return true;
     }

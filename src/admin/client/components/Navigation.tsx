@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import * as styles from './Navigation.css';
 
-interface NavigationProps {
+export interface NavigationProps {
     models: {[modelName: string]: any} //TODO: Create model map type
 }
 

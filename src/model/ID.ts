@@ -3,11 +3,11 @@ import constants from './constants';
 import { addTypeMeta } from './Field';
 
 export default function ID(): PropertyDecorator {
-    return (target: any, propertyKey: string): any  =>{
-    let type = Reflect.getMetadata('design:type', target, propertyKey);
+    return (target: any, propertyKey: string | symbol): any => {
+        let type = Reflect.getMetadata('design:type', target, propertyKey);
 
-    type = type || String;
+        type = type || String;
 
-    addTypeMeta(target.constructor, propertyKey, type, true, false);
-}
+        addTypeMeta(target.constructor, propertyKey, type, true, false);
+    }
 }

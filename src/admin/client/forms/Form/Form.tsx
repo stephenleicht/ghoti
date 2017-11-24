@@ -8,7 +8,7 @@ import { FormFieldMeta } from './FormFieldMeta';
 
 import * as styles from './Form.css';
 
-interface FormProps {
+export interface FormProps {
     children: React.ReactNode,
     formState: FormState,
     onChange: (newState: FormState) => void,
@@ -144,7 +144,7 @@ export default class Form extends React.Component<FormProps, {}> {
                     return child;
                 }
 
-                let propsToAdd: Partial<FormElementProps<any>> & { children?: any } = {};
+                let propsToAdd: Partial<FormElementProps> & { children?: any } = {};
                 if (child.props.children) {
                     propsToAdd = {
                         ...propsToAdd,
@@ -153,7 +153,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 }
 
                 if (child.props.hasOwnProperty('name')) {
-                    const namedChild = child as React.ReactElement<FormElementProps<any>>;
+                    const namedChild = child as React.ReactElement<FormElementProps>;
 
                     propsToAdd = {
                         ...propsToAdd,
@@ -174,11 +174,11 @@ export default class Form extends React.Component<FormProps, {}> {
         const { formState }  = this.props;
 
         const newFieldState = fields
-            .map((field) => ([
+            .map<[string, {[validatorKey: string]: boolean}]>((field) => ([
                 field,
                 formState.fields[field].validate()
             ]))
-            .reduce((agg, [key, validationResult]: [string, {[key: string]: boolean}]) => {
+            .reduce((agg, [key, validationResult]) => {
                 let allValid = true;
                 let errors: {[errorKey: string]: boolean} = {};
                 Object.entries(validationResult)

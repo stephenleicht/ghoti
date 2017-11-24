@@ -8,7 +8,8 @@ export interface FormElementProps {
     name: string,
     value?: any,
     required?: boolean,
-    onChange?: (newValue: any) => void
+    onChange?: (newValue: any) => void,
+    [otherPropKey: string]: any,
 }
 
 export interface FormElementOptions {
@@ -20,11 +21,11 @@ export interface FormElementOptions {
 
 export default function FormElement(options: FormElementOptions = {}) {
 
-    return function wrapFormElement<T>(ComponentToWrap: React.ComponentClass<T>): React.ComponentClass<T & FormElementProps> {
+    return function wrapFormElement<T extends { [key: string]: any }>(ComponentToWrap: React.ComponentClass<T & FormElementProps>): React.ComponentClass<T & FormElementProps> {
         return class WrappedComponent extends React.Component<T & FormElementProps, {}> {
             static defaultProps: any = {
                 required: false,
-                onChange: () => {},
+                onChange: () => { },
             }
 
             static contextTypes = {
@@ -50,8 +51,8 @@ export default function FormElement(options: FormElementOptions = {}) {
             getChildContext() {
                 let onChangeNotifier = undefined;
 
-                if(this.wrappedComponent && this.wrappedComponent.onChildElementChange){
-                    onChangeNotifier = this.onChildElementChange              
+                if (this.wrappedComponent && this.wrappedComponent.onChildElementChange) {
+                    onChangeNotifier = this.onChildElementChange
                 }
 
                 return {
@@ -60,7 +61,7 @@ export default function FormElement(options: FormElementOptions = {}) {
                     onChangeNotifier,
                 }
             }
-            
+
             componentDidMount() {
                 const register = this.context.register(this.path, this.validate)
 
@@ -89,12 +90,12 @@ export default function FormElement(options: FormElementOptions = {}) {
                 }
 
                 const validationResults = Object
-                                            .entries(options.validators)
-                                            .map<[string, boolean]>(([key, validateFn]) => [key, validateFn(this.getMergedProps())])
-                                            .reduce<{[errorKey: string]: boolean}>((agg, [key, validationResult]) => {
-                                                agg[key] = validationResult;
-                                                return agg;
-                                            }, {})
+                    .entries(options.validators)
+                    .map<[string, boolean]>(([key, validateFn]) => [key, validateFn(this.getMergedProps())])
+                    .reduce<{ [errorKey: string]: boolean }>((agg, [key, validationResult]) => {
+                        agg[key] = validationResult;
+                        return agg;
+                    }, {})
 
                 return validationResults;
             }
@@ -102,7 +103,7 @@ export default function FormElement(options: FormElementOptions = {}) {
             onChangeWrapper = (newValue: any) => {
                 this.context.addToChangeQueue(this.path.join('.'));
 
-                if(this.context.onChangeNotifier) {
+                if (this.context.onChangeNotifier) {
                     this.context.onChangeNotifier(this.props.name, newValue);
                 }
 
@@ -112,22 +113,22 @@ export default function FormElement(options: FormElementOptions = {}) {
             }
 
             onChildElementChange = (name: string, newValue: any) => {
-                if(this.wrappedComponent && this.wrappedComponent.onChildElementChange) {
+                if (this.wrappedComponent && this.wrappedComponent.onChildElementChange) {
                     this.wrappedComponent.onChildElementChange(name, newValue);
                 }
             }
 
             getValue = (fieldName: string) => {
-                if(this.props.value) {
+                if (this.props.value) {
                     return this.props.value;
                 }
-                else if(this.context.getValue) {
+                else if (this.context.getValue) {
                     return this.context.getValue(fieldName)
                 }
             }
 
-            render(){
-                const { name, value, onChange, ...other } = this.props;
+            render() {
+                const { name, value, onChange, required, ...other } = (this.props as FormElementProps);
 
                 let injectedOnChange;
                 if (onChange) {
@@ -136,16 +137,25 @@ export default function FormElement(options: FormElementOptions = {}) {
 
                 const actualValue = this.getValue(name);
 
+                // HACK: Typescript got angry trying to merge props into the wrapped component
+                // It doesn't seem to be able to understand that the wrapping FormElement
+                // injects props into the child, or I am not fully understanding the type system (this is more likely)
+                // But I've spent way too much time tring to get typescript to understand
+                // hacky any annotation it is!
+                const childProps: any = {
+                    name,
+                    value: actualValue,
+                    onChange: injectedOnChange,
+                    ref: (c: any) => { this.wrappedComponent = c; },
+                    ...other,
+                }
+
                 return (
-                <ComponentToWrap
-                    ref={(c) => { this.wrappedComponent = c;}} 
-                    {...other}
-                    name={name}
-                    value={actualValue}
-                    onChange={injectedOnChange} 
-                />
+                    <ComponentToWrap
+                        {...childProps}
+                    />
                 )
             }
-        } 
+        }
     }
 }

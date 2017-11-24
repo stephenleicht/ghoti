@@ -20,8 +20,8 @@ export interface ModelListPageState {
 }
 
 export default class ModelListPage extends React.Component<ModelListPageProps, ModelListPageState> {
-    constructor() {
-        super();
+    constructor(props: ModelListPageProps) {
+        super(props);
 
         this.state = {
             modelsList: []
