@@ -8,15 +8,10 @@ const webpack = require('webpack');
 
 const files = {
     library: [
-        'src/**/*.ts',
-        '!src/admin/client/**/*',
-        // 'src/admin/client/forms/**/*.ts'
+        'src/**/*.@(ts|tsx)',
     ],
     packageJsons: 'src/**/package.json',
-    client: [
-        'src/admin/client/**/*.ts',
-        'src/admin/client/**/*.tsx'
-    ]
+    client: 'src/admin/client/index.html'
 };
 
 let shouldWatch = false;

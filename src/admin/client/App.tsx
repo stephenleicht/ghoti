@@ -17,7 +17,7 @@ import LoginPage from './components//LoginPage';
 
 import * as styles from './App.css';
 
-interface AppProps {
+export interface AppProps {
     models: {
         [modelName: string]: any
     }

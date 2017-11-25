@@ -5,15 +5,15 @@ import { SessionSummary } from '../../../api/SessionSummary';
 
 import { getSessionInfo } from '../api';
 
-interface AuthenticatedRouteState {
+export interface AuthenticatedRouteState {
     isAuthenticating: boolean,
     session: null | SessionSummary
 }
 
-interface AuthenticatedRouteProps extends RouteProps{}
+export interface AuthenticatedRouteProps extends RouteProps{}
 
 
-class AuthenticatedRoute extends React.Component<any, AuthenticatedRouteState> {
+export class AuthenticatedRoute extends React.Component<any, AuthenticatedRouteState> {
     constructor(props: AuthenticatedRouteProps) {
         super(props);
 
