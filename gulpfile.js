@@ -7,9 +7,16 @@ const merge = require('merge2');
 const webpack = require('webpack');
 
 const files = {
-    library: ['src/**/*.ts', '!src/admin/client/**/*'],
+    library: [
+        'src/**/*.ts',
+        '!src/admin/client/**/*',
+        // 'src/admin/client/forms/**/*.ts'
+    ],
     packageJsons: 'src/**/package.json',
-    client: 'src/admin/client/index.html'
+    client: [
+        'src/admin/client/**/*.ts',
+        'src/admin/client/**/*.tsx'
+    ]
 };
 
 let shouldWatch = false;

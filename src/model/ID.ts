@@ -8,6 +8,10 @@ export default function ID(): PropertyDecorator {
 
         type = type || String;
 
-        addTypeMeta(target.constructor, propertyKey, type, true, false);
+        addTypeMeta(target.constructor, propertyKey, {
+            type,
+            isID: true,
+            editable: false,
+        });
     }
 }

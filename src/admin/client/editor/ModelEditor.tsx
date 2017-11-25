@@ -7,14 +7,24 @@ import Form, { FormState, createFormState } from '../forms/Form';
 import EmbededModel from './EmbededModel';
 
 import { defaultComponentsByType } from './defaultComponentsByType';
+import Select from '../forms/Select';
 
 
-function getEditorMarkupForModel(model: any) : React.ReactElement<any> | Array<React.ReactElement<any>>{
+function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<React.ReactElement<any>> {
     const modelMeta: ModelMeta = model.modelMeta;
 
     const fields = Object.entries(modelMeta.fields)
         .filter(([key, f]) => f.editable)
         .map(([key, f]) => {
+            if (f.Component) {
+                return (
+                    <div>
+                        <label key={`${key}-label`}>{key}</label>
+                        <f.Component key={`${key}-component`} name={key} {...f.componentProps} />
+                    </div>
+                );
+            }
+
             if (!!f.type.modelMeta) {
                 return (
                     <EmbededModel key={key} name={key}>
@@ -24,18 +34,32 @@ function getEditorMarkupForModel(model: any) : React.ReactElement<any> | Array<R
                 )
             }
 
-            const Component = defaultComponentsByType.get(f.type);
+            if (f.possibleValues) {
+                const selectOptions = Object
+                    .entries(f.possibleValues)
+                    .map(([valueKey, displayValue]) => ({ key: valueKey, displayValue }));
 
-            if (!Component) {
-                return <div>No editor for type {f.type.toString()}</div>
+                return (
+                    <div>
+                        <label key={`${key}-label`}>{key}</label>
+                        <Select key={`${key}-component`} name={key} options={selectOptions} />
+                    </div>
+                )
             }
+            else {
+                const Component = defaultComponentsByType.get(f.type);
 
-            return (
-                <div>
-                    <label key={`${key}-label`}>{key}</label>
-                    <Component key={`${key}-component`} name={key} />
-                </div>
-            )
+                if (!Component) {
+                    return <div>No editor for type {f.type.toString()}</div>
+                }
+
+                return (
+                    <div>
+                        <label key={`${key}-label`}>{key}</label>
+                        <Component key={`${key}-component`} name={key} {...f.componentProps} />
+                    </div>
+                )
+            }
 
         })
 

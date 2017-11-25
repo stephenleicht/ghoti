@@ -1,19 +1,33 @@
+import {ComponentClass} from 'react';
 import constants from './constants';
 import { ModelMeta } from './ModelMeta';
+import { FormElementProps } from '../admin/client/forms/FormElement';
 
 export type FieldOptions = {
-    type: any
+    type?: any,
+    possibleValues?: {[key: string]: string}
+    Component?: ComponentClass<FormElementProps>,
+    componentProps?: {[key: string]: any}
 }
 
-export function addTypeMeta(target: any, propertyKey: string | symbol, type: any, isID: boolean, editable: boolean) {
+export type TypeMetaOptions = {
+    type: any,
+    isID: boolean,
+    editable: boolean,
+    possibleValues?: {[key: string]: string}
+    Component?: ComponentClass<FormElementProps>,
+    componentProps?: {[key: string]: any}
+}
+
+export function addTypeMeta(target: any,
+                            propertyKey: string | symbol,
+                            options: TypeMetaOptions ) {
         const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
             ...modelMeta.fields,
             [propertyKey]: {
-                type,
-                isID,
-                editable,
+                ...options
             }
         };
 
@@ -24,10 +38,22 @@ export function addTypeMeta(target: any, propertyKey: string | symbol, type: any
 
 export default function Field(options?: FieldOptions): PropertyDecorator {
     return (target: any, propertyKey: string | symbol) => {
-        let type = Reflect.getMetadata('design:type', target, propertyKey);
+        let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
-        type = type || (options && options.type);
+        const {
+            type = reflectedType,
+            possibleValues = undefined,
+            Component = undefined,
+            componentProps = undefined,
+        } = options || {};
 
-        addTypeMeta(target.constructor, propertyKey, type, false, true);
+        addTypeMeta(target.constructor, propertyKey, {
+            type,
+            possibleValues,
+            Component,
+            componentProps,
+            isID: false, 
+            editable: true,
+        });
     }
 }

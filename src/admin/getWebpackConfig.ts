@@ -34,9 +34,9 @@ export default function getWebpackConfig(entryPath: string, outputPath: string):
             ]
         },
 
-        externals: {
-            "react": "React",
-            "react-dom": "ReactDOM"
-        },
+        // externals: {
+        //     "react": "React",
+        //     "react-dom": "ReactDOM"
+        // },
     };
 }
