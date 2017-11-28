@@ -10,6 +10,9 @@ const files = {
     library: [
         'src/**/*.@(ts|tsx)',
     ],
+    entryPoints: [
+        'forms.ts'
+    ],
     packageJsons: 'src/**/package.json',
     client: 'src/admin/client/index.html'
 };
@@ -23,7 +26,7 @@ gulp.task('build', (cb) => runSequence('clean', ['build-library', 'build-admin-c
 gulp.task('watch', ['clean'], (cb) => {
     shouldWatch = true;
 
-    runSequence(['build-library', 'build-admin-client'], () => {
+    runSequence(['copy-styles', 'build-library', 'build-admin-client'], 'entry-points', () => {
         gulp.watch(files.library, ['build-library']);
         gulp.watch(files.packageJsons, ['build-library']);
         gulp.watch(files.client, ['copy-admin-client-files']);
@@ -47,6 +50,21 @@ gulp.task('build-library', () => {
     ]);
 })
 
+gulp.task('entry-points', () => {
+    const tsProject = ts.createProject('./tsconfig.json');
+
+    gulp.src(files.entryPoints)
+        .pipe(sourcemaps.init())
+        .pipe(tsProject())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('.'))
+});
+
+gulp.task('copy-styles', () => {
+    gulp.src('src/**/*.css')
+    .pipe(gulp.dest('dist'));
+})
+
 gulp.task('build-admin-client', () => runSequence(['bundle-admin-client', 'copy-admin-client-files']));
 
 gulp.task('bundle-admin-client', (cb) => {
@@ -55,14 +73,14 @@ gulp.task('bundle-admin-client', (cb) => {
 
     if (!shouldWatch) {
         bundler.run((err, stats) => {
-                console.log(stats.toString());
-                cb(err);
-            })
+            console.log(stats.toString());
+            cb(err);
+        })
     }
     else {
         let hasCalledBack;
         bundler.watch(null, (err, stats) => {
-            if(!hasCalledBack) {
+            if (!hasCalledBack) {
                 cb();
                 hasCalledBack = true;
             }
@@ -70,10 +88,10 @@ gulp.task('bundle-admin-client', (cb) => {
             console.log(stats.toString())
         })
     }
-    
+
 });
 
 gulp.task('copy-admin-client-files', () => {
     return gulp.src(files.client)
-    .pipe(gulp.dest('dist/admin/client'))
+        .pipe(gulp.dest('dist/admin/client'))
 })

@@ -62,3 +62,6 @@ typings/
 dist/
 
 *.css.d.ts
+
+forms.js
+forms.d.ts

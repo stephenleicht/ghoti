@@ -8,6 +8,7 @@ import EmbededModel from './EmbededModel';
 
 import { defaultComponentsByType } from './defaultComponentsByType';
 import Select from '../forms/Select';
+import Group from '../forms/Group';
 
 
 function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<React.ReactElement<any>> {
@@ -27,10 +28,10 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
 
             if (!!f.type.modelMeta) {
                 return (
-                    <EmbededModel key={key} name={key}>
+                    <Group key={key} name={key}>
                         <label>{key}</label>
                         {getEditorMarkupForModel(f.type)}
-                    </EmbededModel>
+                    </Group>
                 )
             }
 

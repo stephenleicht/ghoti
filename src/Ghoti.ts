@@ -1,3 +1,4 @@
+import * as hook from 'css-modules-require-hook';
 import 'reflect-metadata';
 import { MongoClient } from 'mongodb';
 import { Application } from 'express';
@@ -8,6 +9,8 @@ import { processMetaData } from './admin/bundler';
 import { GhotiOptions } from './GhotiOptions';
 
 import createLogger from './logging/createLogger';
+
+hook({});
 
 const logger = createLogger('Ghoti');
 
