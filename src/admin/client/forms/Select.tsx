@@ -3,7 +3,7 @@ import * as React from 'react';
 import FormElement, {FormElementProps} from './FormElement';
 
 export interface SelectProps extends FormElementProps{
-    options: Array<{key: string, displayValue: string}>
+    options: Array<{key: string | undefined, displayValue: string}>
 }
 
 class Select extends React.Component<SelectProps, {}> {
