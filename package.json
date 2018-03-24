@@ -44,11 +44,12 @@
     "merge2": "^1.1.0",
     "run-sequence": "^2.0.0",
     "style-loader": "^0.19.0",
-    "typescript": "2.6.2",
     "typings-for-css-modules-loader": "^1.5.0"
   },
   "dependencies": {
+    "@types/bcrypt": "^1.0.0",
     "@types/express-session": "^1.15.1",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
@@ -67,6 +68,7 @@
     "react-router-dom": "^4.1.1",
     "reflect-metadata": "^0.1.10",
     "stack-trace": "^0.0.10",
+    "typescript": "2.7.2",
     "webpack": "^3.9.1",
     "winston": "^2.3.1"
   }

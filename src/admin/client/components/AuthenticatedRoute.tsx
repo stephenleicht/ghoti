@@ -13,8 +13,8 @@ export interface AuthenticatedRouteState {
 export interface AuthenticatedRouteProps extends RouteProps{}
 
 
-export class AuthenticatedRoute extends React.Component<any, AuthenticatedRouteState> {
-    constructor(props: AuthenticatedRouteProps) {
+export class AuthenticatedRoute extends React.Component<AuthenticatedRouteProps & RouteComponentProps<any>, AuthenticatedRouteState> {
+    constructor(props: AuthenticatedRouteProps & RouteComponentProps<any>) {
         super(props);
 
         this.state = {

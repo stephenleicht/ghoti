@@ -8,6 +8,8 @@ import createExpressApp from './server/createExpressApp';
 import { processMetaData } from './admin/bundler';
 import { GhotiOptions } from './GhotiOptions';
 
+import User from './auth/User';
+
 import createLogger from './logging/createLogger';
 
 hook({});
@@ -48,16 +50,40 @@ export class Ghoti {
             }
 
             await processMetaData(models, tempDir);
+
+            await this.checkFirstUser();
         }
         catch (err) {
             console.log(err.stack);
         }
 
-        this.app = createExpressApp(this.configuration);
+        this.app = await createExpressApp(this.configuration);
 
         this.app.listen(port, () => {
             console.log(`Express server running on ${port}`)
         })
+    }
+
+    private async checkFirstUser() {
+        logger.info('Checking for first user');
+        const user: User = await entityManager.findOne(User);
+
+        if(user) {
+            logger.info('First user already created. Proceeding with startup.')
+            return;
+        }
+
+        logger.info('Creating default usre');
+        const firstUser = new User(this.configuration.username);
+        await firstUser.setPassword(this.configuration.password);
+
+        try {
+            await entityManager.save(User, firstUser);
+            logger.info("First user created.");
+        }
+        catch(err) {
+            logger.error("Error while creating first user: {}", err);
+        }
     }
 }
 

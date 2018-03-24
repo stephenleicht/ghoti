@@ -6,9 +6,9 @@ import { GhotiOptions } from '../GhotiOptions';
 import { configureAdminServer } from "../admin/configureAdminServer";
 import configureAPI from '../api/configureAPI';
 
-export default function configureRoutes(config: GhotiOptions): Router {
+export default async function configureRoutes(config: GhotiOptions): Promise<Router> {
     const router = Router();
-    const adminRouter = configureAdminServer(config);
+    const adminRouter = await configureAdminServer(config);
     const apiRouter = configureAPI(config);
 
     router.use('/admin', adminRouter);

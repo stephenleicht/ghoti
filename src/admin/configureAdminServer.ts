@@ -1,12 +1,18 @@
 import * as path from "path";
 import * as express from 'express';
 
-import getMarkup from "./getMarkup";
+import { getMarkupForAdminUI, getMarkupForInitPage } from "./getMarkup";
 
 import { Ghoti } from "../Ghoti";
 import { GhotiOptions } from '../GhotiOptions';
 
-export function configureAdminServer(config: GhotiOptions): express.Router{
+import authManager from '../auth/AuthManager';
+
+import { createLogger } from '../logging';
+
+const log = createLogger('configureAdminServer')
+
+export async function configureAdminServer(config: GhotiOptions): Promise<express.Router> {
     const router = express.Router();
 
     const jsPath = path.resolve(__dirname, './client');
@@ -14,8 +20,9 @@ export function configureAdminServer(config: GhotiOptions): express.Router{
     router.use('/generated', express.static(config.tempDir));
 
     router.get('*', (req, res) => {
-        res.send(getMarkup())
+        res.send(getMarkupForAdminUI())
     })
 
     return router;
 }
+

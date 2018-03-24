@@ -39,6 +39,27 @@ export class EntityManager {
         return result;
     }
 
+    async findOne(model: any, query: any = {}) {
+        const modelMeta: ModelMeta = model.modelMeta;
+        const col = this.db.collection(modelMeta.namePlural);
+
+        const rawResult = await col.findOne(query);
+
+        if (!rawResult) {
+            return null;
+        }
+
+        const { _id, ...rest } = rawResult;
+
+        const retVal = new model();
+        Object.assign(retVal, {
+            [modelMeta.idKey]: _id.toString(),
+            ...rest,
+        });
+        
+        return retVal;
+    }
+
     async findByID(model: any, id: string) {
         const modelMeta: ModelMeta = model.modelMeta;
         const col = this.db.collection(modelMeta.namePlural);
@@ -94,7 +115,7 @@ export class EntityManager {
 
         const toSave = pick(newValue, fields);
 
-        const result = await col.findOneAndUpdate({_id: new ObjectID(id)}, {$set: toSave});
+        const result = await col.findOneAndUpdate({ _id: new ObjectID(id) }, { $set: toSave });
 
         if (!result.ok) {
             return null;
