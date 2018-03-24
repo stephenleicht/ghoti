@@ -56,7 +56,7 @@ export class EntityManager {
             [modelMeta.idKey]: _id.toString(),
             ...rest,
         });
-        
+
         return retVal;
     }
 
@@ -67,9 +67,13 @@ export class EntityManager {
         try {
             const rawResult = await col.findOne({ _id: new ObjectID(id) });
             const { _id, ...rest } = rawResult;
-            rest[modelMeta.idKey] = _id.toString();
+            const retVal = new model();
+            Object.assign(retVal, {
+                [modelMeta.idKey]: _id.toString(),
+                ...rest,
+            });
 
-            return rest;
+            return retVal;
         }
         catch (err) {
             logger.error(err.stack);

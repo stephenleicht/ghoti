@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import {omit} from 'lodash';
 
 import {Model, Field, ID} from '../model';
 
@@ -23,5 +24,9 @@ export default class User {
 
     public get password() {
         return this.passwordHash;
+    }
+
+    public toJSON() {
+        return omit(this, ['passwordHash']);
     }
 }
