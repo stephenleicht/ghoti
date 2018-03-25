@@ -1,4 +1,3 @@
-import * as bcrypt from 'bcrypt';
 import {omit} from 'lodash';
 
 import {Model, Field, ID} from '../model';
@@ -12,18 +11,10 @@ export default class User {
     public email: string;
 
     @Field()
-    private passwordHash: string;
+    public passwordHash: string;
 
     constructor(email: string) {
         this.email = email;
-    }
-
-    public async setPassword(newPlainTextPassword: string){
-        this.passwordHash = await bcrypt.hash(newPlainTextPassword, 10);
-    }
-
-    public get password() {
-        return this.passwordHash;
     }
 
     public toJSON() {

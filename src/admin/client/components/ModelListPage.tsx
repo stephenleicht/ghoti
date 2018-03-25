@@ -3,15 +3,11 @@ import * as PropTypes from 'prop-types';
 
 import { RouteComponentProps, Link } from 'react-router-dom';
 
-import { getModelList, deleteByID } from '../api';
+import { getModelList, deleteModelByID } from '../api';
 import { ModelMeta } from '../../../model';
 import getIDKey from '../../../model/getIDKey';
 
-export interface ModelListPageParams {
-    modelName: string
-}
-
-export interface ModelListPageProps extends RouteComponentProps<ModelListPageParams> {
+export interface ModelListPageProps extends RouteComponentProps<{}> {
     model: any,
 }
 
@@ -36,7 +32,7 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
             return;
         }
 
-        if (nextProps.match.params.modelName === this.props.match.params.modelName) {
+        if(nextProps.model === this.props.model){
             return;
         }
 
@@ -52,7 +48,7 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
     }
 
     onDeleteClick = async (id: string) => {
-        const result = await deleteByID(this.props.model.modelMeta, id);
+        const result = await deleteModelByID(this.props.model.modelMeta, id);
 
         this.getList();
     }

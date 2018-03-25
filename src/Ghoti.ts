@@ -9,6 +9,7 @@ import { processMetaData } from './admin/bundler';
 import { GhotiOptions } from './GhotiOptions';
 
 import User from './auth/User';
+import authManager from './auth/AuthManager';
 
 import createLogger from './logging/createLogger';
 
@@ -66,16 +67,16 @@ export class Ghoti {
 
     private async checkFirstUser() {
         logger.info('Checking for first user');
-        const user: User = await entityManager.findOne(User);
+        const isFirstUserCreated = await authManager.isFirstUserCreated();
 
-        if(user) {
+        if(isFirstUserCreated) {
             logger.info('First user already created. Proceeding with startup.')
             return;
         }
 
-        logger.info('Creating default usre');
+        logger.info('Creating firt user');
         const firstUser = new User(this.configuration.username);
-        await firstUser.setPassword(this.configuration.password);
+        firstUser.passwordHash = await authManager.createPasswordHash(this.configuration.password);
 
         try {
             await entityManager.save(User, firstUser);

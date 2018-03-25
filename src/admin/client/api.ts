@@ -45,7 +45,7 @@ export async function getModelList(modelMeta: ModelMeta) {
     return models.json();
 }
 
-export async function deleteByID(modelMeta: ModelMeta, id: string) {
+export async function deleteModelByID(modelMeta: ModelMeta, id: string) {
     const res = await fetch(`/api/models/${modelMeta.namePlural}/${id}`, {
         method: 'DELETE',
         credentials: 'include'
@@ -83,4 +83,57 @@ export async function getSessionInfo() {
 
     const session: SessionSummary = await res.json();
     return session;
+}
+
+export async function createUser(value: any) {
+    const result = await fetch(`/api/users`, {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify(value),
+        credentials: 'include'
+    });
+
+    return result.json();
+}
+
+export async function updateUser(id: string, value: any) {
+    const result = await fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify(value),
+        credentials: 'include'
+    });
+
+    return result.json();
+}
+
+export async function getUserByID(id: string) {
+    const model = await fetch(`/api/users/${id}`, {
+        method: 'GET',
+        credentials: 'include'
+    });
+
+    return model.json();
+}
+
+export async function getUsersList() {
+    const models = await fetch(`/api/users`, {
+        method: 'GET',
+        credentials: 'include'
+    });
+
+    return models.json();
+}
+
+export async function deleteUserByID(id: string) {
+    const res = await fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    return res.json();
 }

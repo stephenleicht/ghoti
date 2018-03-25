@@ -21,8 +21,4 @@ export default class Fish {
 
     @Field()
     link: Person
-
-    constructor(options: FishOptions){
-        Object.assign(this, options);
-    }
 }

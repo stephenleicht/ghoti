@@ -32,8 +32,14 @@ export class EntityManager {
 
         const result = rawResult.map((v) => {
             const { _id, ...rest } = v;
-            rest[modelMeta.idKey] = _id.toString();
-            return rest;
+
+            const retVal = new model();
+            Object.assign(retVal, {
+                [modelMeta.idKey]: _id.toString(),
+                ...rest,
+            });
+
+            return retVal;
         })
 
         return result;

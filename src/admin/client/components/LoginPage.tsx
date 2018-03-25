@@ -23,7 +23,6 @@ export default class LoginPage extends React.Component<RouteComponentProps<{}>, 
     }
 
     onSubmit = async (formValue: any) => {
-        console.log('obsubmit');
         const result = await authenticate(formValue.username, formValue.password);
         
         if(result) {

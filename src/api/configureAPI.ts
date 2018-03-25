@@ -14,8 +14,17 @@ import {
     getModelListHandler,
     getModelByIDHandler,
     updateModelHandler,
-    deleteModelByIDHandler
+    deleteModelByIDHandler,
 } from './modelHandlers';
+
+import {
+    getUsersListHandler,
+    getUserByIDHandler,
+    createUserHandler,
+    deleteUserByIDHandler,
+    updateUserHandler,
+} from './usersHandlers';
+
 import authorize from './authorize';
 
 const logger = createLogger('configureAPI');
@@ -35,7 +44,7 @@ passport.deserializeUser(async function (userID: string, done) {
     }
 });
 
-function configureAuthentication(actualUsername: string, actualPassword: string) {
+function configureAuthentication() {
     passport.use(new LocalStrategy(
         async function (email, password, done) {
             logger.info('Authenticating user: %s', email);
@@ -58,7 +67,7 @@ export default function configureAPI(config: GhotiOptions): Router {
 
     const router = Router();
 
-    configureAuthentication(config.username, config.password)
+    configureAuthentication()
 
     router.post('/login',
         passport.authenticate('local'),
@@ -74,6 +83,12 @@ export default function configureAPI(config: GhotiOptions): Router {
 
         res.send(JSON.stringify(sessionInfo));
     })
+
+    router.get('/users', getUsersListHandler);
+    router.post('/users', createUserHandler);
+    router.get('/users/:id', getUserByIDHandler);
+    router.put('/users/:id', updateUserHandler);
+    router.delete('/users/:id', deleteUserByIDHandler);
 
     // router.use('/models*', authorize);
     router.param('model', getModelParamHandler(models));

@@ -29,8 +29,4 @@ export default class Person {
     get fullName() {
         return `${this.firstName} ${this.lastName}`;
     }
-
-    constructor(options: PersonOptions){
-        Object.assign(this, options);
-    }
 }

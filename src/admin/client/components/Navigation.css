@@ -1,5 +1,12 @@
 .navigation {
     background-color: #F4F5F7;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.topLinks {
+    flex-grow: 1;
 }
 
 .header {

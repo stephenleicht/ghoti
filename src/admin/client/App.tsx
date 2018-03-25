@@ -13,7 +13,9 @@ import Navigation from './components/Navigation';
 import ModelListPage from './components/ModelListPage';
 import ViewModelPage from './components/ViewModelPage';
 import CreateModelPage from './components/CreateModelPage';
-import LoginPage from './components//LoginPage';
+import LoginPage from './components/LoginPage';
+import UserListPage from './components/UserListPage';
+import CreateUserPage from './components/CreateUserPage';
 
 import * as styles from './App.css';
 
@@ -34,7 +36,8 @@ export default class App extends React.Component<AppProps, {}> {
                     return (
                         <div className={styles.appWrapper}>
                             <Navigation models={models} />
-                            <Route path="/users" render={() => <div>Users Route</div>} />
+                            <Route exact path="/users" component={UserListPage} />
+                            <Route path="/users/create" component={CreateUserPage} />
                             <Route path="/models/:modelName" render={({ match }) => {
                                 const model = models[match.params.modelName];
                                 return (

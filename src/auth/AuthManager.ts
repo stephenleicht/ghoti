@@ -13,12 +13,10 @@ export class AuthManager {
             const user: User = await entityManager.findOne(User, {email});
 
             if(!user) {
-                log.info('user not found')
                 return null;
             }
-            console.log(user.password);
-            const passwordsMatch = await bcrypt.compare(password, user.password);
-            console.log(passwordsMatch);
+
+            const passwordsMatch = await bcrypt.compare(password, user.passwordHash);
             if(!passwordsMatch) {
                 return null;
             }
@@ -35,6 +33,10 @@ export class AuthManager {
     public async isFirstUserCreated() {
         const user: User = await entityManager.findOne(User, {});
         return !!user;
+    }
+
+    public createPasswordHash(plainText: string): Promise<string> {
+        return bcrypt.hash(plainText, 10);
     }
 }
 
