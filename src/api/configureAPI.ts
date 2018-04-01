@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as passport from 'passport';
+import * as session from 'express-session';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 import { GhotiOptions } from '../GhotiOptions';
@@ -55,7 +56,7 @@ function configureAuthentication() {
                 done("Invalid Username or Password");
             }
             else {
-                logger.info("Authentication successful: {}, email");
+                logger.info("Authentication successful: %s", email);
                 done(null, result);
             }
         }
@@ -66,6 +67,15 @@ export default function configureAPI(config: GhotiOptions): Router {
     const models = config.models;
 
     const router = Router();
+
+    router.use(session({ 
+        secret: 'some super cool secret',
+        resave: false,
+        saveUninitialized: false,
+    }));
+    router.use(passport.initialize());
+    router.use(passport.session());    
+
 
     configureAuthentication()
 
@@ -84,13 +94,14 @@ export default function configureAPI(config: GhotiOptions): Router {
         res.send(JSON.stringify(sessionInfo));
     })
 
+    router.use('/users*', authorize);
     router.get('/users', getUsersListHandler);
     router.post('/users', createUserHandler);
     router.get('/users/:id', getUserByIDHandler);
     router.put('/users/:id', updateUserHandler);
     router.delete('/users/:id', deleteUserByIDHandler);
 
-    // router.use('/models*', authorize);
+    router.use('/models*', authorize);
     router.param('model', getModelParamHandler(models));
     router.post('/models/:model', createModelHandler);
     router.get('/models/:model', getModelListHandler);

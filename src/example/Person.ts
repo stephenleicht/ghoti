@@ -1,11 +1,5 @@
 import { ID, Model, Field } from "../model";
 
-export interface PersonOptions {
-    firstName: string,
-    lastName: string,
-    favoriteColor?: string,
-}
-
 @Model()
 export default class Person {
     @ID()

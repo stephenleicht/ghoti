@@ -1,8 +1,7 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser'
-import * as session from 'express-session';
-import * as passport from 'passport';
+
 
 
 import { GhotiOptions } from '../GhotiOptions';
@@ -13,14 +12,7 @@ export default async function createExpressApp(config: GhotiOptions): Promise<ex
 
     app.use(cookieParser());
     app.use(bodyParser.json());
-    app.use(session({ 
-        secret: 'some super cool secret',
-        resave: false,
-        saveUninitialized: false,
-    }));
-    app.use(passport.initialize());
-    app.use(passport.session());    
-
+    
     app.use(await configureRoutes(config));
 
     return app;
