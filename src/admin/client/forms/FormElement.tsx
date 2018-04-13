@@ -1,15 +1,17 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import { pick } from 'lodash'
+
 import { ValidateCallback } from './Form/ValidateCallback';
 
-import { FormContext } from './Form/Form';
+import { FormContext, FormContextValue } from './Form/FormContext';
 
 export interface FormElementProps {
     name: string,
     value?: any,
     required?: boolean,
     onChange?: (newValue: any) => void,
-    [otherPropKey: string]: any,
+    [key: string]: any,
 }
 
 export interface FormElementOptions {
@@ -19,62 +21,39 @@ export interface FormElementOptions {
     }
 }
 
+export interface FormElementContextValue {
+    parentPath: string[],
+    onChangeNotifier?: (name: string, newValue: any) => void,
+}
+
+const FormElementContext = React.createContext<FormElementContextValue>();
+
 export default function FormElement(options: FormElementOptions = {}) {
 
-    return function wrapFormElement<T extends { [key: string]: any }>(ComponentToWrap: React.ComponentClass<T & FormElementProps>): React.ComponentClass<T & FormElementProps> {
-        return class WrappedComponent extends React.Component<T & FormElementProps, {}> {
+    return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentClass<T>): (props: T) => JSX.Element {
+        class WrappedComponent extends React.Component<T & FormContextValue & FormElementContextValue> {
             static defaultProps: any = {
                 required: false,
                 onChange: () => { },
             }
 
-            static contextTypes = {
-                register: PropTypes.func,
-                addToChangeQueue: PropTypes.func,
-                parentPath: PropTypes.arrayOf(PropTypes.string),
-                onChangeNotifier: PropTypes.func,
-                getValue: PropTypes.func,
-            }
-
-            static childContextTypes = {
-                parentPath: PropTypes.arrayOf(PropTypes.string),
-                onChangeNotifier: PropTypes.func,
-                getValue: PropTypes.func,
-            }
-
-            context: FormContext & {
-                parentPath: string[],
-            }
-
             wrappedComponent: any
+            childContextValue: FormElementContextValue
 
-            getChildContext() {
+            componentDidMount() {
+
                 let onChangeNotifier = undefined;
 
                 if (this.wrappedComponent && this.wrappedComponent.onChildElementChange) {
                     onChangeNotifier = this.onChildElementChange
                 }
 
-                return {
-                    parentPath: this.path,
-                    getValue: this.getValue,
-                    onChangeNotifier,
-                }
-            }
-
-            componentDidMount() {
-                const register = this.context.register(this.path, this.validate)
-
-                // setTimeout(() => {
-                //     if(!this.props.value && options.defaultValue) {
-                //         this.props.onChange && this.onChangeWrapper(options.defaultValue());
-                //     }
-                // }, 0);
+                const register = this.props.register(this.path, this.validate)
             }
 
             get path() {
-                const { parentPath } = this.context;
-                return [...(parentPath ? parentPath : []), this.props.name]
+                const { parentPath = [] } = this.props;
+                return [...parentPath, this.props.name]
             }
 
             getMergedProps = () => {
@@ -101,10 +80,10 @@ export default function FormElement(options: FormElementOptions = {}) {
             }
 
             onChangeWrapper = (newValue: any) => {
-                this.context.addToChangeQueue(this.path.join('.'));
+                this.props.addToChangeQueue(this.path.join('.'));
 
-                if (this.context.onChangeNotifier) {
-                    this.context.onChangeNotifier(this.props.name, newValue);
+                if (this.props.onChangeNotifier) {
+                    this.props.onChangeNotifier(this.props.name, newValue);
                 }
 
                 if (this.props.onChange) {
@@ -122,13 +101,13 @@ export default function FormElement(options: FormElementOptions = {}) {
                 if (this.props.value) {
                     return this.props.value;
                 }
-                else if (this.context.getValue) {
-                    return this.context.getValue(fieldName)
+                else if (this.props.getValue) {
+                    return this.props.getValue(fieldName)
                 }
             }
 
             render() {
-                const { name, value, onChange, required, ...other } = (this.props as FormElementProps);
+                const { name, value, onChange, required, parentPath, onChangeNotifier, ...other } = (this.props as any);
 
                 let injectedOnChange;
                 if (onChange) {
@@ -136,6 +115,11 @@ export default function FormElement(options: FormElementOptions = {}) {
                 }
 
                 const actualValue = this.getValue(name);
+
+                const childContextValue = {
+                    parentPath: this.path,
+                    onChangeNotifier,
+                }
 
                 // HACK: Typescript got angry trying to merge props into the wrapped component
                 // It doesn't seem to be able to understand that the wrapping FormElement
@@ -151,11 +135,25 @@ export default function FormElement(options: FormElementOptions = {}) {
                 }
 
                 return (
-                    <ComponentToWrap
-                        {...childProps}
-                    />
+                    <FormElementContext.Provider value={childContextValue}>
+                        <ComponentToWrap
+                            {...childProps}
+                        />
+                    </FormElementContext.Provider>
                 )
             }
         }
+
+        return (props: T) => (
+            <FormContext.Consumer>
+                {(formContextValue: FormContextValue) => (
+                    <FormElementContext.Consumer>
+                        {(elementContextValue: FormElementContextValue) => (
+                            <WrappedComponent {...props} {...formContextValue} {...elementContextValue}/>
+                        )}
+                    </FormElementContext.Consumer>
+                )}
+            </FormContext.Consumer>
+        )
     }
 }

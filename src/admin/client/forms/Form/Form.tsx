@@ -3,8 +3,9 @@ import * as PropTypes from 'prop-types';
 
 import { FormState } from './FormState';
 import { FormElementProps } from '../FormElement';
-import { ValidateCallback } from './ValidateCallback';
 import { FormFieldMeta } from './FormFieldMeta';
+import { ValidateCallback } from './ValidateCallback'
+import { FormContext, FormContextValue } from './FormContext'
 
 import * as styles from './Form.css';
 
@@ -15,25 +16,15 @@ export interface FormProps {
     onSubmit?: (value: Object) => void,
 }
 
-export interface FormContext {
-    register: (path: string[], validateCallback: ValidateCallback) => void,
-    addToChangeQueue: (fieldName: string) => void,
-    onChangeNotifier: (name: string, newValue: any) => void,
-    getValue: (fieldName: string) => any,
-}
-
 export default class Form extends React.Component<FormProps, {}> {
-    static childContextTypes = {
-        register: PropTypes.func,
-        addToChangeQueue: PropTypes.func,
-        onChangeNotifier: PropTypes.func,
-        getValue: PropTypes.func,
-    }
     pendingRegistrations: Array<{ path: string[], validateCallback: ValidateCallback }> = []
     changeQueue: string[] = []
+    childContext: FormContextValue
 
-    getChildContext(): FormContext {
-        return {
+    constructor(props: FormProps) {
+        super(props);
+
+        this.childContext = {
             register: this.registerChild,
             addToChangeQueue: this.addToChangeQueue,
             onChangeNotifier: this.onChildChange,
@@ -50,7 +41,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
     componentDidMount() {
         const { formState } = this.props;
-    
+
         const newFormState = this.processRegistrations();
         this.pendingRegistrations = [];
 
@@ -62,8 +53,8 @@ export default class Form extends React.Component<FormProps, {}> {
             const fields = this.props.formState.fields;
 
             const pendingFields = Object.entries(fields)
-            .filter(([, field]) => field.pendingValidation)
-            .map(([key]) => key);
+                .filter(([, field]) => field.pendingValidation)
+                .map(([key]) => key);
 
             this.validateByField(pendingFields);
         }
@@ -115,7 +106,7 @@ export default class Form extends React.Component<FormProps, {}> {
             agg[field].isPristine = false;
             agg[field].pendingValidation = true;
             return agg;
-        }, {...this.props.formState.fields})
+        }, { ...this.props.formState.fields })
 
         this.changeQueue = [];
 
@@ -132,38 +123,9 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     getChildValue = (fieldName: string) => {
-        if(this.props.formState && this.props.formState.value) {
+        if (this.props.formState && this.props.formState.value) {
             return this.props.formState.value[fieldName];
         }
-    }
-
-    prepareChildren(children: React.ReactNode) {
-        return React.Children.toArray(children)
-            .map((child: React.ReactChild) => {
-                if (!React.isValidElement<any>(child)) {
-                    return child;
-                }
-
-                let propsToAdd: Partial<FormElementProps> & { children?: any } = {};
-                if (child.props.children) {
-                    propsToAdd = {
-                        ...propsToAdd,
-                        children: this.prepareChildren(child.props.children)
-                    };
-                }
-
-                if (child.props.hasOwnProperty('name')) {
-                    const namedChild = child as React.ReactElement<FormElementProps>;
-
-                    propsToAdd = {
-                        ...propsToAdd,
-                        value: this.props.formState.value[namedChild.props.name],
-                        onChange: (value) => this.onChildChange(namedChild.props.name, value)
-                    }
-                }
-
-                return React.cloneElement(child, propsToAdd);
-            })
     }
 
     validate() {
@@ -171,24 +133,24 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     validateByField(fields: string[]) {
-        const { formState }  = this.props;
+        const { formState } = this.props;
 
         const newFieldState = fields
-            .map<[string, {[validatorKey: string]: boolean}]>((field) => ([
+            .map<[string, { [validatorKey: string]: boolean }]>((field) => ([
                 field,
                 formState.fields[field].validate()
             ]))
             .reduce((agg, [key, validationResult]) => {
                 let allValid = true;
-                let errors: {[errorKey: string]: boolean} = {};
+                let errors: { [errorKey: string]: boolean } = {};
                 Object.entries(validationResult)
-                .forEach(([key, isValid]) => {
-                    allValid = allValid && isValid;
-                    
-                    if(!isValid) {
-                        errors[key] = true;
-                    }
-                })
+                    .forEach(([key, isValid]) => {
+                        allValid = allValid && isValid;
+
+                        if (!isValid) {
+                            errors[key] = true;
+                        }
+                    })
 
                 agg[key] = {
                     ...agg[key],
@@ -197,16 +159,16 @@ export default class Form extends React.Component<FormProps, {}> {
                     errors: allValid ? undefined : errors,
                 }
                 return agg;
-            }, {...this.props.formState.fields});
+            }, { ...this.props.formState.fields });
 
-            const formIsValid = Object.values(newFieldState).every((field) => field.isValid);
+        const formIsValid = Object.values(newFieldState).every((field) => field.isValid);
 
-            this.props.onChange({
-                ...this.props.formState,
-                pendingValidation: false,
-                isValid: formIsValid,
-                fields: newFieldState
-            });
+        this.props.onChange({
+            ...this.props.formState,
+            pendingValidation: false,
+            isValid: formIsValid,
+            fields: newFieldState
+        });
     }
 
     addToChangeQueue = (fieldName: string) => {
@@ -215,7 +177,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
     onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (this.props.formState.isValid && this.props.onSubmit) {
             this.props.onSubmit(this.props.formState.value);
         }
@@ -224,7 +186,9 @@ export default class Form extends React.Component<FormProps, {}> {
     render() {
         return (
             <form className={styles.test} onSubmit={this.onFormSubmit}>
-                {this.props.children}
+                <FormContext.Provider value={this.childContext}>
+                    {this.props.children}
+                </FormContext.Provider>
             </form>
         );
     }

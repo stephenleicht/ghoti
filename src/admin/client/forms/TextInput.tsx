@@ -15,7 +15,6 @@ class TextInput extends React.Component<TextInputProps, {}> {
 
         return (
             <input
-                {...this.props}
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}

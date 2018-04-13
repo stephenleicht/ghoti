@@ -19,9 +19,9 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
         .map(([key, f]) => {
             if (f.Component) {
                 return (
-                    <div>
-                        <label key={`${key}-label`}>{key}</label>
-                        <f.Component key={`${key}-component`} name={key} {...f.componentProps} />
+                    <div key={`${key}-row`}>
+                        <label>{key}</label>
+                        <f.Component name={key} {...f.componentProps} />
                     </div>
                 );
             }
@@ -41,7 +41,7 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
                     .map(([valueKey, displayValue]) => ({ key: valueKey, displayValue }));
 
                 return (
-                    <div>
+                    <div key={`${key}-row`}>
                         <label key={`${key}-label`}>{key}</label>
                         <Select key={`${key}-component`} name={key} options={selectOptions} />
                     </div>
@@ -55,7 +55,7 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
                 }
 
                 return (
-                    <div>
+                    <div key={`${key}-row`}>
                         <label key={`${key}-label`}>{key}</label>
                         <Component key={`${key}-component`} name={key} {...f.componentProps} />
                     </div>
