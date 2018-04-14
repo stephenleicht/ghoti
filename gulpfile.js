@@ -10,26 +10,27 @@ const files = {
     library: [
         'src/**/*.@(ts|tsx)',
     ],
-    entryPoints: [
-        'forms.ts'
-    ],
     packageJsons: 'src/**/package.json',
-    client: 'src/admin/client/index.html'
 };
 
 let shouldWatch = false;
+let isReleaseBuild = false;
 
 gulp.task('default', ['build']);
 gulp.task('clean', () => del(['dist']));
 gulp.task('build', (cb) => runSequence('clean', ['build-library', 'build-admin-client'], cb));
 
+gulp.task('release', (cb) => {
+    isReleaseBuild = true;
+    runSequence('build', cb);
+})
+
 gulp.task('watch', ['clean'], (cb) => {
     shouldWatch = true;
 
-    runSequence(['copy-styles', 'build-library', 'build-admin-client'], 'entry-points', () => {
+    runSequence(['build-library', 'build-admin-client'], () => {
         gulp.watch(files.library, ['build-library']);
         gulp.watch(files.packageJsons, ['build-library']);
-        gulp.watch(files.client, ['copy-admin-client-files']);
 
         cb();
     })
@@ -50,25 +51,14 @@ gulp.task('build-library', () => {
     ]);
 })
 
-gulp.task('entry-points', () => {
-    const tsProject = ts.createProject('./tsconfig.json');
-
-    gulp.src(files.entryPoints)
-        .pipe(sourcemaps.init())
-        .pipe(tsProject())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('.'))
-});
-
-gulp.task('copy-styles', () => {
-    gulp.src('src/**/*.css')
-    .pipe(gulp.dest('dist'));
-})
-
-gulp.task('build-admin-client', () => runSequence(['bundle-admin-client', 'copy-admin-client-files']));
+gulp.task('build-admin-client', () => runSequence(['bundle-admin-client']));
 
 gulp.task('bundle-admin-client', (cb) => {
-    const webpackConfig = require('./webpack.client');
+    const webpackOptions = {
+        isReleaseBuild
+    }
+
+    const webpackConfig = require('./webpack.client')(webpackOptions);
     const bundler = webpack(webpackConfig);
 
     if (!shouldWatch) {
@@ -90,8 +80,3 @@ gulp.task('bundle-admin-client', (cb) => {
     }
 
 });
-
-gulp.task('copy-admin-client-files', () => {
-    return gulp.src(files.client)
-        .pipe(gulp.dest('dist/admin/client'))
-})
