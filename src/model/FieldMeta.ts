@@ -7,5 +7,8 @@ export type FieldMeta = {
     editable: boolean,
     possibleValues?: {[key: string]: string},
     Component?: ComponentClass<FormElementProps>,
-    componentProps?: {[key: string]: any}
+    componentProps?: {[key: string]: any},
+    validators?: {
+        [key: string]: [string, (value: any) => boolean]
+    },
 };

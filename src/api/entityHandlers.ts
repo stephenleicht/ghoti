@@ -6,6 +6,8 @@ import getIDKey from '../model/getIDKey';
 import entityManager from '../persistence/EntityManager';
 import { createLogger } from '../logging';
 
+import ValidationError from '../errors/ValidationError';
+
 const logger = createLogger('entityHandlers');
 
 export async function createEntityHandler(model: any, req: Request, res: Response) {
@@ -14,9 +16,19 @@ export async function createEntityHandler(model: any, req: Request, res: Respons
         res.send(JSON.stringify(savedInstance))
     }
     catch (err) {
-        logger.error(err.stack);
-        res.status(500);
-        res.send(undefined);
+        if(err instanceof ValidationError) {
+            logger.info(err.message)
+            res.status(400);
+            res.send(JSON.stringify({
+                error: true,
+                result: err.result
+            }))
+        }
+        else {
+            logger.error(err.stack);
+            res.status(500);
+            res.send(undefined);
+        }
     }
 
     

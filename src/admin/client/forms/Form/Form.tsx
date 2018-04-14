@@ -8,8 +8,6 @@ import { ValidateCallback } from './ValidateCallback'
 import { FormContext, FormContextValue } from './FormContext'
 import { ValueInterceptorContext, ValueInterceptor } from '../ValueInterceptor';
 
-import * as styles from './Form.css';
-
 export interface FormProps {
     children: React.ReactNode,
     formState: FormState,
@@ -194,7 +192,7 @@ export default class Form extends React.Component<FormProps, {}> {
         return (
             <FormContext.Provider value={this.formChildContext}>
                 <ValueInterceptorContext.Provider value={this.valueInterceptorChildContext}>
-                    <form className={styles.test} onSubmit={this.onFormSubmit}>
+                    <form onSubmit={this.onFormSubmit}>
                         {this.props.children}
                     </form>
                 </ValueInterceptorContext.Provider>

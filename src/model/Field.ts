@@ -3,25 +3,13 @@ import constants from './constants';
 import { ModelMeta } from './ModelMeta';
 import { FormElementProps } from '../admin/client/forms/FormElement';
 
-export type FieldOptions = {
-    type?: any,
-    possibleValues?: {[key: string]: string}
-    Component?: ComponentClass<FormElementProps>,
-    componentProps?: {[key: string]: any}
-}
+import { FieldMeta } from './FieldMeta';
 
-export type TypeMetaOptions = {
-    type: any,
-    isID: boolean,
-    editable: boolean,
-    possibleValues?: {[key: string]: string}
-    Component?: ComponentClass<FormElementProps>,
-    componentProps?: {[key: string]: any}
-}
+export type FieldDecoratorOptions = Partial<FieldMeta>
 
 export function addTypeMeta(target: any,
                             propertyKey: string | symbol,
-                            options: TypeMetaOptions ) {
+                            options: FieldMeta ) {
         const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
@@ -36,22 +24,24 @@ export function addTypeMeta(target: any,
         Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
-export default function Field(options?: FieldOptions): PropertyDecorator {
+export default function Field(options?: FieldDecoratorOptions): PropertyDecorator {
     return (target: any, propertyKey: string | symbol) => {
         let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
         const {
             type = reflectedType,
-            possibleValues = undefined,
-            Component = undefined,
-            componentProps = undefined,
-        } = options || {};
+            possibleValues,
+            Component,
+            componentProps,
+            validators
+        } = options || {} as FieldDecoratorOptions;
 
         addTypeMeta(target.constructor, propertyKey, {
             type,
             possibleValues,
             Component,
             componentProps,
+            validators,
             isID: false, 
             editable: true,
         });

@@ -3,6 +3,9 @@ import { MongoClient, Db, ObjectID } from 'mongodb';
 import { omit, pick } from 'lodash';
 
 import { ModelMeta } from '../model/ModelMeta'
+import { validateModel } from '../validation/validateModel';
+import ValidationError from '../errors/ValidationError';
+
 import createLogger from '../logging/createLogger';
 
 const logger = createLogger('Entity Manager');
@@ -89,6 +92,11 @@ export class EntityManager {
 
     async save(model: any, instance: any) {
         const modelMeta: ModelMeta = model.modelMeta;
+
+        const validationResult = validateModel(modelMeta, instance);
+        if(!validationResult.isValid) {
+            throw new ValidationError("Validation failure while saving model", validationResult)
+        }
 
         const toSave = pick(instance, Object.keys(modelMeta.fields));
 
