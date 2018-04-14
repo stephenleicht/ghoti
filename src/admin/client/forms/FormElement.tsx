@@ -12,7 +12,6 @@ export interface FormElementProps {
     value?: any,
     required?: boolean,
     onChange?: (newValue: any) => void,
-    formContext?: FormContextValue,
 }
 
 export interface FormElementOptions {
@@ -25,17 +24,17 @@ export interface FormElementOptions {
 export default function FormElement(options: FormElementOptions = {}) {
 
     return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentClass<T>): (props: T) => JSX.Element {
-        class WrappedComponent extends React.Component<T & ValueInterceptor, {}> {
+        class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue}, {}> {
             static defaultProps: any = {
                 required: false,
             }
 
             path: string
 
-            constructor(props: T & ValueInterceptor) {
+            constructor(props: T & ValueInterceptor & { formContext: FormContextValue}) {
                 super(props);
 
-                const { parentPath } = props.formContext as FormContextValue;
+                const { parentPath } = props.formContext;
                 this.path = `${parentPath}${parentPath && '.'}${this.props.name}`;
             }
 
