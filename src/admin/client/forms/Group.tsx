@@ -1,16 +1,19 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import FormElement, {FormElementProps} from './FormElement';
+import FormElement, { FormElementProps } from './FormElement';
+
+import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';
 
 class Group extends React.Component<FormElementProps, {}> {
-    static childContextTypes = {
-        getValue: PropTypes.func,
-    }
+    valueChildContext: ValueInterceptor
 
-    getChildContext() {
-        return {
+    constructor(props: FormElementProps) {
+        super(props);
+
+        this.valueChildContext = {
             getValue: this.getChildValue,
-        }
+            onChangeInterceptor: this.onChildElementChange,
+        };
     }
 
     getChildValue = (fieldName: string) => {
@@ -23,16 +26,18 @@ class Group extends React.Component<FormElementProps, {}> {
             [name]: newChildValue,
         };
 
-        if(this.props.onChange) {
+        if (this.props.onChange) {
             this.props.onChange(newValue);
         }
     }
 
     render() {
         return (
-            <div>
-                {this.props.children}
-            </div>
+            <ValueInterceptorContext.Provider value={this.valueChildContext}>
+                <div>
+                    {this.props.children}
+                </div>
+            </ValueInterceptorContext.Provider>
         );
     }
 }

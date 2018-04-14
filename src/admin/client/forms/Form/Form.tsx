@@ -6,6 +6,7 @@ import { FormElementProps } from '../FormElement';
 import { FormFieldMeta } from './FormFieldMeta';
 import { ValidateCallback } from './ValidateCallback'
 import { FormContext, FormContextValue } from './FormContext'
+import { ValueInterceptorContext, ValueInterceptor } from '../ValueInterceptor';
 
 import * as styles from './Form.css';
 
@@ -17,22 +18,28 @@ export interface FormProps {
 }
 
 export default class Form extends React.Component<FormProps, {}> {
-    pendingRegistrations: Array<{ path: string[], validateCallback: ValidateCallback }> = []
+    pendingRegistrations: Array<{ path: string, validateCallback: ValidateCallback }> = []
     changeQueue: string[] = []
-    childContext: FormContextValue
+    formChildContext: FormContextValue
+    valueInterceptorChildContext: ValueInterceptor
+
 
     constructor(props: FormProps) {
         super(props);
 
-        this.childContext = {
+        this.formChildContext = {
             register: this.registerChild,
             addToChangeQueue: this.addToChangeQueue,
-            onChangeNotifier: this.onChildChange,
+            parentPath: ''
+        }
+
+        this.valueInterceptorChildContext = {
             getValue: this.getChildValue,
+            onChangeInterceptor: this.onChildChange,
         }
     }
 
-    registerChild = (path: string[], validateCallback: ValidateCallback) => {
+    registerChild = (path: string, validateCallback: ValidateCallback) => {
         this.pendingRegistrations.push({
             path,
             validateCallback,
@@ -65,9 +72,9 @@ export default class Form extends React.Component<FormProps, {}> {
 
         const currentFields = formState.fields;
         const newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
-            const pathKey = registration.path.join('.');
+            const pathKey = registration.path;
             let currentFieldMeta = agg[pathKey];
-            if (!agg[pathKey]) {
+            if (!currentFieldMeta) {
                 currentFieldMeta = {
                     isPristine: true,
                     isValid: true,
@@ -185,11 +192,13 @@ export default class Form extends React.Component<FormProps, {}> {
 
     render() {
         return (
-            <form className={styles.test} onSubmit={this.onFormSubmit}>
-                <FormContext.Provider value={this.childContext}>
-                    {this.props.children}
-                </FormContext.Provider>
-            </form>
+            <FormContext.Provider value={this.formChildContext}>
+                <ValueInterceptorContext.Provider value={this.valueInterceptorChildContext}>
+                    <form className={styles.test} onSubmit={this.onFormSubmit}>
+                        {this.props.children}
+                    </form>
+                </ValueInterceptorContext.Provider>
+            </FormContext.Provider>
         );
     }
 }
