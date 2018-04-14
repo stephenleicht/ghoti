@@ -56,6 +56,8 @@ jspm_packages/
 
 .DS_Store
 
+.rpt2_cache
+
 dist/
 
 *.css.d.ts

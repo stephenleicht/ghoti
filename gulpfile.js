@@ -5,6 +5,9 @@ const del = require('del');
 const runSequence = require('run-sequence');
 const merge = require('merge2');
 const webpack = require('webpack');
+const rollup = require('rollup');
+const rollupTypescript = require('rollup-plugin-typescript2');
+const rollupUglify = require('rollup-plugin-uglify')
 
 const files = {
     library: [
@@ -80,3 +83,36 @@ gulp.task('bundle-admin-client', (cb) => {
     }
 
 });
+
+gulp.task('release-forms', ['clean'], () => {
+    gulp.src('./src/admin/client/forms/package.json')
+    .pipe(gulp.dest('./dist'))
+
+    return rollup.rollup({
+        input: './src/admin/client/forms/index.ts',
+        external: [
+            'react'
+        ],
+        plugins: [
+            rollupTypescript({
+                tsconfigOverride: {
+                    compilerOptions: {
+                        declaration: false,
+                        target: "ES5",
+                    }
+                }
+            }),
+            rollupUglify()
+        ]
+    })
+        .then(bundle => {
+            return bundle.write({
+                file: './dist/forms.js',
+                format: 'umd',
+                name: 'GhotiForms',
+                globals: {
+                    react: 'React'
+                },
+            });
+        });
+})
