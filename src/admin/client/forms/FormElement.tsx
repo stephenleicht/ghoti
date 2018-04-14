@@ -7,26 +7,30 @@ import { ValidateCallback } from './Form/ValidateCallback';
 import { FormContext, FormContextValue } from './Form/FormContext';
 import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';
 
+export interface ValidatorMap {
+    [key: string]: (props: any) => boolean
+}
+
 export interface FormElementProps {
     name: string,
     value?: any,
     required?: boolean,
     onChange?: (newValue: any) => void,
+    validators?: ValidatorMap
 }
 
 export interface FormElementOptions {
     defaultValue?: () => any
-    validators?: {
-        [key: string]: (props: any) => boolean
-    }
+    validators?: ValidatorMap
 }
 
 export default function FormElement(options: FormElementOptions = {}) {
 
     return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentClass<T>): (props: T) => JSX.Element {
         class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue}, {}> {
-            static defaultProps: any = {
+            static defaultProps: Partial<FormElementProps> = {
                 required: false,
+                validators: {}
             }
 
             path: string
@@ -50,22 +54,27 @@ export default function FormElement(options: FormElementOptions = {}) {
             }
 
             validate: ValidateCallback = () => {
-                if (!options.validators) {
+                if (!options.validators && !this.props.validators) {
                     return {}
                 }
 
+                const allValidators: ValidatorMap = {
+                    ...options.validators,
+                    ...this.props.validators as object,
+                }
+
                 const validationResults = Object
-                    .entries(options.validators)
+                    .entries(allValidators)
                     .map<[string, boolean]>(([key, validateFn]) => [key, validateFn(this.getMergedProps())])
-                    .reduce<{ [errorKey: string]: boolean }>((agg, [key, validationResult]) => {
+                    .reduce((agg, [key, validationResult]) => {
                         agg[key] = validationResult;
                         return agg;
-                    }, {})
+                    }, {} as { [errorKey: string]: boolean })
 
                 return validationResults;
             }
 
-            onChangeWrapper = (newValue: any) => {
+            onChange = (newValue: any) => {
                 this.props.formContext && this.props.formContext.addToChangeQueue(this.path);
 
                 if (this.props.onChange) {
@@ -97,7 +106,7 @@ export default function FormElement(options: FormElementOptions = {}) {
                         <ComponentToWrap
                             name={name}
                             value={actualValue}
-                            onChange={this.onChangeWrapper}
+                            onChange={this.onChange}
                             {...other}
                         />
                     </FormContext.Provider>

@@ -95,7 +95,7 @@ export class EntityManager {
 
         const validationResult = validateModel(modelMeta, instance);
         if(!validationResult.isValid) {
-            throw new ValidationError("Validation failure while saving model", validationResult)
+            throw new ValidationError("Validation failure while saving entity", validationResult)
         }
 
         const toSave = pick(instance, Object.keys(modelMeta.fields));
@@ -127,6 +127,12 @@ export class EntityManager {
 
     async updateByID(model: any, id: string, newValue: any) {
         const modelMeta: ModelMeta = model.modelMeta;
+
+        const validationResult = validateModel(modelMeta, newValue);
+        if(!validationResult.isValid) {
+            throw new ValidationError("Validation failure while updating entity", validationResult)
+        }
+
         const col = this.db.collection(modelMeta.namePlural);
 
         const fields = Object.keys(modelMeta.fields).filter(f => !modelMeta.fields[f].isID);
@@ -139,7 +145,7 @@ export class EntityManager {
             return null;
         }
 
-        return result.value;
+        return newValue;
     }
 
 }

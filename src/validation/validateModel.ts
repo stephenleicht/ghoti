@@ -21,7 +21,7 @@ export function validateModel(modelMeta: ModelMeta, value: any): ValidationResul
             else {
                 retVal = Object.entries(validators)
                     .map(([validatorKey, [msg, validateFn]]): [string, boolean, string] => {
-                        const isValid = validateFn(value[key]);
+                        const isValid = validateFn({value: value[key]});
                         return [validatorKey, isValid, msg];
                     })
                     .reduce((agg, [validatorKey, isValid, msg]) => {

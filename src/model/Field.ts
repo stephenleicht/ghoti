@@ -5,7 +5,14 @@ import { FormElementProps } from '../admin/client/forms/FormElement';
 
 import { FieldMeta } from './FieldMeta';
 
+import requiredValidator from '../validation/required';
+
 export type FieldDecoratorOptions = Partial<FieldMeta>
+
+const defaultOptions = {
+    required: false,
+    editable: true,
+} as FieldDecoratorOptions
 
 export function addTypeMeta(target: any,
                             propertyKey: string | symbol,
@@ -24,7 +31,7 @@ export function addTypeMeta(target: any,
         Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
-export default function Field(options?: FieldDecoratorOptions): PropertyDecorator {
+export default function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorator {
     return (target: any, propertyKey: string | symbol) => {
         let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
@@ -33,17 +40,24 @@ export default function Field(options?: FieldDecoratorOptions): PropertyDecorato
             possibleValues,
             Component,
             componentProps,
-            validators
+            required = false,
+            validators = {},
+            editable = true,
         } = options || {} as FieldDecoratorOptions;
+
+        if(required) {
+            validators.required = requiredValidator
+        }
 
         addTypeMeta(target.constructor, propertyKey, {
             type,
             possibleValues,
             Component,
             componentProps,
+            required,
+            editable,
             validators,
-            isID: false, 
-            editable: true,
+            isID: false,
         });
     }
 }

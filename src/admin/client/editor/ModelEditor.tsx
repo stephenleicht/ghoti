@@ -10,6 +10,7 @@ import { defaultComponentsByType } from './defaultComponentsByType';
 import Select from '../forms/Select';
 import Group from '../forms/Group';
 
+type Predicate = (value: any) => boolean
 
 function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<React.ReactElement<any>> {
     const modelMeta: ModelMeta = model.modelMeta;
@@ -17,11 +18,21 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
     const fields = Object.entries(modelMeta.fields)
         .filter(([key, f]) => f.editable)
         .map(([key, f]) => {
+
+            const validators = modelMeta.fields[key].validators || {}
+
+            const componentValidators = Object.entries(validators)
+                .map<[string, Predicate]>(([key, [msg, validatorFn]]) =>  [key, validatorFn])
+                .reduce((agg, [key, validatorFn]) => {
+                    agg[key] = validatorFn;
+                    return agg;
+                }, {} as  {[key: string]: any})
+
             if (f.Component) {
                 return (
                     <div key={`${key}-row`}>
                         <label>{key}</label>
-                        <f.Component name={key} {...f.componentProps} />
+                        <f.Component name={key} {...f.componentProps} validators={componentValidators}/>
                     </div>
                 );
             }
@@ -43,7 +54,7 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
                 return (
                     <div key={`${key}-row`}>
                         <label key={`${key}-label`}>{key}</label>
-                        <Select key={`${key}-component`} name={key} options={selectOptions} />
+                        <Select key={`${key}-component`} name={key} options={selectOptions} validators={componentValidators} />
                     </div>
                 )
             }
@@ -57,7 +68,7 @@ function getEditorMarkupForModel(model: any): React.ReactElement<any> | Array<Re
                 return (
                     <div key={`${key}-row`}>
                         <label key={`${key}-label`}>{key}</label>
-                        <Component key={`${key}-component`} name={key} {...f.componentProps} />
+                        <Component key={`${key}-component`} name={key} {...f.componentProps} validators={componentValidators}/>
                     </div>
                 )
             }

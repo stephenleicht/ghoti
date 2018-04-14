@@ -5,7 +5,7 @@ export default class Person {
     @ID()
     id: string
 
-    @Field()
+    @Field({required: true})
     firstName: string
 
     @Field()

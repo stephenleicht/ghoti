@@ -12,7 +12,7 @@ export interface FormProps {
     children: React.ReactNode,
     formState: FormState,
     onChange: (newState: FormState) => void,
-    onSubmit?: (value: Object) => void,
+    onSubmit?: (value: object) => void,
 }
 
 export default class Form extends React.Component<FormProps, {}> {

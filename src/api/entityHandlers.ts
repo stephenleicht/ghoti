@@ -10,13 +10,15 @@ import ValidationError from '../errors/ValidationError';
 
 const logger = createLogger('entityHandlers');
 
+// TODO: more robust error codes for the API
+
 export async function createEntityHandler(model: any, req: Request, res: Response) {
     try {
         const savedInstance = await entityManager.save(model, req.body);
         res.send(JSON.stringify(savedInstance))
     }
     catch (err) {
-        if(err instanceof ValidationError) {
+        if (err instanceof ValidationError) {
             logger.info(err.message)
             res.status(400);
             res.send(JSON.stringify({
@@ -31,7 +33,7 @@ export async function createEntityHandler(model: any, req: Request, res: Respons
         }
     }
 
-    
+
 }
 
 export async function updateEntityHandler(model: any, req: Request, res: Response) {
@@ -40,8 +42,18 @@ export async function updateEntityHandler(model: any, req: Request, res: Respons
         res.send(JSON.stringify(instance));
     }
     catch (err) {
-        res.status(500);
-        res.send(err);
+        if (err instanceof ValidationError) {
+            logger.info(err.message)
+            res.status(400);
+            res.send(JSON.stringify({
+                error: true,
+                result: err.result
+            }))
+        }
+        else {
+            res.status(500);
+            res.send(err);
+        }
     }
 }
 

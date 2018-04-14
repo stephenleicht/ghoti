@@ -24,10 +24,10 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
         };
     }
 
-    onSubmit = async (newValue: any) => {
+    onSubmit = async (formState: FormState) => {
         const modelMeta = this.props.model.modelMeta;
 
-        await createModel(modelMeta, newValue);
+        await createModel(modelMeta, formState);
 
         this.props.history.push(`/models/${modelMeta.namePlural}`)
     }
