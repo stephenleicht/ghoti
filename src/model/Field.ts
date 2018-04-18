@@ -43,6 +43,7 @@ export default function Field(options: FieldDecoratorOptions = defaultOptions): 
             required = false,
             validators = {},
             editable = true,
+            arrayOf
         } = options || {} as FieldDecoratorOptions;
 
         if(required) {
@@ -58,6 +59,7 @@ export default function Field(options: FieldDecoratorOptions = defaultOptions): 
             editable,
             validators,
             isID: false,
+            arrayOf
         });
     }
 }
