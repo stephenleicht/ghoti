@@ -12,6 +12,7 @@ export default function ID(): PropertyDecorator {
             type,
             isID: true,
             editable: false,
+            required: false,
         });
     }
 }

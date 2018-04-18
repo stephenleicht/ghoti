@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, {FormElementProps} from './FormElement';
+import FormElement, {FormElementProps} from '../../forms/FormElement';
 
 export interface SelectProps extends FormElementProps{
     options: Array<{key: string | undefined, displayValue: string}>

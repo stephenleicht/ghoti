@@ -7,7 +7,7 @@ import Form, { FormState, createFormState } from '../forms/Form';
 import EmbededModel from './EmbededModel';
 
 import { defaultComponentsByType } from './defaultComponentsByType';
-import Select from '../forms/Select';
+import Select from '../components/inputs/Select';
 import Group from '../forms/Group';
 
 type Predicate = (value: any) => boolean

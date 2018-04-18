@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps } from './FormElement';
+import FormElement, { FormElementProps } from '../../forms/FormElement';
 import { SyntheticEvent } from 'react';
 
 export interface NumberInputProps extends FormElementProps {

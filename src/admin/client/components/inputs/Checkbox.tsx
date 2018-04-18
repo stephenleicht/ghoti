@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, {FormElementProps} from './FormElement';
+import FormElement, {FormElementProps} from '../../forms/FormElement';
 
 export interface CheckboxProps extends FormElementProps{
 

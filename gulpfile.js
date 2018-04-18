@@ -9,6 +9,9 @@ const rollup = require('rollup');
 const rollupTypescript = require('rollup-plugin-typescript2');
 const rollupUglify = require('rollup-plugin-uglify')
 
+
+const OUTDIR = './dist'
+
 const files = {
     library: [
         'src/**/*.@(ts|tsx)',
@@ -20,7 +23,7 @@ let shouldWatch = false;
 let isReleaseBuild = false;
 
 gulp.task('default', ['build']);
-gulp.task('clean', () => del(['dist']));
+gulp.task('clean', () => del([OUTDIR]));
 gulp.task('build', (cb) => runSequence('clean', ['build-library', 'build-admin-client'], cb));
 
 gulp.task('release', (cb) => {
@@ -47,10 +50,10 @@ gulp.task('build-library', () => {
             .pipe(sourcemaps.init())
             .pipe(tsProject())
             .pipe(sourcemaps.write())
-            .pipe(gulp.dest('dist')),
+            .pipe(gulp.dest(OUTDIR)),
 
         gulp.src(files.packageJsons)
-            .pipe(gulp.dest('dist'))
+            .pipe(gulp.dest(OUTDIR))
     ]);
 })
 
@@ -86,7 +89,7 @@ gulp.task('bundle-admin-client', (cb) => {
 
 gulp.task('release-forms', ['clean'], () => {
     gulp.src('./src/admin/client/forms/package.json')
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest(OUTDIR))
 
     return rollup.rollup({
         input: './src/admin/client/forms/index.ts',
@@ -107,7 +110,7 @@ gulp.task('release-forms', ['clean'], () => {
     })
         .then(bundle => {
             return bundle.write({
-                file: './dist/forms.js',
+                file: `${OUTDIR}/forms.js`,
                 format: 'umd',
                 name: 'GhotiForms',
                 globals: {

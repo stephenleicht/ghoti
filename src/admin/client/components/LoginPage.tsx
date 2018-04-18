@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 
 import Form from '../forms/Form';
 import { createFormState, FormState } from '../forms/Form/FormState';
-import TextInput from '../forms/TextInput';
+import TextInput from './inputs/TextInput';
 
 import { authenticate } from '../api';
 

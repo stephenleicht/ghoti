@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import { FormElementProps } from '../forms/FormElement';
 
-import TextInput from '../forms/TextInput';
-import NumberInput from '../forms/NumberInput';
-import Checkbox from '../forms/Checkbox';
+import TextInput from '../components/inputs/TextInput';
+import NumberInput from '../components/inputs/NumberInput';
+import Checkbox from '../components/inputs/Checkbox';
 
 const defaults = new Map<any, any>([
     [String, TextInput],

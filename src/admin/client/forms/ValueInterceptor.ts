@@ -5,4 +5,9 @@ export interface ValueInterceptor {
     getValue: (name: string) => any
 }
 
-export const ValueInterceptorContext = React.createContext<ValueInterceptor>();
+const defaultValue = {
+    onChangeInterceptor: () => {},
+    getValue: () => {}
+}
+
+export const ValueInterceptorContext = React.createContext<ValueInterceptor>(defaultValue);

@@ -8,4 +8,10 @@ export interface FormContextValue {
     parentPath: string,
 }
 
-export const FormContext = React.createContext<FormContextValue>();
+const defaultValue = {
+    register: () => {},
+    addToChangeQueue: () => {},
+    parentPath: ''
+}
+
+export const FormContext = React.createContext<FormContextValue>(defaultValue);
