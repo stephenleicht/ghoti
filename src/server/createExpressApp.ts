@@ -13,7 +13,8 @@ export default async function createExpressApp(config: GhotiOptions): Promise<ex
     app.use(cookieParser());
     app.use(bodyParser.json());
     
-    app.use(await configureRoutes(config));
+    const routes = await configureRoutes(config)
+    app.use(routes);
 
     return app;
 }

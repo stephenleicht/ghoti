@@ -8,8 +8,6 @@ import {
 } from '../forms';
 import TextInput from './inputs/TextInput'
 
-import ModelEditor from '../editor/ModelEditor';
-
 import { createUser } from '../api';
 
 export interface CreateUserPageProps extends RouteComponentProps<any> {

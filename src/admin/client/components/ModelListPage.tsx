@@ -54,6 +54,10 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
     }
 
     renderDisplayValue(fieldName: string, value: any) {
+        if (Array.isArray(value[fieldName])) {
+            return '[]';
+        }
+
         if(this.props.model.modelMeta.fields[fieldName].type.modelMeta) {
             //TODO: have some sort of display value configuration on ghoti model
             return '{}';

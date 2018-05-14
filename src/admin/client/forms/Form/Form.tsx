@@ -48,24 +48,28 @@ export default class Form extends React.Component<FormProps, {}> {
         const { formState } = this.props;
 
         const newFormState = this.processRegistrations();
-        this.pendingRegistrations = [];
 
         this.props.onChange(newFormState);
     }
 
     componentDidUpdate(prevProps: FormProps) {
-        if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
+        if(this.pendingRegistrations.length > 0) {
+            const newFormState = this.processRegistrations();
+            this.props.onChange(newFormState);
+        }
+        else if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
             const fields = this.props.formState.fields;
 
             const pendingFields = Object.entries(fields)
                 .filter(([, field]) => field.pendingValidation)
                 .map(([key]) => key);
 
-            this.validateByField(pendingFields);
+            const newFormState = this.validateByField(pendingFields, this.props.formState);
+            this.props.onChange(newFormState);
         }
     }
 
-    processRegistrations(): FormState {
+    processRegistrations() {
         const { formState } = this.props;
 
         const currentFields = formState.fields;
@@ -94,6 +98,8 @@ export default class Form extends React.Component<FormProps, {}> {
             }
 
         }, currentFields);
+
+        this.pendingRegistrations = [];
 
         return {
             ...formState,
@@ -134,12 +140,11 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     validate() {
-        this.validateByField(Object.keys(this.props.formState.fields));
+        const newFormState = this.validateByField(Object.keys(this.props.formState.fields), this.props.formState);
+        this.props.onChange(newFormState);
     }
 
-    validateByField(fields: string[]) {
-        const { formState } = this.props;
-
+    validateByField(fields: string[], formState: FormState) {
         const newFieldState = fields
             .map<[string, { [validatorKey: string]: boolean }]>((field) => ([
                 field,
@@ -164,16 +169,16 @@ export default class Form extends React.Component<FormProps, {}> {
                     errors: allValid ? undefined : errors,
                 }
                 return agg;
-            }, { ...this.props.formState.fields });
+            }, { ...formState.fields });
 
         const formIsValid = Object.values(newFieldState).every((field) => field.isValid);
 
-        this.props.onChange({
-            ...this.props.formState,
+        return {
+            ...formState,
             pendingValidation: false,
             isValid: formIsValid,
             fields: newFieldState
-        });
+        };
     }
 
     addToChangeQueue = (fieldName: string) => {

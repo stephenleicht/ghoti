@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { FormState, createFormState } from '../forms/Form';
+import { Form, FormState, createFormState } from '../forms';
 import ModelEditor from '../editor/ModelEditor';
 
 import { getModelByID, updateModel } from '../api';
@@ -10,7 +10,7 @@ export interface ViewModelPageParams {
     id: string
 }
 
-export interface ViewModelPageProps extends RouteComponentProps<ViewModelPageParams>{
+export interface ViewModelPageProps extends RouteComponentProps<ViewModelPageParams> {
     model: any,
 }
 
@@ -27,9 +27,9 @@ export default class ViewModelPage extends React.Component<ViewModelPageProps, V
             formState: undefined,
         }
     }
-    
+
     async componentDidMount() {
-        const { 
+        const {
             model: {
                 modelMeta
             },
@@ -41,13 +41,13 @@ export default class ViewModelPage extends React.Component<ViewModelPageProps, V
         const value = await getModelByID(modelMeta, params.id);
 
         this.setState({
-            formState: createFormState(value),
+            formState: createFormState({model: value}),
         });
     }
 
     onEditorSubmit = async (value: any) => {
         const { history, match, model } = this.props;
-        await updateModel(model.modelMeta, match.params.id, value);
+        await updateModel(model.modelMeta, match.params.id, value.model);
 
         history.push(`/models/${model.modelMeta.namePlural}`);
     }
@@ -63,12 +63,18 @@ export default class ViewModelPage extends React.Component<ViewModelPageProps, V
         return (
             <div>
                 <h1>Edit Model</h1>
-                <ModelEditor 
+                <Form
                     formState={formState}
-                    model={model}
-                    onChange={(newState) => this.setState({formState: newState})}
                     onSubmit={this.onEditorSubmit}
-                />
+                    onChange={(newState: FormState) => this.setState({ formState: newState })}
+                >
+                    <ModelEditor
+                        name="model"
+                        model={model}
+                    />
+                    <button type="submit">Submit</button>
+                </Form>
+
             </div>
         )
     }

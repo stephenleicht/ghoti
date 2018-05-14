@@ -1,3 +1,4 @@
+const path = require('path');
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
@@ -10,7 +11,7 @@ const rollupTypescript = require('rollup-plugin-typescript2');
 const rollupUglify = require('rollup-plugin-uglify')
 
 
-const OUTDIR = './dist'
+const OUTDIR = path.resolve('./dist');
 
 const files = {
     library: [
@@ -61,7 +62,8 @@ gulp.task('build-admin-client', () => runSequence(['bundle-admin-client']));
 
 gulp.task('bundle-admin-client', (cb) => {
     const webpackOptions = {
-        isReleaseBuild
+        isReleaseBuild,
+        outDir: OUTDIR,
     }
 
     const webpackConfig = require('./webpack.client')(webpackOptions);

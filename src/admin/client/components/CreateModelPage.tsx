@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import {FormState, createFormState} from '../forms/Form';
+import { Form, FormState, createFormState } from '../forms';
 import ModelEditor from '../editor/ModelEditor';
 
 import { createModel } from '../api';
@@ -20,14 +20,14 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
         super(props);
 
         this.state = {
-            formState: createFormState({}),
+            formState: createFormState({model: {}}),
         };
     }
 
-    onSubmit = async (formState: FormState) => {
+    onSubmit = async (value: FormState['value']) => {
         const modelMeta = this.props.model.modelMeta;
 
-        await createModel(modelMeta, formState);
+        await createModel(modelMeta, value.value);
 
         this.props.history.push(`/models/${modelMeta.namePlural}`)
     }
@@ -38,12 +38,18 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
         return (
             <div>
                 <h1>Add {model.modelMeta.name}</h1>
-                <ModelEditor
-                    model={model}
-                    onSubmit={this.onSubmit} 
+                <Form
                     formState={formState}
-                    onChange={(newState: FormState) => this.setState({formState: newState})}  
-                />
+                    onSubmit={this.onSubmit}
+                    onChange={(newState: FormState) => this.setState({ formState: newState })}
+                >
+                    <ModelEditor
+                        name="model"
+                        model={model}
+                    />
+                    <button type="submit">Submit</button>
+                </Form>
+
             </div>
         )
     }

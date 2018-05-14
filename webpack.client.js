@@ -7,7 +7,7 @@ module.exports = (options) => {
         entry: path.resolve(__dirname, 'src/admin/client/main.tsx'),
         output: {
             filename: 'main.bundle.js',
-            path: path.resolve(__dirname, 'dist/admin/client'),
+            path: path.resolve(options.outDir, 'admin/client'),
         },
     
         devtool: options.isReleaseBuild ? false : "inline-source-map",

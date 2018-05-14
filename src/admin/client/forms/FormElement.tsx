@@ -11,17 +11,17 @@ export interface ValidatorMap {
     [key: string]: (props: any) => boolean
 }
 
-export interface FormElementProps {
+export interface FormElementProps<T = any> {
     name: string,
-    value?: any,
+    value?: T,
     required?: boolean,
-    onChange?: (newValue: any) => void,
+    onChange?: (newValue: T) => void,
     validators?: ValidatorMap
 }
 
 export interface FormElementOptions {
     defaultValue?: () => any
-    validators?: ValidatorMap
+    validators?: FormElementProps['validators']
 }
 
 export default function FormElement(options: FormElementOptions = {}) {
@@ -120,10 +120,10 @@ export default function FormElement(options: FormElementOptions = {}) {
                     <ValueInterceptorContext.Consumer>
                     {({ onChangeInterceptor, getValue }: ValueInterceptor) => (
                         <WrappedComponent
-                            {...props as any}
                             formContext={formContextValue}
                             getValue={getValue}
                             onChange={(newValue: any) => onChangeInterceptor(props.name, newValue)}
+                            {...props as any}
                         />
                     )}
                 </ValueInterceptorContext.Consumer>
