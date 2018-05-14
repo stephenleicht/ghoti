@@ -50,7 +50,7 @@ export default FormElement({
             return !!props.value;
         },
         isNumber: (props: NumberInputProps): boolean => {
-            if(!props.value) {
+            if(props.value === null || props.value === undefined) {
                 return false;
             }
 

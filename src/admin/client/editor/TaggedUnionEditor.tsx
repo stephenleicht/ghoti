@@ -54,6 +54,7 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
 
         return (
             <div>
+                <label>{unionMeta.tagField}</label>
                 <Select name="tagField" options={tagOptions} value={value[unionMeta.tagField]} onChange={this.onTagFieldChange} />
                 <div>
                     {Object.keys(modifiedModelMeta.fields).length > 0 &&

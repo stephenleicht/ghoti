@@ -53,19 +53,26 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     componentDidUpdate(prevProps: FormProps) {
+        let currentFormState = this.props.formState;
+        let shouldSetFormState = false;
         if(this.pendingRegistrations.length > 0) {
-            const newFormState = this.processRegistrations();
-            this.props.onChange(newFormState);
+            currentFormState = this.processRegistrations();
+            shouldSetFormState = true;
         }
-        else if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
-            const fields = this.props.formState.fields;
+        
+        if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
+            shouldSetFormState = true;
+            const fields = currentFormState.fields;
 
             const pendingFields = Object.entries(fields)
                 .filter(([, field]) => field.pendingValidation)
                 .map(([key]) => key);
 
-            const newFormState = this.validateByField(pendingFields, this.props.formState);
-            this.props.onChange(newFormState);
+            currentFormState = this.validateByField(pendingFields, currentFormState);
+        }
+
+        if(shouldSetFormState) {
+            this.props.onChange(currentFormState);
         }
     }
 

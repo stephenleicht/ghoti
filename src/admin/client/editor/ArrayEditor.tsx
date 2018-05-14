@@ -10,7 +10,7 @@ export interface ArrayEditorProps extends FormElementProps {
 }
 class ArrayEditor extends React.Component<ArrayEditorProps, object>{
     handleAdd = () => {
-        const newValue = [...this.props.value, undefined]
+        const newValue = this.props.value ? [...this.props.value, undefined] : [undefined];
         this.props.onChange && this.props.onChange(newValue);
     }
 
