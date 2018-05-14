@@ -25,7 +25,7 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
                         let component;
     
                         if (!!arrayOf.modelMeta) {
-                            component = <ModelEditor model={arrayOf} {...arrayProps} />;
+                            component = <ModelEditor modelMeta={arrayOf.modelMeta} {...arrayProps} />;
                         }
                         else {
                             component = <PrimitiveEditor type={arrayOf} {...arrayProps} />;

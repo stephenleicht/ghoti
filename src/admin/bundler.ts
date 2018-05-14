@@ -45,7 +45,7 @@ async function generatePackedBundle(tempDir: string): Promise<boolean> {
 }
 
 export async function processMetaData(models: any[], tempDir: string): Promise<boolean> {
-    const metaData: ModelMeta[] = models.map(model => Reflect.getMetadata(modelConstants.MODEL_META_KEY, model.prototype.constructor));
+    const metaData: ModelMeta[] = models.map(model => model.modelMeta);
 
     logger.info('Processing model metadata');
     const metaFileString = buildMetaFileString(metaData);

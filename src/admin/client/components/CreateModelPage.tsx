@@ -45,7 +45,7 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
                 >
                     <ModelEditor
                         name="model"
-                        model={model}
+                        modelMeta={model.modelMeta}
                     />
                     <button type="submit">Submit</button>
                 </Form>

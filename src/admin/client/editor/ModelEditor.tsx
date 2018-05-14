@@ -4,8 +4,6 @@ import { ModelMeta } from '../../../model';
 
 import { FormElement, FormElementProps } from '../forms';
 
-import EmbededModel from './EmbededModel';
-
 import Select from '../components/inputs/Select';
 import Group from '../forms/Group';
 
@@ -14,13 +12,12 @@ import FieldEditor from './FieldEditor';
 type Predicate = (value: any) => boolean
 
 export interface ModelEditorProps extends FormElementProps {
-    model: any,
+    modelMeta: ModelMeta,
 }
 
 class ModelEditor extends React.Component<ModelEditorProps, {}> {
     render() {
-        const { model, name, ...otherProps } = this.props;
-        const modelMeta: ModelMeta = model.modelMeta;
+        const { modelMeta, name, ...otherProps } = this.props;
 
         const fields = Object.entries(modelMeta.fields)
             .filter(([key, f]) => f.editable)

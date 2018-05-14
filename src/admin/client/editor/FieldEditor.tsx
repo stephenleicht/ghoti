@@ -4,14 +4,13 @@ import { FieldMeta } from '../../../model';
 
 import Form, { FormState, createFormState } from '../forms/Form';
 import FormElement, { FormElementProps } from '../forms/FormElement';
-
-import EmbededModel from './EmbededModel';
+import Select from '../components/inputs/Select';
 
 import PrimitiveEditor from './PrimitiveEditor';
-import Select from '../components/inputs/Select';
-import Group from '../forms/Group';
 import ModelEditor from './ModelEditor';
 import ArrayEditor from './ArrayEditor';
+import TaggedUnionEditor from './TaggedUnionEditor';
+
 
 export interface FieldEditorProps extends FormElementProps {
     fieldMeta: FieldMeta,
@@ -26,8 +25,12 @@ const FieldEditor: React.SFC<FieldEditorProps> = ({
         return <f.Component name={name} {...f.componentProps} {...otherProps} />;
     }
 
+    if (f.taggedUnion) {
+        return <TaggedUnionEditor unionMeta={f.taggedUnion} name={name} {...otherProps} />
+    }
+
     if (!!f.type.modelMeta) {
-        return <ModelEditor model={f.type} name={name} {...otherProps} />;
+        return <ModelEditor modelMeta={f.type.modelMeta} name={name} {...otherProps} />;
     }
 
     if (f.arrayOf) {

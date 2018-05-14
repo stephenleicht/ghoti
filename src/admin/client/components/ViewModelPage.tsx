@@ -70,7 +70,7 @@ export default class ViewModelPage extends React.Component<ViewModelPageProps, V
                 >
                     <ModelEditor
                         name="model"
-                        model={model}
+                        modelMeta={model.modelMeta}
                     />
                     <button type="submit">Submit</button>
                 </Form>

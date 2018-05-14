@@ -14,10 +14,18 @@ const defaultOptions = {
     editable: true,
 } as FieldDecoratorOptions
 
+export type FieldDecorator = PropertyDecorator & {
+    taggedUnion: TaggedUnionHelper
+}
+
+export type TaggedUnionMeta = {tagField: string, tagMap: {[key: string]: any}};
+
+export type TaggedUnionHelper = (tagField: string, tagMap: {[key: string]: any}) => TaggedUnionMeta;
+
 export function addTypeMeta(target: any,
                             propertyKey: string | symbol,
                             options: FieldMeta ) {
-        const modelMeta = <ModelMeta>Reflect.getMetadata(constants.MODEL_META_KEY, target) || {};
+        const modelMeta = <ModelMeta>Reflect.getOwnMetadata(constants.MODEL_META_KEY, target) || {};
 
         const newMeta = {
             ...modelMeta.fields,
@@ -31,7 +39,9 @@ export function addTypeMeta(target: any,
         Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
-export default function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorator {
+
+
+function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorator {
     return (target: any, propertyKey: string | symbol) => {
         let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
@@ -43,7 +53,8 @@ export default function Field(options: FieldDecoratorOptions = defaultOptions): 
             required = false,
             validators = {},
             editable = true,
-            arrayOf
+            arrayOf,
+            taggedUnion,
         } = options || {} as FieldDecoratorOptions;
 
         if(required) {
@@ -59,7 +70,19 @@ export default function Field(options: FieldDecoratorOptions = defaultOptions): 
             editable,
             validators,
             isID: false,
-            arrayOf
+            arrayOf,
+            taggedUnion,
         });
     }
 }
+
+const FieldDecorator = (Field as any as FieldDecorator)
+
+FieldDecorator.taggedUnion = (tagField, tagMap) => {
+    return {
+        tagField,
+        tagMap
+    }
+}
+
+export default FieldDecorator;
