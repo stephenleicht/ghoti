@@ -16,7 +16,8 @@ export interface FormElementProps<T = any> {
     value?: T,
     required?: boolean,
     onChange?: (newValue: T) => void,
-    validators?: ValidatorMap
+    validators?: ValidatorMap,
+    degregister: (path?: string) => void,
 }
 
 export interface FormElementOptions {
@@ -44,6 +45,10 @@ export default function FormElement(options: FormElementOptions = {}) {
 
             componentDidMount() {
                 this.props.formContext && this.props.formContext.register(this.path, this.validate)
+            }
+
+            deregister = (path?: string) => {
+                this.props.formContext && this.props.formContext.deregister(`${this.path}.${path}` || this.path);
             }
 
             getMergedProps = () => {
@@ -107,6 +112,7 @@ export default function FormElement(options: FormElementOptions = {}) {
                             name={name}
                             value={actualValue}
                             onChange={this.onChange}
+                            degregister={this.deregister}
                             {...other}
                         />
                     </FormContext.Provider>

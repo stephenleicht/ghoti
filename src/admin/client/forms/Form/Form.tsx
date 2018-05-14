@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import { omit } from 'lodash';
 
 import { FormState } from './FormState';
 import { FormElementProps } from '../FormElement';
@@ -17,6 +18,7 @@ export interface FormProps {
 
 export default class Form extends React.Component<FormProps, {}> {
     pendingRegistrations: Array<{ path: string, validateCallback: ValidateCallback }> = []
+    pendingDeregistrations: Array<string> = [];
     changeQueue: string[] = []
     formChildContext: FormContextValue
     valueInterceptorChildContext: ValueInterceptor
@@ -27,6 +29,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
         this.formChildContext = {
             register: this.registerChild,
+            deregister: this.deregisterChild,
             addToChangeQueue: this.addToChangeQueue,
             parentPath: ''
         }
@@ -44,6 +47,10 @@ export default class Form extends React.Component<FormProps, {}> {
         });
     }
 
+    deregisterChild = (path: string) => {
+        this.pendingDeregistrations.push(path);
+    }
+
     componentDidMount() {
         const { formState } = this.props;
 
@@ -55,7 +62,7 @@ export default class Form extends React.Component<FormProps, {}> {
     componentDidUpdate(prevProps: FormProps) {
         let currentFormState = this.props.formState;
         let shouldSetFormState = false;
-        if(this.pendingRegistrations.length > 0) {
+        if(this.pendingRegistrations.length > 0 || this.pendingDeregistrations.length > 0) {
             currentFormState = this.processRegistrations();
             shouldSetFormState = true;
         }
@@ -80,7 +87,7 @@ export default class Form extends React.Component<FormProps, {}> {
         const { formState } = this.props;
 
         const currentFields = formState.fields;
-        const newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
+        let newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
             const pathKey = registration.path;
             let currentFieldMeta = agg[pathKey];
             if (!currentFieldMeta) {
@@ -106,7 +113,13 @@ export default class Form extends React.Component<FormProps, {}> {
 
         }, currentFields);
 
+        newFieldMeta = this.pendingDeregistrations.reduce((agg, pathToDeregister) => {
+            const fields = Object.keys(agg).filter(fieldKey => fieldKey.startsWith(pathToDeregister));
+            return omit(agg, ...fields);
+        }, newFieldMeta)
+
         this.pendingRegistrations = [];
+        this.pendingDeregistrations = [];
 
         return {
             ...formState,
