@@ -26,7 +26,7 @@ class ArrayInput extends React.Component<ArrayInputProps, {}> {
         const newValue = this.props.value ? [...this.props.value] : [];
         newValue.splice(idx, 1);
 
-        this.props.degregister(`${this.props.name}-${newValue.length}`);
+        this.props.deregister && this.props.deregister(`${this.props.name}-${newValue.length}`);
         this.props.onChange && this.props.onChange(newValue);
     }
 

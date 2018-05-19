@@ -1,13 +1,11 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import { omit } from 'lodash';
-
+import * as React from 'react';
+import { ValueInterceptor, ValueInterceptorContext } from '../ValueInterceptor';
+import { FormContext, FormContextValue } from './FormContext';
 import { FormState } from './FormState';
-import { FormElementProps } from '../FormElement';
 import { FormFieldMeta } from './FormFieldMeta';
-import { ValidateCallback } from './ValidateCallback'
-import { FormContext, FormContextValue } from './FormContext'
-import { ValueInterceptorContext, ValueInterceptor } from '../ValueInterceptor';
+import { ValidateCallback } from './ValidateCallback';
+
 
 export interface FormProps {
     children: React.ReactNode,

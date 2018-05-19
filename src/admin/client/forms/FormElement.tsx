@@ -17,7 +17,7 @@ export interface FormElementProps<T = any> {
     required?: boolean,
     onChange?: (newValue: T) => void,
     validators?: ValidatorMap,
-    degregister: (path?: string) => void,
+    deregister?: (path?: string) => void,
 }
 
 export interface FormElementOptions {
@@ -112,7 +112,7 @@ export default function FormElement(options: FormElementOptions = {}) {
                             name={name}
                             value={actualValue}
                             onChange={this.onChange}
-                            degregister={this.deregister}
+                            deregister={this.deregister}
                             {...other}
                         />
                     </FormContext.Provider>
