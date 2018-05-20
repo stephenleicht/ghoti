@@ -31,7 +31,6 @@ class NumberInput extends React.Component<NumberInputProps, {}> {
 
         return (
             <input
-                {...this.props}
                 type="number"
                 value={value}
                 onChange={this.onChange}

@@ -17,6 +17,7 @@ class Select extends React.Component<SelectProps, {}> {
             onChange = () => {}
         } = this.props;
 
+        let valueIsOption = false;
         const optionElems = options.sort((a, b) => {
             if(a.displayValue > b.displayValue) {
                 return 1;
@@ -27,10 +28,16 @@ class Select extends React.Component<SelectProps, {}> {
             else {
                 return 0;
             }
-        }).map(({key, displayValue}) => <option key={key} value={key}>{displayValue}</option>)
+        }).map(({key, displayValue}) => {
+            if(value === key) {
+                valueIsOption = true;
+            }
+            return <option key={key} value={key}>{displayValue}</option>
+        })
 
         return (
             <select value={value} onChange={this.onChange}>
+                {!valueIsOption && <option value={value}></option>}
                 {optionElems}
             </select>
         )

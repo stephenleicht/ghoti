@@ -1,11 +1,9 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import { pick } from 'lodash'
-
-import { ValidateCallback } from './Form/ValidateCallback';
-
 import { FormContext, FormContextValue } from './Form/FormContext';
-import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';
+import { ValidateCallback } from './Form/ValidateCallback';
+import { ValueInterceptor, ValueInterceptorContext } from './ValueInterceptor';
+
+
 
 export interface ValidatorMap {
     [key: string]: (props: any) => boolean
@@ -48,7 +46,7 @@ export default function FormElement(options: FormElementOptions = {}) {
             }
 
             deregister = (path?: string) => {
-                this.props.formContext && this.props.formContext.deregister(`${this.path}.${path}` || this.path);
+                this.props.formContext && this.props.formContext.deregister(path ? `${this.path}.${path}` : this.path);
             }
 
             getMergedProps = () => {
