@@ -25,6 +25,10 @@ const FieldEditor: React.SFC<FieldEditorProps> = ({
         return <f.Component name={name} {...f.componentProps} {...otherProps} />;
     }
 
+    if (f.arrayOf) {
+        return <ArrayEditor arrayOf={f.arrayOf} name={name} {...otherProps} />
+    }
+
     if (f.taggedUnion) {
         return <TaggedUnionEditor unionMeta={f.taggedUnion} name={name} {...otherProps} />
     }
@@ -33,9 +37,6 @@ const FieldEditor: React.SFC<FieldEditorProps> = ({
         return <ModelEditor modelMeta={f.type.modelMeta} name={name} {...otherProps} />;
     }
 
-    if (f.arrayOf) {
-        return <ArrayEditor arrayOf={f.arrayOf} name={name} {...otherProps} />
-    }
 
     if (f.possibleValues) {
         const selectOptions = Object

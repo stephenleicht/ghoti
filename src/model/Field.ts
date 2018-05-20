@@ -1,4 +1,4 @@
-import {ComponentClass} from 'react';
+import { ComponentClass } from 'react';
 import constants from './constants';
 import { ModelMeta } from './ModelMeta';
 import { FormElementProps } from '../admin/client/forms/FormElement';
@@ -18,25 +18,29 @@ export type FieldDecorator = PropertyDecorator & {
     taggedUnion: TaggedUnionHelper
 }
 
-export type TaggedUnionMeta = {tagField: string, tagMap: {[key: string]: any}};
+export type TaggedUnionMeta = {
+    __ghotiTaggedUnion: true,
+    tagField: string,
+    tagMap: { [key: string]: any } 
+};
 
-export type TaggedUnionHelper = (tagField: string, tagMap: {[key: string]: any}) => TaggedUnionMeta;
+export type TaggedUnionHelper = (tagField: string, tagMap: { [key: string]: any }) => TaggedUnionMeta;
 
 export function addTypeMeta(target: any,
-                            propertyKey: string | symbol,
-                            options: FieldMeta ) {
-        const modelMeta = <ModelMeta>Reflect.getOwnMetadata(constants.MODEL_META_KEY, target) || {};
+    propertyKey: string | symbol,
+    options: FieldMeta) {
+    const modelMeta = <ModelMeta>Reflect.getOwnMetadata(constants.MODEL_META_KEY, target) || {};
 
-        const newMeta = {
-            ...modelMeta.fields,
-            [propertyKey]: {
-                ...options
-            }
-        };
+    const newMeta = {
+        ...modelMeta.fields,
+        [propertyKey]: {
+            ...options
+        }
+    };
 
-        modelMeta.fields = newMeta;
+    modelMeta.fields = newMeta;
 
-        Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
+    Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
 
 
@@ -45,7 +49,7 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
     return (target: any, propertyKey: string | symbol) => {
         let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
-        const {
+        let {
             type = reflectedType,
             possibleValues,
             Component,
@@ -54,11 +58,27 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
             validators = {},
             editable = true,
             arrayOf,
+            enumOf,
             taggedUnion,
         } = options || {} as FieldDecoratorOptions;
 
-        if(required) {
+        if (required) {
             validators.required = requiredValidator
+        }
+
+        if(arrayOf && arrayOf.__ghotiTaggedUnion){
+            taggedUnion = arrayOf;
+        }
+        else if(type.__ghotiTaggedUnion) {
+            taggedUnion = type;
+        }
+
+        if (enumOf && !possibleValues) {
+            possibleValues = Object.entries(enumOf)
+                .reduce((agg, [displayValue, key]) => {
+                    agg[key] = displayValue;
+                    return agg;
+                }, {} as {[key: string]: string})
         }
 
         addTypeMeta(target.constructor, propertyKey, {
@@ -71,6 +91,7 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
             validators,
             isID: false,
             arrayOf,
+            enumOf,
             taggedUnion,
         });
     }
@@ -78,8 +99,9 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
 
 const FieldDecorator = (Field as any as FieldDecorator)
 
-FieldDecorator.taggedUnion = (tagField, tagMap) => {
+FieldDecorator.taggedUnion = (tagField, tagMap): TaggedUnionMeta => {
     return {
+        __ghotiTaggedUnion: true,
         tagField,
         tagMap
     }

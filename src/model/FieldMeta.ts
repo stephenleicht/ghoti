@@ -5,11 +5,12 @@ import { TaggedUnionMeta } from './Field';
 export interface FieldMeta {
     type: any,
     arrayOf?: any
+    enumOf?: {[key: string]: string},
     
     isID: boolean,
     editable: boolean,
     required: boolean,
-
+    
     possibleValues?: {[key: string]: string},
     Component?: ComponentType<FormElementProps>,
     componentProps?: {[key: string]: any},
