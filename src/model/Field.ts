@@ -14,7 +14,7 @@ const defaultOptions = {
     editable: true,
 } as FieldDecoratorOptions
 
-export type FieldDecorator = PropertyDecorator & {
+export type FieldDecoratorType = ((options?: FieldDecoratorOptions) => PropertyDecorator) & {
     taggedUnion: TaggedUnionHelper
 }
 
@@ -42,7 +42,6 @@ export function addTypeMeta(target: any,
 
     Reflect.defineMetadata(constants.MODEL_META_KEY, modelMeta, target)
 }
-
 
 
 function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorator {
@@ -97,9 +96,7 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
     }
 }
 
-const FieldDecorator = (Field as any as FieldDecorator)
-
-FieldDecorator.taggedUnion = (tagField, tagMap): TaggedUnionMeta => {
+(Field as FieldDecoratorType).taggedUnion = (tagField, tagMap): TaggedUnionMeta => {
     return {
         __ghotiTaggedUnion: true,
         tagField,
@@ -107,4 +104,4 @@ FieldDecorator.taggedUnion = (tagField, tagMap): TaggedUnionMeta => {
     }
 }
 
-export default FieldDecorator;
+export default Field as FieldDecoratorType;

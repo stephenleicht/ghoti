@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
+
 import FormElement, { FormElementProps } from './FormElement';
 
 import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';

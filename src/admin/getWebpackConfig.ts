@@ -6,6 +6,7 @@ export default function getWebpackConfig(entryPath: string, outputPath: string):
     const outputDirName = path.dirname(outputPath);
 
     return {
+        mode: 'development',
         entry: entryPath,
         output: {
             filename: outputFileName,

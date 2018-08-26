@@ -19,7 +19,7 @@ export interface FieldEditorProps extends FormElementProps {
 const FieldEditor: React.SFC<FieldEditorProps> = ({
     name,
     fieldMeta: f,
-    ...otherProps,
+    ...otherProps
 }) => {
     if (f.Component) {
         return <f.Component name={name} {...f.componentProps} {...otherProps} />;

@@ -4,12 +4,13 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = (options) => {
     return {
+        mode: 'development',
         entry: path.resolve(__dirname, 'src/admin/client/main.tsx'),
         output: {
             filename: 'main.bundle.js',
             path: path.resolve(options.outDir, 'admin/client'),
         },
-    
+
         devtool: options.isReleaseBuild ? false : "inline-source-map",
         resolve: {
             extensions: [".ts", ".tsx", ".js", ".json"],
@@ -22,7 +23,7 @@ module.exports = (options) => {
                 new UglifyJSPlugin()
             ] : [])
         ],
-    
+
         module: {
             rules: [
                 // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
@@ -42,5 +43,5 @@ module.exports = (options) => {
             ]
         }
     };
-    
+
 }
