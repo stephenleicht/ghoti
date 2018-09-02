@@ -41,7 +41,7 @@ export async function getModelList(modelMeta: ModelMeta) {
         method: 'GET',
         credentials: 'include'
     });
-
+    
     return models.json();
 }
 

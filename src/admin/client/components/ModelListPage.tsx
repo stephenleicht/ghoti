@@ -57,7 +57,9 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
             return '[]';
         }
 
-        if(this.props.model.modelMeta.fields[fieldName].type.modelMeta) {
+        const type = this.props.model.modelMeta.fields[fieldName].type;
+
+        if(type._ghotiType !== 'primitive') {
             //TODO: have some sort of display value configuration on ghoti model
             return '{}';
         }

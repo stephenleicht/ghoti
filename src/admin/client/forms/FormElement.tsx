@@ -95,7 +95,7 @@ export default function FormElement(options: FormElementOptions = {}) {
             }
 
             render() {
-                const { name, value, onChange, required, parentPath, ...other } = (this.props as any);
+                const { name, value, onChange, parentPath, ...other } = (this.props as any);
 
                 const actualValue = this.getValue(name);
 

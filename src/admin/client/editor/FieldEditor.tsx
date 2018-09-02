@@ -4,7 +4,7 @@ import { FieldMeta } from '../../../model';
 
 import Form, { FormState, createFormState } from '../forms/Form';
 import FormElement, { FormElementProps } from '../forms/FormElement';
-import Select from '../components/inputs/Select';
+import Select, { SelectProps } from '../components/inputs/Select';
 
 import PrimitiveEditor from './PrimitiveEditor';
 import ModelEditor from './ModelEditor';
@@ -25,28 +25,37 @@ const FieldEditor: React.SFC<FieldEditorProps> = ({
         return <f.Component name={name} {...f.componentProps} {...otherProps} />;
     }
 
-    if (f.arrayOf) {
-        return <ArrayEditor arrayOf={f.arrayOf} name={name} {...otherProps} />
+    const {type, required} = f;
+
+    if (type._ghotiType === 'arrayOf') {
+        return <ArrayEditor arrayOf={type.arrayOf} name={name} required={required} {...otherProps} />
     }
 
-    if (f.taggedUnion) {
-        return <TaggedUnionEditor unionMeta={f.taggedUnion} name={name} {...otherProps} />
+    if (type._ghotiType === 'taggedUnion') {
+        return <TaggedUnionEditor unionMeta={type} name={name} required={required} {...otherProps} />
     }
 
-    if (!!f.type.modelMeta) {
-        return <ModelEditor modelMeta={f.type.modelMeta} name={name} {...otherProps} />;
+    if (type._ghotiType === 'ref') {
+        return <ModelEditor modelMeta={type.modelMeta} name={name} required={required} {...otherProps} />;
     }
 
+    if(type._ghotiType === 'enumOf') {
+        const selectOptions: SelectProps['options'] = Object
+            .entries(type.enumOf)
+            .map(([valueKey, displayValue]) => ({ key: valueKey, displayValue }));
+
+        return <Select name={name} options={selectOptions} required={required} {...otherProps}/>
+    }
 
     if (f.possibleValues) {
         const selectOptions = Object
             .entries(f.possibleValues)
             .map(([valueKey, displayValue]) => ({ key: valueKey, displayValue }));
 
-        return <Select name={name} options={selectOptions} {...otherProps} />;
+        return <Select name={name} options={selectOptions} required={required} {...otherProps} />;
     }
    
-    return <PrimitiveEditor type={f.type} name={name} {...otherProps} />;
+    return <PrimitiveEditor type={type.type} name={name} {...otherProps} />;
 }
 
 export default FieldEditor;

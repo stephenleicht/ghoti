@@ -1,11 +1,14 @@
-import { ComponentClass } from 'react';
 import constants from './constants';
 import { ModelMeta } from './ModelMeta';
-import { FormElementProps } from '../admin/client/forms/FormElement';
-
 import { FieldMeta } from './FieldMeta';
+import { createTaggedUnionMeta } from './TaggedUnion';
+import { createArrayOfMeta } from './ArrayOf';
+import { createReferenceMeta } from './Reference';
+import { createPrimitiveMeta } from './Primitive';
+import { createEnumOfMeta } from './EnumOf';
 
 import requiredValidator from '../validation/required';
+import { GhotiType } from './GhotiType';
 
 export type FieldDecoratorOptions = Partial<FieldMeta>
 
@@ -15,16 +18,12 @@ const defaultOptions = {
 } as FieldDecoratorOptions
 
 export type FieldDecoratorType = ((options?: FieldDecoratorOptions) => PropertyDecorator) & {
-    taggedUnion: TaggedUnionHelper
+    taggedUnion: typeof createTaggedUnionMeta,
+    arrayOf: typeof createArrayOfMeta,
+    enumOf: typeof createEnumOfMeta,
+    reference: typeof createReferenceMeta,
+    primitive: typeof createPrimitiveMeta,
 }
-
-export type TaggedUnionMeta = {
-    __ghotiTaggedUnion: true,
-    tagField: string,
-    tagMap: { [key: string]: any } 
-};
-
-export type TaggedUnionHelper = (tagField: string, tagMap: { [key: string]: any }) => TaggedUnionMeta;
 
 export function addTypeMeta(target: any,
     propertyKey: string | symbol,
@@ -48,36 +47,27 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
     return (target: any, propertyKey: string | symbol) => {
         let reflectedType = Reflect.getMetadata('design:type', target, propertyKey);
 
+        let inferedType: GhotiType;
+
+        if (reflectedType.modelMeta) {
+            inferedType = createReferenceMeta(reflectedType);
+        }
+        else {
+            inferedType = createPrimitiveMeta(reflectedType);
+        }
+
         let {
-            type = reflectedType,
+            type = inferedType,
             possibleValues,
             Component,
             componentProps,
             required = false,
             validators = {},
             editable = true,
-            arrayOf,
-            enumOf,
-            taggedUnion,
         } = options || {} as FieldDecoratorOptions;
 
         if (required) {
             validators.required = requiredValidator
-        }
-
-        if(arrayOf && arrayOf.__ghotiTaggedUnion){
-            taggedUnion = arrayOf;
-        }
-        else if(type.__ghotiTaggedUnion) {
-            taggedUnion = type;
-        }
-
-        if (enumOf && !possibleValues) {
-            possibleValues = Object.entries(enumOf)
-                .reduce((agg, [displayValue, key]) => {
-                    agg[key] = displayValue;
-                    return agg;
-                }, {} as {[key: string]: string})
         }
 
         addTypeMeta(target.constructor, propertyKey, {
@@ -89,19 +79,18 @@ function Field(options: FieldDecoratorOptions = defaultOptions): PropertyDecorat
             editable,
             validators,
             isID: false,
-            arrayOf,
-            enumOf,
-            taggedUnion,
         });
     }
 }
 
-(Field as FieldDecoratorType).taggedUnion = (tagField, tagMap): TaggedUnionMeta => {
-    return {
-        __ghotiTaggedUnion: true,
-        tagField,
-        tagMap
-    }
+const helpers = {
+    taggedUnion: createTaggedUnionMeta,
+    arrayOf: createArrayOfMeta,
+    enumOf: createEnumOfMeta,
+    reference: createReferenceMeta,
+    primitive: createPrimitiveMeta,
 }
+
+Object.assign(Field, helpers)
 
 export default Field as FieldDecoratorType;

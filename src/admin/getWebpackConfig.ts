@@ -6,7 +6,6 @@ export default function getWebpackConfig(entryPath: string, outputPath: string):
     const outputDirName = path.dirname(outputPath);
 
     return {
-        mode: 'development',
         entry: entryPath,
         output: {
             filename: outputFileName,
@@ -27,8 +26,7 @@ export default function getWebpackConfig(entryPath: string, outputPath: string):
 
         module: {
             rules: [
-                // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-                { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
+                { test: /\.tsx?$/, loader: "ts-loader" },
                 {
                     test: /\.css$/,
                     use: [{

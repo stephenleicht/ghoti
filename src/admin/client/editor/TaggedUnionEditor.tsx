@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { omit } from 'lodash';
 
-import { TaggedUnionMeta } from '../../../model/Field';
+import { TaggedUnionMeta } from '../../../model/TaggedUnion';
 import { ModelMeta } from '../../../model/ModelMeta';
 
 import { FormElement, FormElementProps } from '../forms';

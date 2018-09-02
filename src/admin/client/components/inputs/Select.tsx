@@ -3,21 +3,24 @@ import * as React from 'react';
 import FormElement, {FormElementProps} from '../../forms/FormElement';
 
 export interface SelectProps extends FormElementProps{
-    options: Array<{key: string | undefined, displayValue: string}>
+    options: Array<{key?: string, displayValue: string}>
 }
+
+const UNDEFINED = '_ghotiUndefined';
 
 class Select extends React.Component<SelectProps, {}> {
     onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        this.props.onChange && this.props.onChange(e.target.value);
+        const value = e.target.value === UNDEFINED ? undefined : e.target.value;
+        this.props.onChange && this.props.onChange(value);
     }
     render() {
         const {
             options,
-            value, 
+            value,
+            required,
             onChange = () => {}
         } = this.props;
 
-        let valueIsOption = false;
         const optionElems = options.sort((a, b) => {
             if(a.displayValue > b.displayValue) {
                 return 1;
@@ -28,16 +31,19 @@ class Select extends React.Component<SelectProps, {}> {
             else {
                 return 0;
             }
-        }).map(({key, displayValue}) => {
-            if(value === key) {
-                valueIsOption = true;
-            }
-            return <option key={key} value={key}>{displayValue}</option>
-        })
+        }).map(({key, displayValue}) => <option key={key} value={key}>{displayValue}</option>)
+
+        let valueIsOption = !required && !value;
+        if(!valueIsOption) {
+            valueIsOption = options.some(o => o.key === value)
+        }
+
+        const renderValue = (!required && !value) ? UNDEFINED : value 
 
         return (
-            <select value={value} onChange={this.onChange}>
+            <select value={renderValue} onChange={this.onChange}>
                 {!valueIsOption && <option value={value}></option>}
+                {!required && <option value={UNDEFINED}>None</option>}
                 {optionElems}
             </select>
         )

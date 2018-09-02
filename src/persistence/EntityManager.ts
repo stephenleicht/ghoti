@@ -3,6 +3,7 @@ import { MongoClient, Db, ObjectID } from 'mongodb';
 import { omit, pick } from 'lodash';
 
 import { ModelMeta } from '../model/ModelMeta'
+import { ModelType } from '../model/modelDecorator';
 import { validateModel } from '../validation/validateModel';
 import ValidationError from '../errors/ValidationError';
 
@@ -27,7 +28,7 @@ export class EntityManager {
         }
     }
 
-    async find(model: any, query: any) {
+    async find(model: ModelType<any>, query: any) {
         const modelMeta: ModelMeta = model.modelMeta;
         const col = this.db.collection(modelMeta.namePlural);
 

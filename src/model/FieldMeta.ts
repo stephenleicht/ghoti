@@ -1,11 +1,10 @@
-import {ComponentClass, ComponentType} from 'react';
+import { ComponentType } from 'react';
 import {FormElementProps} from '../admin/client/forms/FormElement';
-import { TaggedUnionMeta } from './Field';
+import { GhotiType } from './GhotiType';
+
 
 export interface FieldMeta {
-    type: any,
-    arrayOf?: any
-    enumOf?: {[key: string]: string},
+    type: GhotiType,
     
     isID: boolean,
     editable: boolean,
@@ -14,8 +13,6 @@ export interface FieldMeta {
     possibleValues?: {[key: string]: string},
     Component?: ComponentType<FormElementProps>,
     componentProps?: {[key: string]: any},
-
-    taggedUnion?: TaggedUnionMeta,
     
     validators?: {
         [key: string]: [string, (value: any) => boolean]

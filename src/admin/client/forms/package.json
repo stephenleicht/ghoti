@@ -1,6 +1,6 @@
 {
   "name": "@ghoti/forms",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Standalone form library from the main ghoti project",
   "main": "forms.js",
   "scripts": {
