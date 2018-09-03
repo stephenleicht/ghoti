@@ -25,6 +25,10 @@
     grid-template-columns: 15em 1fr;
 }
 
+.appBody {
+    padding: 1em 2em;
+}
+
 .content {
     padding: 0 2rem;
 }

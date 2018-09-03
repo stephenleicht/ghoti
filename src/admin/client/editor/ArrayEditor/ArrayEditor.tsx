@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { GhotiType } from '../../../model';
-import Select from '../components/inputs/Select';
-import { ArrayInput, FormElement, FormElementProps } from '../forms';
-import ModelEditor from './ModelEditor';
-import PrimitiveEditor from './PrimitiveEditor';
-import TaggedUnionEditor from './TaggedUnionEditor';
+import { GhotiType } from '../../../../model';
+import Select from '../../components/inputs/Select';
+import { ArrayInput, FormElement, FormElementProps } from '../../forms';
+import ModelEditor from '.././ModelEditor';
+import PrimitiveEditor from '../PrimitiveEditor';
+import TaggedUnionEditor from '../TaggedUnionEditor';
 
-
+import * as styles from './ArrayEditor.css';
 
 export interface ArrayEditorProps extends FormElementProps {
     arrayOf: GhotiType,
@@ -14,16 +14,16 @@ export interface ArrayEditorProps extends FormElementProps {
 class ArrayEditor extends React.Component<ArrayEditorProps, object>{
     createNewInstance(type: GhotiType): any {
         let newInstance;
-        if(type._ghotiType === 'arrayOf') {
+        if (type._ghotiType === 'arrayOf') {
             newInstance = [this.createNewInstance(type.arrayOf)];
         }
-        else if(type._ghotiType === 'taggedUnion') {
+        else if (type._ghotiType === 'taggedUnion') {
             newInstance = {};
         }
-        else if(type._ghotiType === 'enumOf') {
+        else if (type._ghotiType === 'enumOf') {
             newInstance = Object.keys(type.enumOf)[0];
         }
-        else if(type._ghotiType === 'ref'){
+        else if (type._ghotiType === 'ref') {
             newInstance = new type.model();
         }
         else {
@@ -46,10 +46,10 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
         const { arrayOf, ...otherProps } = this.props;
 
         return (
-            <div>
+            <div className={styles.wrapper}>
                 <button type="button" onClick={this.handleAdd}>Add</button>
                 <ArrayInput name="list" {...otherProps}>
-                    {({ removeSelf, key, ...arrayProps }) => {
+                    {({ removeSelf, key, idx, ...arrayProps }) => {
                         let component;
 
                         if (arrayOf._ghotiType === 'taggedUnion') {
@@ -65,7 +65,7 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
 
                             component = <Select name={name} options={selectOptions} {...arrayProps} />
                         }
-                        else if(arrayOf._ghotiType === 'primitive') {
+                        else if (arrayOf._ghotiType === 'primitive') {
                             component = <PrimitiveEditor type={arrayOf.type} name={name} {...arrayProps} />;
                         }
                         else {
@@ -74,11 +74,13 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
 
 
                         return (
-                            <div key={key}>
-                                <div>
+                            <div key={key} className={styles.itemWrapper}>
+                                <div className={styles.componentWrapper}>
                                     {component}
                                 </div>
-                                <button type="button" onClick={removeSelf}>Remove</button>
+                                <div>
+                                    <button type="button" onClick={removeSelf}>Remove</button>
+                                </div>
                             </div>
                         )
                     }}

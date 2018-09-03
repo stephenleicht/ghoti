@@ -1,0 +1,11 @@
+.wrapper {
+    background-color: #eee;
+}
+
+.itemWrapper {
+    display: flex;
+}
+
+.componentWrapper {
+    margin-right: 1em;
+}

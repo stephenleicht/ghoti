@@ -3,6 +3,7 @@ import * as React from 'react';
 import FormElement, { FormElementProps } from './FormElement';
 
 export interface ArrayInputRenderProps {
+    idx: number,
     name: string,
     key: string,
     value: any,
@@ -47,6 +48,7 @@ class ArrayInput extends React.Component<ArrayInputProps, {}> {
                 {value.map((el, idx) => {
                     const childName = `${name}-${idx}`
                     return children({
+                        idx: idx,
                         name: childName,
                         key: childName,
                         value: el,

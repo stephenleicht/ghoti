@@ -34,9 +34,7 @@ class Group extends React.Component<FormElementProps, {}> {
     render() {
         return (
             <ValueInterceptorContext.Provider value={this.valueChildContext}>
-                <div>
-                    {this.props.children}
-                </div>
+                {this.props.children}
             </ValueInterceptorContext.Provider>
         );
     }

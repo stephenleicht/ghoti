@@ -1,0 +1,13 @@
+.wrapper {
+    margin-bottom: 0.5em;
+    padding-left: 1em;
+    border-left: grey 1px solid;
+}
+
+.fieldWrapper {
+    margin-bottom: 0.8em;
+}
+
+.label {
+    display: block;
+}
