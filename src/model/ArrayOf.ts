@@ -1,7 +1,7 @@
 import { GhotiType } from './GhotiType';
 import { ModelType } from './modelDecorator';
 import { createReferenceMeta } from './Reference';
-import { array } from 'prop-types';
+import { createPrimitiveMeta } from './Primitive';
 
 export type ArrayOfMeta = {
     _ghotiType: 'arrayOf',
@@ -12,10 +12,13 @@ export function createArrayOfMeta(arrayOf: GhotiType | ModelType<any>): ArrayOfM
     let ghotiType: GhotiType;
 
     if(arrayOf.hasOwnProperty('_ghotiType')) {
-        ghotiType = arrayOf as GhotiType;
+        ghotiType = arrayOf;
+    }
+    else if(arrayOf.modelMeta) {
+        ghotiType = createReferenceMeta(arrayOf)
     }
     else {
-        ghotiType = createReferenceMeta(arrayOf as ModelType<any>)
+        ghotiType = createPrimitiveMeta(arrayOf);
     }
 
     return {
