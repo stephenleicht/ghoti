@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as passport from 'passport';
 import * as session from 'express-session';
 import { Strategy as LocalStrategy } from 'passport-local';
+import * as cors from 'cors';
 
 import { GhotiOptions } from '../GhotiOptions';
 import { createLogger } from '../logging';
@@ -74,7 +75,10 @@ export default function configureAPI(config: GhotiOptions): Router {
         saveUninitialized: false,
     }));
     router.use(passport.initialize());
-    router.use(passport.session());    
+    router.use(passport.session());  
+    
+    //TODO: make this configurable, or just export middleware instead of running the server.
+    router.use(cors()); 
 
 
     configureAuthentication()
