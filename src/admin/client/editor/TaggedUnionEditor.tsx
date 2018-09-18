@@ -20,8 +20,8 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
             return;
         }
 
-        const prevTagValue = prevProps.value[prevProps.unionMeta.tagField];
-        const currTagValue = this.props.value[this.props.unionMeta.tagField];
+        const prevTagValue = prevProps.value && prevProps.value[prevProps.unionMeta.tagField];
+        const currTagValue = this.props.value && this.props.value[this.props.unionMeta.tagField];
 
         if (prevTagValue === currTagValue) {
             return;
@@ -44,7 +44,7 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
     }
 
     getModelMeta(props: TaggedUnionEditorProps = this.props): ModelMeta {
-        const tagFieldValue = props.value[props.unionMeta.tagField];
+        const tagFieldValue = props.value && props.value[props.unionMeta.tagField];
 
         const unionMeta = props.unionMeta;
         const model = unionMeta.tagMap[tagFieldValue];

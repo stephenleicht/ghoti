@@ -30,7 +30,7 @@ export default FormElement({
                 return true;
             }
 
-            return !!props.value;
+            return props.value !== null && props.value !== undefined && props.value.trim() !== '';
         }
     }
 })(TextInput);

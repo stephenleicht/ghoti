@@ -20,14 +20,14 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
         super(props);
 
         this.state = {
-            formState: createFormState({model: {}}),
+            formState: createFormState({ model: {} }),
         };
     }
 
     onSubmit = async (value: FormState['value']) => {
         const modelMeta = this.props.model.modelMeta;
 
-        await createModel(modelMeta, value.value);
+        await createModel(modelMeta, value.model);
 
         this.props.history.push(`/models/${modelMeta.namePlural}`)
     }
@@ -35,6 +35,13 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
     render() {
         const { formState } = this.state;
         const { model } = this.props;
+
+        let errors = null
+        if (!formState.isValid) {
+            errors = Object.entries(formState.fields)
+                .filter(([, value]) => !value.isValid)
+        }
+
         return (
             <div>
                 <h1>Add {model.modelMeta.name}</h1>
@@ -49,7 +56,18 @@ class CreateModelPage extends React.Component<CreateModelPageProps, CreateModelS
                     />
                     <button type="submit">Submit</button>
                 </Form>
-
+                {errors && (
+                    <>
+                        <div>
+                            Errors:
+                        </div>
+                        {errors.map(([key]) => (
+                            <div key={key}>
+                                {key}
+                            </div>
+                        ))}
+                    </>
+                )}
             </div>
         )
     }

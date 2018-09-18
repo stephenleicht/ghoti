@@ -26,7 +26,7 @@ export interface FormElementOptions {
 export default function FormElement(options: FormElementOptions = {}) {
 
     return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentType<T>): React.ComponentType<T> {
-        class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue}, {}> {
+        class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue }, {}> {
             static defaultProps: Partial<FormElementProps> = {
                 required: false,
                 validators: {}
@@ -34,7 +34,7 @@ export default function FormElement(options: FormElementOptions = {}) {
 
             path: string
 
-            constructor(props: T & ValueInterceptor & { formContext: FormContextValue}) {
+            constructor(props: T & ValueInterceptor & { formContext: FormContextValue }) {
                 super(props);
 
                 const { parentPath } = props.formContext;
@@ -122,15 +122,15 @@ export default function FormElement(options: FormElementOptions = {}) {
             <FormContext.Consumer>
                 {(formContextValue: FormContextValue) => (
                     <ValueInterceptorContext.Consumer>
-                    {({ onChangeInterceptor, getValue }: ValueInterceptor) => (
-                        <WrappedComponent
-                            formContext={formContextValue}
-                            getValue={getValue}
-                            onChange={(newValue: any) => onChangeInterceptor(props.name, newValue)}
-                            {...props as any}
-                        />
-                    )}
-                </ValueInterceptorContext.Consumer>
+                        {({ onChangeInterceptor, getValue }: ValueInterceptor) => (
+                            <WrappedComponent
+                                formContext={formContextValue}
+                                getValue={getValue}
+                                onChange={(newValue: any) => onChangeInterceptor(props.name, newValue)}
+                                {...props as any}
+                            />
+                        )}
+                    </ValueInterceptorContext.Consumer>
                 )}
             </FormContext.Consumer>
         )
