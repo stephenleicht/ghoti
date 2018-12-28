@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, {FormElementProps} from '../../forms/FormElement';
+import formElement, {FormElementProps} from '../../forms/FormElement';
 
 export interface CheckboxProps extends FormElementProps{
 
@@ -18,4 +18,4 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
     }
 }
 
-export default FormElement()(Checkbox);
+export default formElement()(Checkbox);

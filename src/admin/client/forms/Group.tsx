@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps } from './FormElement';
+import formElement, { FormElementProps } from './FormElement';
 
 import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';
 
@@ -40,6 +40,6 @@ class Group extends React.Component<FormElementProps, {}> {
     }
 }
 
-export default FormElement({
+export default formElement({
     defaultValue: () => ({})
 })(Group);

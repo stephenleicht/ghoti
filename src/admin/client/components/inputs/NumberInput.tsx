@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps } from '../../forms/FormElement';
+import formElement, { FormElementProps } from '../../forms/FormElement';
 import { SyntheticEvent } from 'react';
 
 export interface NumberInputProps extends FormElementProps {
@@ -39,7 +39,7 @@ class NumberInput extends React.Component<NumberInputProps, {}> {
     }
 }
 
-export default FormElement({
+export default formElement({
     validators: {
         required: (props: NumberInputProps) => {
             if(!props.required) {

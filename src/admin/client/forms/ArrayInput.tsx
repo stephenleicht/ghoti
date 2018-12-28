@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps } from './FormElement';
+import formElement, { FormElementProps } from './FormElement';
 
 export interface ArrayInputRenderProps {
     idx: number,
@@ -61,4 +61,4 @@ class ArrayInput extends React.Component<ArrayInputProps, {}> {
     }
 }
 
-export default FormElement()(ArrayInput);
+export default formElement()(ArrayInput);

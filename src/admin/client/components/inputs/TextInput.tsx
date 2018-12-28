@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, { FormElementProps } from '../../forms/FormElement';
+import formElement, { FormElementProps } from '../../forms/FormElement';
 
 export interface TextInputProps extends FormElementProps {
     minLength?: number,
@@ -23,7 +23,7 @@ class TextInput extends React.Component<TextInputProps, {}> {
     }
 }
 
-export default FormElement({
+export default formElement({
     validators: {
         required: (props: TextInputProps) => {
             if(!props.required) {

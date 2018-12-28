@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormElement, { FormElementProps } from '../forms/FormElement';
+import formElement, { FormElementProps } from '../forms/FormElement';
 
 import TextInput from './inputs/TextInput';
 
@@ -42,4 +42,4 @@ class CompositeInput extends React.Component<CompositeInputProps, {}> {
     }
 } 
 
-export default FormElement()(CompositeInput)
+export default formElement()(CompositeInput)

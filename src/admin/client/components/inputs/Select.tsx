@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import FormElement, {FormElementProps} from '../../forms/FormElement';
+import formElement, {FormElementProps} from '../../forms/FormElement';
 
 export interface SelectProps extends FormElementProps{
     options: Array<{key?: string, displayValue: string}>
@@ -50,4 +50,4 @@ class Select extends React.Component<SelectProps, {}> {
     }
 }
 
-export default FormElement()(Select);
+export default formElement()(Select);
