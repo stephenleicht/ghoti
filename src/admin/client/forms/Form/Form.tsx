@@ -5,6 +5,7 @@ import { FormContext, FormContextValue } from './FormContext';
 import { FormState } from './FormState';
 import { FormFieldMeta } from './FormFieldMeta';
 import { ValidateCallback } from './ValidateCallback';
+import { FormErrorMap } from './FormErrorMap';
 
 
 export interface FormProps {
@@ -29,6 +30,7 @@ export default class Form extends React.Component<FormProps, {}> {
             register: this.registerChild,
             deregister: this.deregisterChild,
             addToChangeQueue: this.addToChangeQueue,
+            getErrors: this.getErrorsForField,
             parentPath: ''
         }
 
@@ -252,6 +254,10 @@ export default class Form extends React.Component<FormProps, {}> {
 
     addToChangeQueue = (fieldName: string) => {
         this.changeQueue.push(fieldName);
+    }
+
+    getErrorsForField = (fieldName: string): FormErrorMap | undefined => {
+        return this.props.formState.fields[fieldName] && this.props.formState.fields[fieldName].errors;
     }
 
     onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {

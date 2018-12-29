@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { FormContext, FormContextValue } from './Form/FormContext';
 import { ValidateCallback } from './Form/ValidateCallback';
+import { FormErrorMap } from './Form/FormErrorMap';
 import { ValueInterceptor, ValueInterceptorContext } from './ValueInterceptor';
 
 
@@ -12,6 +13,7 @@ export interface ValidatorMap {
 export interface FormElementProps<T = any> {
     name: string,
     value?: T,
+    errors?: FormErrorMap
     required?: boolean,
     onChange?: (newValue: T) => void,
     validators?: ValidatorMap,
@@ -45,8 +47,8 @@ export default function formElement(options: FormElementOptions = {}) {
                 this.props.formContext && this.props.formContext.register(this.path, this.validate)
             }
 
-            deregister = (path?: string) => {
-                this.props.formContext && this.props.formContext.deregister(path ? `${this.path}.${path}` : this.path);
+            deregister = (childPath?: string) => {
+                this.props.formContext && this.props.formContext.deregister(childPath ? `${this.path}.${childPath}` : this.path);
             }
 
             getMergedProps = () => {
@@ -98,9 +100,13 @@ export default function formElement(options: FormElementOptions = {}) {
             }
 
             render() {
-                const { name, value, onChange, parentPath, ...other } = (this.props as any); // FIXME: this is bad and I should feel bad
+                const { name, value, onChange, ...other } = (this.props as any); // FIXME: this is bad and I should feel bad
 
                 const actualValue = this.getValue(name);
+                let errors;
+                if (this.props.formContext) {
+                    errors = this.props.formContext.getErrors(this.path);
+                }
 
                 const context: FormContextValue = {
                     ...this.props.formContext as FormContextValue,
@@ -113,6 +119,7 @@ export default function formElement(options: FormElementOptions = {}) {
                             name={name}
                             value={actualValue}
                             onChange={this.onChange}
+                            errors={errors}
                             deregister={this.deregister}
                             {...other}
                         />
