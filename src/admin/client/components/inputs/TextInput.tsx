@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import formElement, { FormElementProps } from '../../forms/FormElement';
-import { lineBreak } from 'acorn';
 import ErrorMessages from '../../forms/errors/ErrorMessages';
 import Message from '../../forms/errors/Message';
 
