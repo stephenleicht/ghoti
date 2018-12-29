@@ -98,7 +98,7 @@ export default function formElement(options: FormElementOptions = {}) {
             }
 
             render() {
-                const { name, value, onChange, parentPath, ...other } = (this.props);
+                const { name, value, onChange, parentPath, ...other } = (this.props as any); // FIXME: this is bad and I should feel bad
 
                 const actualValue = this.getValue(name);
 

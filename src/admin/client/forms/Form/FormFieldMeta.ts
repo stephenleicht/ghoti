@@ -7,5 +7,6 @@ export interface FormFieldMeta {
     errors?: {
         [validatorKey: string]: boolean
     }
-    validate: ValidateCallback
+    validate: ValidateCallback,
+    children: Set<FormFieldMeta>
 }
