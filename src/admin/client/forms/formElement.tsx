@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormContext, FormContextValue } from './Form/FormContext';
 import { ValidateCallback } from './Form/ValidateCallback';
-import { FormErrorMap } from './Form/FormErrorMap';
+import { FormErrorMap } from './errors/FormErrorMap';
 import { ValueInterceptor, ValueInterceptorContext } from './ValueInterceptor';
 
 

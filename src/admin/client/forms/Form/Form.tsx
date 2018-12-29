@@ -5,7 +5,7 @@ import { FormContext, FormContextValue } from './FormContext';
 import { FormState } from './FormState';
 import { FormFieldMeta } from './FormFieldMeta';
 import { ValidateCallback } from './ValidateCallback';
-import { FormErrorMap } from './FormErrorMap';
+import { FormErrorMap } from '../errors/FormErrorMap';
 
 
 export interface FormProps {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { ValidateCallback } from './ValidateCallback';
-import { FormErrorMap } from './FormErrorMap';
+import { FormErrorMap } from '../errors/FormErrorMap';
 
 export interface FormContextValue {
     register: (path: string, validateCallback: ValidateCallback) => void,
