@@ -27,9 +27,9 @@ export interface FormElementOptions {
 
 export default function formElement(options: FormElementOptions = {}) {
 
-    return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentType<T>): React.ComponentType<T> {
+    return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentType<T> | React.SFC<T>): React.ComponentType<T> {
         class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue }, {}> {
-            static defaultProps: Partial<FormElementProps> = {
+            static defaultProps: FormElementProps = {
                 required: false,
                 validators: {}
             }
