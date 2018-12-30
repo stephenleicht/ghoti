@@ -1,6 +1,8 @@
+// TextInput.tsx
+
 import * as React from 'react';
 
-import formElement, { FormElementProps } from '@ghoti/forms;
+import { formElement, FormElementProps } from '@ghoti/forms;
 
 const noOp = () => {};
 

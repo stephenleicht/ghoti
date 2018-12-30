@@ -1,5 +1,5 @@
 # Ghoti Forms
-This is a (relatively) unopinionated library for common form functionality like validation and metadata tracking like dirty checking. It does not provide any form elements itself, just the building blocks to wrap your favorite ones in it's functionality.
+This is a (relatively) unopinionated library for common form functionality like validation and metadata tracking like dirty checking. It does not provide any form elements itself, just the building blocks to wrap your favorite ones in it's functionality with minimal boilerplate.
 
 The main Ghoti project uses this library, but it can be used independently by installing `@ghoti/forms` from npm or yarn. Check out that side of the repository for some more complex examples.
 ### Current Functionality
@@ -50,11 +50,14 @@ At a minimum your component shold take 2 props. `value` and `onChange`
 
 
 ```typescript
+// TextInput.tsx
+
 import * as React from 'react';
-import formElement, { FormElementProps } from '@ghoti/forms';
+import { formElement, FormElementProps } from '@ghoti/forms';
 
 const noOp = () => {};
 
+// Give on change and value default values just in case
 function TextInput ({ onChange = noOp, value = '' }: FormElementProps) {
     return (
         <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
@@ -64,13 +67,89 @@ function TextInput ({ onChange = noOp, value = '' }: FormElementProps) {
 export default formElement()(TextInput);
 ```
 
-### Creating a form
-TODO: A full form example expanding on the hello world
+See [here](../components/inputs/TextInput.tsx) for a full example.
 
-### Prepopulating formState
-TODO: create a form state with a prepopulated value.
+### Form Example
+```typescript
+//CreateUserPage.tsx
+import * as React from 'react';
+import { FormState, createFormState, Form, Group } from '@ghoti/forms';
+import TextInput from './TextInput'
+
+
+interface CreateUserPageState {
+    formState: FormState,
+}
+
+class CreateUserPage extends React.Component<{}, CreateUserPageState> {
+    constructor(props: object) {
+        super(props);
+
+        this.state = {
+            formState: createFormState(),
+        };
+    }
+
+    onSubmit = (newValue: any) => {
+        // create the user
+    }
+
+    onFormChange = (newState: FormState) => {
+        this.setState({ formState: newState });
+    }
+
+    render() {
+        return (
+            <div>
+                <h1>Create User</h1>
+                <Form
+                    onSubmit={this.onSubmit}
+                    formState={this.state.formState}
+                    onChange={this.onFormChange}
+                >
+                    <div>
+                        <label htmlFor="firstName">First Name</label>
+                        <TextInput name="firstName" required />
+                    </div>
+                    <div>
+                        <label htmlFor="lastName">Last Name</label>
+                        <TextInput name="lastName" required />
+                    </div>
+                    <div>
+                        <h3>Address</h3>
+                        <Group name="address">
+                            <div>
+                                <label htmlFor="address1">Address 1</label>
+                                <TextInput name="address1" required />
+                            </div>
+                            <div>
+                                <label htmlFor="address2">Address 2</label>
+                                <TextInput name="address2" />
+                            </div>
+                            <div>
+                                <label htmlFor="city">City</label>
+                                <TextInput name="city" />
+                                <label htmlFor="state">State</label>
+                                <TextInput name="state" />
+                                <label htmlFor="zip">Zip</label>
+                                <TextInput name="zip" />
+                            </div>
+                        </Group>
+                    </div>
+                    <button type="submit">Create User</button>
+                </Form>
+            </div>
+        )
+    }
+}
+```
 
 ### Validation
 TODO: Creating a validation function and handling errors.
 * Max length example
 * Displaying error messages
+
+## Design Principles
+* Be opinionated on how forms should work
+* Be unopinionated on things like markup, you do you.
+* Minimal boilerplate
