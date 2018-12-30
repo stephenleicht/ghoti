@@ -7,5 +7,5 @@ export interface FormFieldMeta {
     pendingValidation: boolean,
     errors?: FormErrorMap,
     validate: ValidateCallback,
-    children: Set<FormFieldMeta>
+    children: Set<string>
 }

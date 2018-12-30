@@ -3,7 +3,6 @@ import * as React from 'react';
 import { ValueInterceptor, ValueInterceptorContext } from '../ValueInterceptor';
 import { FormContext, FormContextValue } from './FormContext';
 import { FormState } from './FormState';
-import { FormFieldMeta } from './FormFieldMeta';
 import { ValidateCallback } from './ValidateCallback';
 import { FormErrorMap } from '../errors/FormErrorMap';
 
@@ -52,10 +51,7 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     componentDidMount() {
-        const { formState } = this.props;
-
         const newFormState = this.processRegistrations();
-
         this.props.onChange(newFormState);
     }
 
@@ -83,11 +79,11 @@ export default class Form extends React.Component<FormProps, {}> {
         }
     }
 
-    processRegistrations() {
+    processRegistrations(): FormState {
         const { formState } = this.props;
 
-        const currentFields = formState.fields;
-        let newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
+        let newFieldMeta = { ...formState.fields };
+        newFieldMeta = this.pendingRegistrations.reduce((agg, registration) => {
             const pathKey = registration.path;
             let currentFieldMeta = agg[pathKey];
             if (!currentFieldMeta) {
@@ -101,13 +97,16 @@ export default class Form extends React.Component<FormProps, {}> {
                 }
             }
             else {
-                currentFieldMeta.validate = registration.validateCallback;
+                currentFieldMeta = {
+                    ...currentFieldMeta,
+                    validate: registration.validateCallback
+                };
             }
 
             agg[pathKey] = currentFieldMeta;
             return agg;
 
-        }, currentFields);
+        }, newFieldMeta);
 
         newFieldMeta = this.pendingDeregistrations.reduce((agg, pathToDeregister) => {
             const fields = Object.keys(agg).filter(fieldKey => fieldKey.startsWith(pathToDeregister));
@@ -117,16 +116,22 @@ export default class Form extends React.Component<FormProps, {}> {
         this.pendingRegistrations = [];
         this.pendingDeregistrations = [];
 
-        // Completely rebuild children after processing registrations
-        // It's much easier this way than trying to use a weak set to not have to worry about a memory leak
-        // Where you still have a reference to the old object 
-        Object.values(newFieldMeta)
-            .forEach((fieldMeta) => {
-                fieldMeta.children.clear();
-            })
+        this.processChildren(newFieldMeta);
 
-        Object.entries(newFieldMeta)
-            .forEach(([fieldName, fieldMeta]) => {
+        return {
+            ...formState,
+            pendingValidation: true,
+            fields: newFieldMeta,
+        };
+    }
+
+    processChildren(fieldMeta: FormState['fields']) {
+        // Completely rebuild children each time
+        // It's much easier this way than trying to remove individually
+        Object.values(fieldMeta).forEach(f => f.children.clear());
+
+        Object.keys(fieldMeta)
+            .forEach((fieldName) => {
                 const splitPath = fieldName.split('.');
                 if (splitPath.length == 1) {
                     // root level, no parent
@@ -135,14 +140,8 @@ export default class Form extends React.Component<FormProps, {}> {
 
                 splitPath.pop();
                 const parentPath = splitPath.join('.');
-                newFieldMeta[parentPath].children.add(fieldMeta);
+                fieldMeta[parentPath].children.add(fieldName);
             })
-
-        return {
-            ...formState,
-            pendingValidation: true,
-            fields: newFieldMeta,
-        };
     }
 
     onChildChange = (childName: string, newValue: any) => {
@@ -182,22 +181,17 @@ export default class Form extends React.Component<FormProps, {}> {
     }
 
     validateByField(fields: string[], formState: FormState) {
-
-        const rawValidationResults = fields
-            .reduce((agg, fieldName) => {
-                const result = formState.fields[fieldName].validate();
-                const depth = fieldName.split('.').length - 1;
-                if(!agg[depth]){
-                    agg[depth] = {} as { [key: string]: { [validatorKey: string]: boolean } }
-                }
-                agg[depth][fieldName] = result;
-                return agg;
-            }, [] as Array<{ [fieldName: string]: { [validatorKey: string]: boolean } }>)
-
-            
+        const rawValidationResults = fields.reduce((agg, fieldName) => {
+            const result = formState.fields[fieldName].validate();
+            const depth = fieldName.split('.').length - 1;
+            if (!agg[depth]) {
+                agg[depth] = {} as { [key: string]: { [validatorKey: string]: boolean } }
+            }
+            agg[depth][fieldName] = result;
+            return agg;
+        }, [] as Array<{ [fieldName: string]: { [validatorKey: string]: boolean } }>)
 
         const newFieldState = this.processValidationResults(formState.fields, rawValidationResults);
-
         const formIsValid = Object.values(newFieldState).every((field) => field.isValid);
 
         return {
@@ -214,8 +208,8 @@ export default class Form extends React.Component<FormProps, {}> {
     ): FormState['fields'] {
         let newFieldState = { ...currentFieldState };
 
-        // Process deepest first so that by the time it comes to check if all children are valid
-        // then all children are already done validating if necessary
+        // Process deepest nested elements first so that by the time it comes to check if all children are valid
+        // then all children of the current element are already done validating.
         for (let i = rawValidationResults.length - 1; i >= 0; i--) {
             const resultsForDepth = rawValidationResults[i];
 
@@ -234,19 +228,19 @@ export default class Form extends React.Component<FormProps, {}> {
                         });
 
                     const fieldMeta = agg[fieldName];
-                    fieldMeta.errors = allValid ? undefined : errors
-
-                    if(fieldMeta.children.size > 0) {
-                        allValid = allValid && Array.from(fieldMeta.children.values()).every(c => c.isValid)
+                    if (fieldMeta.children.size > 0) {
+                        allValid = allValid && Array.from(fieldMeta.children.values()).every(c => agg[c].isValid)
                     }
 
-                    fieldMeta.pendingValidation = false;
-                    fieldMeta.isValid = allValid;
-                    
+                    agg[fieldName] = {
+                        ...fieldMeta,
+                        errors: allValid ? undefined : errors,
+                        isValid: allValid,
+                        pendingValidation: false
+                    }
 
                     return agg;
                 }, newFieldState);
-
         }
 
         return newFieldState
