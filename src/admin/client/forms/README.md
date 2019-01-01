@@ -58,14 +58,15 @@ import { formElement, FormElementProps } from '@ghoti/forms';
 const noOp = () => {};
 
 // Give on change and value default values just in case
-function TextInput ({ onChange = noOp, value = '' }: FormElementProps) {
+function TextInput ({ onChange = noOp, value = '' }: FormElementProps<string>) {
     return (
         <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
     )
 }
 
-export default formElement()(TextInput);
+export default formElement<FormElementProps<string>, string>()(TextInput);
 ```
+If you're using typescript, formElement requires 2 generic types, the propType and the value type. If anyone knows a better way to infer this information I am open to pull requests.
 
 See [here](../components/inputs/TextInput.tsx) for a full example.
 
