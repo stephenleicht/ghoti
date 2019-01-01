@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { GhotiType } from '../../../../model';
 import Select from '../../components/inputs/Select';
-import { ArrayInput, FormElement, FormElementProps } from '../../forms';
+import { ArrayInput, formElement, FormElementProps } from '../../forms';
 import ModelEditor from '.././ModelEditor';
 import PrimitiveEditor from '../PrimitiveEditor';
 import TaggedUnionEditor from '../TaggedUnionEditor';
 
 import * as styles from './ArrayEditor.css';
 
-export interface ArrayEditorProps extends FormElementProps {
+export interface ArrayEditorProps extends FormElementProps<Array<any>> {
     arrayOf: GhotiType,
 }
 class ArrayEditor extends React.Component<ArrayEditorProps, object>{
@@ -90,4 +90,4 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
     }
 }
 
-export default FormElement()(ArrayEditor);
+export default formElement<ArrayEditorProps, Array<unknown>>()(ArrayEditor);

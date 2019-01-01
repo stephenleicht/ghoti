@@ -3,8 +3,7 @@ import * as React from 'react';
 import formElement, { FormElementProps } from '../../forms/FormElement';
 import { SyntheticEvent } from 'react';
 
-export interface NumberInputProps extends FormElementProps {
-    onChange: (value: number | string) => void,
+export interface NumberInputProps extends FormElementProps<number | string> {
 }
 
 class NumberInput extends React.Component<NumberInputProps, {}> {
@@ -13,7 +12,7 @@ class NumberInput extends React.Component<NumberInputProps, {}> {
 
         const parsed = Number.parseInt(value);
 
-        let retVal;
+        let retVal: string | number;
         if(parsed === undefined) {
             retVal = value;
         }
@@ -21,7 +20,7 @@ class NumberInput extends React.Component<NumberInputProps, {}> {
             retVal = parsed;
         }
 
-        this.props.onChange(retVal);
+        this.props.onChange && this.props.onChange(retVal);
     }
     
     render() {
@@ -39,7 +38,7 @@ class NumberInput extends React.Component<NumberInputProps, {}> {
     }
 }
 
-export default formElement({
+export default formElement<NumberInputProps, number | string>({
     validators: {
         required: (props: NumberInputProps) => {
             if(!props.required) {
@@ -53,7 +52,7 @@ export default formElement({
                 return false;
             }
 
-            return !!Number.parseInt(props.value);
+            return !!Number.parseInt(props.value.toString());
         }
     }
 })(NumberInput);

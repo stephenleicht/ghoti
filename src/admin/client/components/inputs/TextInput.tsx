@@ -4,7 +4,7 @@ import formElement, { FormElementProps } from '../../forms/FormElement';
 import ErrorMessages from '../../forms/errors/ErrorMessages';
 import Message from '../../forms/errors/Message';
 
-export interface TextInputProps extends FormElementProps {
+export interface TextInputProps extends FormElementProps<string> {
     minLength?: number,
 }
 
@@ -13,8 +13,8 @@ class TextInput extends React.Component<TextInputProps, {}> {
         const {
             onChange = () => { },
             value = '',
-            errors,
-            minLength
+            minLength,
+            formElement
         } = this.props;
 
 
@@ -25,18 +25,20 @@ class TextInput extends React.Component<TextInputProps, {}> {
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                 />
-                <ErrorMessages errors={errors}>
-                    <ul>
-                        <Message errorKey="required"><li>This value is required.</li></Message>
-                        <Message errorKey="minLength"><li>This value must be at least {minLength} characters long.</li></Message>
-                    </ul>
-                </ErrorMessages>
+                {formElement && (
+                    <ErrorMessages errors={formElement.errors}>
+                        <ul>
+                            <Message errorKey="required"><li>This value is required.</li></Message>
+                            <Message errorKey="minLength"><li>This value must be at least {minLength} characters long.</li></Message>
+                        </ul>
+                    </ErrorMessages>
+                )}
             </>
         )
     }
 }
 
-export default formElement({
+export default formElement<TextInputProps, string>({
     validators: {
         required: (props: TextInputProps) => {
             if (!props.required) {

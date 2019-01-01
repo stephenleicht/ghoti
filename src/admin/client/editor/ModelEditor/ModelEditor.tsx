@@ -2,7 +2,7 @@ import * as React from 'react';
 import modelContstants from '../../../../model/constants';
 import { ModelMeta } from '../../../../model';
 
-import { FormElement, FormElementProps } from '../../forms';
+import { formElement, FormElementProps } from '../../forms';
 
 import Group from '../../forms/Group';
 
@@ -12,7 +12,11 @@ import * as styles from './ModelEditor.css'
 
 type Predicate = (value: any) => boolean
 
-export interface ModelEditorProps extends FormElementProps {
+export interface ModelEdtitorValue {
+    [fieldName: string]: any
+}
+
+export interface ModelEditorProps extends FormElementProps<ModelEdtitorValue> {
     modelMeta: ModelMeta,
 }
 
@@ -56,4 +60,4 @@ class ModelEditor extends React.Component<ModelEditorProps, {}> {
     }
 }
 
-export default FormElement()(ModelEditor);
+export default formElement<ModelEditorProps, ModelEdtitorValue>()(ModelEditor);

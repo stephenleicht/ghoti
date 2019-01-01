@@ -9,7 +9,7 @@ type CompositeValue = {
     valueTwo: string,
 }
 
-export interface CompositeInputProps extends FormElementProps {
+export interface CompositeInputProps extends FormElementProps<CompositeValue> {
     test?: string
 }
 
@@ -42,4 +42,4 @@ class CompositeInput extends React.Component<CompositeInputProps, {}> {
     }
 } 
 
-export default formElement()(CompositeInput)
+export default formElement<CompositeInputProps, CompositeValue>()(CompositeInput)

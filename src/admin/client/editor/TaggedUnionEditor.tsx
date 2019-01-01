@@ -4,19 +4,23 @@ import { omit } from 'lodash';
 import { TaggedUnionMeta } from '../../../model/TaggedUnion';
 import { ModelMeta } from '../../../model/ModelMeta';
 
-import { FormElement, FormElementProps } from '../forms';
+import { formElement, FormElementProps } from '../forms';
 import Select, { SelectProps } from '../components/inputs/Select';
 
 import ModelEditor from './ModelEditor';
 
-export interface TaggedUnionEditorProps extends FormElementProps {
+export interface TaggedUnionValue {
+    [field: string]: any
+}
+
+export interface TaggedUnionEditorProps extends FormElementProps<TaggedUnionValue> {
     unionMeta: TaggedUnionMeta
 }
 
 class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> {
 
     componentDidUpdate(prevProps: TaggedUnionEditorProps) {
-        if(!this.props.deregister) { // No need to do any of this if it's not in a form for some reason. #sanitychecks
+        if(!this.props.formElement) { // No need to do any of this if it's not in a form for some reason. #sanitychecks
             return;
         }
 
@@ -39,7 +43,7 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
         const removedFields = prevFields.filter((fieldName) => !currModelMeta.fields.hasOwnProperty(fieldName))
 
         for(const field of removedFields) {
-            this.props.deregister(`map.${field}`);
+            this.props.formElement.deregister(`map.${field}`);
         }
     }
 
@@ -53,7 +57,7 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
         return modelMeta;
     }
 
-    onTagFieldChange = (newTagFieldValue: string) => {
+    onTagFieldChange = (newTagFieldValue: string | undefined) => {
         const { unionMeta, value, onChange } = this.props;
 
         const newValue = {
@@ -109,4 +113,4 @@ class TaggedUnionEditor extends React.Component<TaggedUnionEditorProps, object> 
     }
 }
 
-export default FormElement()(TaggedUnionEditor);
+export default formElement<TaggedUnionEditorProps, TaggedUnionValue>()(TaggedUnionEditor);

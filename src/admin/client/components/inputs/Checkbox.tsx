@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import formElement, {FormElementProps} from '../../forms/FormElement';
 
-export interface CheckboxProps extends FormElementProps{
+export interface CheckboxProps extends FormElementProps<boolean>{
 
 }
 
@@ -18,4 +18,4 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
     }
 }
 
-export default formElement()(Checkbox);
+export default formElement<CheckboxProps, boolean>()(Checkbox);

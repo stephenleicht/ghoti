@@ -12,7 +12,7 @@ import ArrayEditor from './ArrayEditor';
 import TaggedUnionEditor from './TaggedUnionEditor';
 
 
-export interface FieldEditorProps extends FormElementProps {
+export interface FieldEditorProps extends FormElementProps<any> {
     fieldMeta: FieldMeta,
 }
 

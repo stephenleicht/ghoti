@@ -11,7 +11,7 @@ export interface ArrayInputRenderProps {
     removeSelf: () => void,
 }
 
-export interface ArrayInputProps extends FormElementProps<any[]> {
+export interface ArrayInputProps extends FormElementProps<Array<any>> {
     children: (props: ArrayInputRenderProps) => React.ReactNode
 }
 
@@ -27,7 +27,7 @@ class ArrayInput extends React.Component<ArrayInputProps, {}> {
         const newValue = this.props.value ? [...this.props.value] : [];
         newValue.splice(idx, 1);
 
-        this.props.deregister && this.props.deregister(`${this.props.name}-${newValue.length}`);
+        this.props.formElement && this.props.formElement.deregister(`${this.props.name}-${newValue.length}`);
         this.props.onChange && this.props.onChange(newValue);
     }
 
@@ -61,4 +61,4 @@ class ArrayInput extends React.Component<ArrayInputProps, {}> {
     }
 }
 
-export default formElement()(ArrayInput);
+export default formElement<ArrayInputProps, Array<any>>()(ArrayInput);

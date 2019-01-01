@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import formElement, {FormElementProps} from '../../forms/FormElement';
 
-export interface SelectProps extends FormElementProps{
+export interface SelectProps extends FormElementProps<string | undefined> {
     options: Array<{key?: string, displayValue: string}>
 }
 
@@ -50,4 +50,4 @@ class Select extends React.Component<SelectProps, {}> {
     }
 }
 
-export default formElement()(Select);
+export default formElement<SelectProps, string | undefined>()(Select);

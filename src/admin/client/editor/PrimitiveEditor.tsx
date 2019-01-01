@@ -6,7 +6,7 @@ import TextInput from '../components/inputs/TextInput';
 import NumberInput from '../components/inputs/NumberInput';
 import Checkbox from '../components/inputs/Checkbox';
 
-export interface PrimitiveEditorProps extends FormElementProps {
+export interface PrimitiveEditorProps extends FormElementProps<any> {
     type: any,
 }
 

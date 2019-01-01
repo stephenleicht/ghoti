@@ -4,20 +4,22 @@ import { ValidateCallback } from './Form/ValidateCallback';
 import { FormErrorMap } from './errors/FormErrorMap';
 import { ValueInterceptor, ValueInterceptorContext } from './ValueInterceptor';
 
-
-
 export interface ValidatorMap {
     [key: string]: (props: any) => boolean
 }
 
-export interface FormElementProps<T = any> {
+export interface FormElementProps<T = unknown> {
     name: string,
     value?: T,
-    errors?: FormErrorMap
-    required?: boolean,
     onChange?: (newValue: T) => void,
+    required?: boolean,
     validators?: ValidatorMap,
-    deregister?: (path?: string) => void,
+    formElement?: {
+        touched: boolean,
+        
+        errors?: FormErrorMap
+        deregister: (path?: string) => void,
+    }
 }
 
 export interface FormElementOptions {
@@ -25,9 +27,9 @@ export interface FormElementOptions {
     validators?: FormElementProps['validators']
 }
 
-export default function formElement(options: FormElementOptions = {}) {
+export default function formElement<T extends FormElementProps<V>, V>(options: FormElementOptions = {}): (ComponentToWrap: React.ComponentType<T> | React.SFC<T>) => React.SFC<T> {
 
-    return function wrapFormElement<T extends FormElementProps>(ComponentToWrap: React.ComponentType<T> | React.SFC<T>): React.ComponentType<T> {
+    return function wrapFormElement(ComponentToWrap){
         class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue }, {}> {
             static defaultProps: Partial<FormElementProps> = {
                 required: false,
@@ -82,7 +84,7 @@ export default function formElement(options: FormElementOptions = {}) {
                 return validationResults;
             }
 
-            onChange = (newValue: any) => {
+            onChange = (newValue: V) => {
                 this.props.formContext && this.props.formContext.addToChangeQueue(this.path);
 
                 if (this.props.onChange) {
@@ -90,7 +92,7 @@ export default function formElement(options: FormElementOptions = {}) {
                 }
             }
 
-            getValue = (fieldName: string) => {
+            getValue = (fieldName: string): V | undefined => {
                 if (this.props.value) {
                     return this.props.value;
                 }
@@ -100,7 +102,13 @@ export default function formElement(options: FormElementOptions = {}) {
             }
 
             render() {
-                const { name, value, onChange, ...other } = (this.props as any); // FIXME: this is bad and I should feel bad
+                const { 
+                    name, 
+                    value,
+                    onChange, 
+                    formElement, 
+                    ...other
+                } = (this.props as any); // FIXME: this is bad and I should feel bad
 
                 const actualValue = this.getValue(name);
                 let errors;
@@ -119,8 +127,11 @@ export default function formElement(options: FormElementOptions = {}) {
                             name={name}
                             value={actualValue}
                             onChange={this.onChange}
-                            errors={errors}
-                            deregister={this.deregister}
+                            formElement={{
+                                touched: false,
+                                errors,
+                                deregister: this.deregister
+                            }}
                             {...other}
                         />
                     </FormContext.Provider>
@@ -128,7 +139,7 @@ export default function formElement(options: FormElementOptions = {}) {
             }
         }
 
-        return (props: T) => (
+        const retVal: React.SFC<T> =  (props: T) => (
             <FormContext.Consumer>
                 {(formContextValue: FormContextValue) => (
                     <ValueInterceptorContext.Consumer>
@@ -144,5 +155,14 @@ export default function formElement(options: FormElementOptions = {}) {
                 )}
             </FormContext.Consumer>
         )
+        retVal.defaultProps = {
+            formElement: {
+                touched: false,
+                errors: undefined,
+                deregister: (p: string) => {}
+            }
+        } as Partial<T>
+
+        return retVal;
     }
 }
