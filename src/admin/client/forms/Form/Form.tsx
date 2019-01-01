@@ -57,24 +57,23 @@ export default class Form extends React.Component<FormProps, {}> {
 
     componentDidUpdate(prevProps: FormProps) {
         let currentFormState = this.props.formState;
-        let shouldSetFormState = false;
         if (this.pendingRegistrations.length > 0 || this.pendingDeregistrations.length > 0) {
             currentFormState = this.processRegistrations();
-            shouldSetFormState = true;
         }
 
+        // Because of the way I wanted to keep the field state as tracked metadata, but the value to be passed down naturally
+        // to each component means that you can't validate until the form is updated with the new values and at that point
+        // is in an unknown validation state. Waiting for the form to be updated to be able to validate causes any 
+        // validations to issue a second onChange call back after every change. This seems like a code smell and should
+        // be addressed in the future
+        //
+        // TOOD: Possibly throttle/debounce validations to not happen to quickly so as to keep the number of validation
+        // passes down. This will become important with async validators.
         if (!prevProps.formState.pendingValidation && this.props.formState.pendingValidation) {
-            shouldSetFormState = true;
-            const fields = currentFormState.fields;
-
-            const pendingFields = Object.entries(fields)
-                .filter(([, field]) => field.pendingValidation)
-                .map(([key]) => key);
-
-            currentFormState = this.validateByField(pendingFields, currentFormState);
+            currentFormState = this.validatePendingFields(currentFormState);
         }
 
-        if (shouldSetFormState) {
+        if (currentFormState !== this.props.formState) {
             this.props.onChange(currentFormState);
         }
     }
@@ -179,6 +178,20 @@ export default class Form extends React.Component<FormProps, {}> {
         const newFormState = this.validateByField(Object.keys(this.props.formState.fields), this.props.formState);
         this.props.onChange(newFormState);
     }
+
+    validatePendingFields = (formState: FormState) => {
+        const fields = formState.fields;
+
+        // Filter down to only fields that need validation, get the field key
+        const pendingFields = Object.entries(fields)
+            .filter(([, field]) => field.pendingValidation)
+            .map(([key]) => key);
+
+        formState = this.validateByField(pendingFields, formState);
+
+        return formState;
+    };
+
 
     validateByField(fields: string[], formState: FormState) {
         const rawValidationResults = fields.reduce((agg, fieldName) => {
