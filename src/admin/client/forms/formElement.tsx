@@ -15,10 +15,12 @@ export interface FormElementProps<T = unknown> {
     required?: boolean,
     validators?: ValidatorMap,
     formElement?: {
-        touched: boolean,
+        isTouched: boolean,
         
         errors?: FormErrorMap
         deregister: (path?: string) => void,
+        setTouched: (isTouched: boolean) => void,
+        formHasSubmitted: boolean,
     }
 }
 
@@ -51,6 +53,10 @@ export default function formElement<T extends FormElementProps<V>, V>(options: F
 
             deregister = (childPath?: string) => {
                 this.props.formContext && this.props.formContext.deregister(childPath ? `${this.path}.${childPath}` : this.path);
+            }
+
+            setTouched = (isTouched: boolean) => {
+                this.props.formContext && this.props.formContext.setTouched(this.path, isTouched);
             }
 
             getMergedProps = () => {
@@ -112,8 +118,12 @@ export default function formElement<T extends FormElementProps<V>, V>(options: F
 
                 const actualValue = this.getValue(name);
                 let errors;
+                let fieldIsTouched = false;
+                let formHasSubmitted = false;
                 if (this.props.formContext) {
                     errors = this.props.formContext.getErrors(this.path);
+                    fieldIsTouched = this.props.formContext.getIsTouched(this.path);
+                    formHasSubmitted = this.props.formContext.getHasSubmitted();
                 }
 
                 const context: FormContextValue = {
@@ -128,9 +138,11 @@ export default function formElement<T extends FormElementProps<V>, V>(options: F
                             value={actualValue}
                             onChange={this.onChange}
                             formElement={{
-                                touched: false,
+                                isTouched: fieldIsTouched,
+                                deregister: this.deregister,
+                                setTouched: this.setTouched,
+                                formHasSubmitted,
                                 errors,
-                                deregister: this.deregister
                             }}
                             {...other}
                         />
@@ -157,7 +169,7 @@ export default function formElement<T extends FormElementProps<V>, V>(options: F
         )
         retVal.defaultProps = {
             formElement: {
-                touched: false,
+                isTouched: false,
                 errors: undefined,
                 deregister: (p: string) => {}
             }

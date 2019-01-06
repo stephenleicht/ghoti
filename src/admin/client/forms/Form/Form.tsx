@@ -1,10 +1,10 @@
-import { omit } from 'lodash';
 import * as React from 'react';
 import { ValueInterceptor, ValueInterceptorContext } from '../ValueInterceptor';
 import { FormContext, FormContextValue } from './FormContext';
 import { FormState } from './FormState';
 import { ValidateCallback } from './ValidateCallback';
 import { FormErrorMap } from '../errors/FormErrorMap';
+import { omit } from '../utils';
 
 
 export interface FormProps {
@@ -28,8 +28,11 @@ export default class Form extends React.Component<FormProps, {}> {
         this.formChildContext = {
             register: this.registerChild,
             deregister: this.deregisterChild,
+            setTouched: this.setTouched,
             addToChangeQueue: this.addToChangeQueue,
             getErrors: this.getErrorsForField,
+            getIsTouched: this.getIsTouchedForField,
+            getHasSubmitted: this.getHasSubmitted,
             parentPath: ''
         }
 
@@ -48,6 +51,21 @@ export default class Form extends React.Component<FormProps, {}> {
 
     deregisterChild = (path: string) => {
         this.pendingDeregistrations.push(path);
+    }
+
+    setTouched = (path: string, isTouched: boolean) => {
+        const newFormState = {
+            ...this.props.formState,
+            fields: {
+                ...this.props.formState.fields,
+                [path]: {
+                    ...this.props.formState.fields[path],
+                    isTouched
+                }
+            }
+        }
+
+        this.props.onChange(newFormState);
     }
 
     componentDidMount() {
@@ -89,6 +107,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 currentFieldMeta = {
                     isPristine: true,
                     isValid: true,
+                    isTouched: false,
                     pendingValidation: true,
                     errors: undefined,
                     validate: registration.validateCallback,
@@ -225,6 +244,7 @@ export default class Form extends React.Component<FormProps, {}> {
         // then all children of the current element are already done validating.
         for (let i = rawValidationResults.length - 1; i >= 0; i--) {
             const resultsForDepth = rawValidationResults[i];
+            if(!resultsForDepth) continue;
 
             newFieldState = Object.entries(resultsForDepth)
                 .reduce((agg, [fieldName, validationResult]) => {
@@ -267,12 +287,27 @@ export default class Form extends React.Component<FormProps, {}> {
         return this.props.formState.fields[fieldName] && this.props.formState.fields[fieldName].errors;
     }
 
+    getIsTouchedForField = (fieldName: string): boolean => {
+        return !!(this.props.formState.fields[fieldName] && this.props.formState.fields[fieldName].isTouched)
+    }
+
+    getHasSubmitted = () => {
+        return this.props.formState.hasSubmitted;
+    }
+
     onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const newFormState = {
+            ...this.props.formState,
+            hasSubmitted: true,
+        }
 
         if (this.props.formState.isValid && this.props.onSubmit) {
             this.props.onSubmit(this.props.formState.value);
         }
+
+        this.props.onChange(newFormState);
     }
 
     render() {

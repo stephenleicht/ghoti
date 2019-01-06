@@ -4,6 +4,7 @@ import { FormErrorMap } from '../errors/FormErrorMap';
 export interface FormFieldMeta {
     isPristine: boolean,
     isValid: boolean,
+    isTouched: boolean,
     pendingValidation: boolean,
     errors?: FormErrorMap,
     validate: ValidateCallback,

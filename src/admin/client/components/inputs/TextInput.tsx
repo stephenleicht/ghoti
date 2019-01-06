@@ -17,15 +17,16 @@ class TextInput extends React.Component<TextInputProps, {}> {
             formElement
         } = this.props;
 
-
+        const shouldShowErrors = formElement && (formElement.isTouched || formElement.formHasSubmitted);
         return (
             <>
                 <input
                     type="text"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
+                    onBlur={() => formElement && formElement.setTouched(true)}
                 />
-                {formElement && (
+                {formElement&& shouldShowErrors && (
                     <ErrorMessages errors={formElement.errors}>
                         <ul>
                             <Message errorKey="required"><li>This value is required.</li></Message>
