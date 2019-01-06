@@ -90,7 +90,10 @@ gulp.task('bundle-admin-client', (cb) => {
 });
 
 gulp.task('release-forms', ['clean'], () => {
-    gulp.src('./src/admin/client/forms/package.json')
+    gulp.src([
+        './src/admin/client/forms/package.json',
+        './src/admin/client/forms/README.md'
+    ])
     .pipe(gulp.dest(OUTDIR))
 
     return rollup.rollup({
@@ -102,9 +105,14 @@ gulp.task('release-forms', ['clean'], () => {
             rollupTypescript({
                 tsconfigOverride: {
                     compilerOptions: {
-                        declaration: false,
+                        declaration: true,
+                        declarationDir: OUTDIR,
+                        module: 'ES2015',
                         target: "ES5",
-                    }
+                    },
+                    include: [
+                        './src/admin/client/forms/**/*'
+                    ]
                 }
             }),
             rollupUglify()
@@ -112,7 +120,7 @@ gulp.task('release-forms', ['clean'], () => {
     })
         .then(bundle => {
             return bundle.write({
-                file: `${OUTDIR}/forms.js`,
+                file: `${OUTDIR}/index.js`,
                 format: 'umd',
                 name: 'GhotiForms',
                 globals: {
