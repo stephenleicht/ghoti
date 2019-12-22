@@ -31,7 +31,7 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
             return;
         }
 
-        if(nextProps.model === this.props.model){
+        if (nextProps.model === this.props.model) {
             return;
         }
 
@@ -59,11 +59,11 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
 
         const type = this.props.model.modelMeta.fields[fieldName].type;
 
-        if(type._ghotiType !== 'primitive') {
+        if (type._ghotiType !== 'primitive') {
             //TODO: have some sort of display value configuration on ghoti model
             return '{}';
         }
-        
+
         return value[fieldName];
     }
 
@@ -93,19 +93,26 @@ export default class ModelListPage extends React.Component<ModelListPageProps, M
                         </tr>
                     </thead>
                     <tbody>
-                        {modelsList
-                            .map(m => (
-                                <tr key={m[idKey]}>
-                                    {renderableFields.map(key => (
-                                        <td key={key}>
-                                            <Link to={`/models/${modelMeta.namePlural}/${m[idKey]}`}>{this.renderDisplayValue(key, m)}</Link>
-                                        </td>
-                                    ))}
-                                    <td>
-                                        <button type="button" onClick={() => this.onDeleteClick(m[idKey])}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
+                        {modelsList.length == 0 ? (
+                            <tr>
+                                <td colSpan={renderableFields.length}>No {modelMeta.namePlural}</td>
+                            </tr>
+                        ) : (
+                                modelsList
+                                    .map(m => (
+                                        <tr key={m[idKey]}>
+                                            {renderableFields.map(key => (
+                                                <td key={key}>
+                                                    <Link to={`/models/${modelMeta.namePlural}/${m[idKey]}`}>{this.renderDisplayValue(key, m)}</Link>
+                                                </td>
+                                            ))}
+                                            <td>
+                                                <button type="button" onClick={() => this.onDeleteClick(m[idKey])}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))
+                            )}
+
                     </tbody>
                 </table>
             </div>
