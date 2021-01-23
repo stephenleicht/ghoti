@@ -1,13 +1,13 @@
 import ghoti from "../Ghoti";
 
 import Person from "./Person";
-import Fish from './Fish';
+import CustomModel from "../model/CustomModel";
 
 
 ghoti.configure({
     models: [
         Person,
-        Fish
+        CustomModel
     ]
 })
 

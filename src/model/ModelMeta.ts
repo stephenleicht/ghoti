@@ -6,5 +6,4 @@ export type ModelMeta = {
     namePlural: string,
     fileName: string,
     fields: {[key: string]: FieldMeta}
-    refFields: string[],
 }
