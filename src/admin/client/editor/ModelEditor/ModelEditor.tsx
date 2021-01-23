@@ -1,10 +1,10 @@
+import { timeStamp } from 'console';
 import * as React from 'react';
-import modelContstants from '../../../../model/constants';
 import { ModelMeta } from '../../../../model';
 
 import { formElement, FormElementProps } from '../../forms';
 
-import Group from '../../forms/Group';
+import Group, { GroupValue } from '../../forms/Group';
 
 import FieldEditor from '../FieldEditor';
 
@@ -21,6 +21,9 @@ export interface ModelEditorProps extends FormElementProps<ModelEdtitorValue> {
 }
 
 class ModelEditor extends React.Component<ModelEditorProps, {}> {
+    onChange(newValue: unknown){
+        this.props.onChange??(newValue as ModelEdtitorValue)
+    }
     render() {
         const { modelMeta, name, ...otherProps } = this.props;
 
@@ -51,7 +54,7 @@ class ModelEditor extends React.Component<ModelEditorProps, {}> {
 
         return (
             <div className={styles.wrapper}>
-                <Group name={name} {...otherProps}>
+                <Group name={name} {...otherProps} onChange={this.onChange}>
                     {fields}
                 </Group>
             </div>

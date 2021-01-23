@@ -24,7 +24,7 @@ export function validateModel(modelMeta: ModelMeta, value: any): ValidationResul
                         const isValid = validateFn({value: value[key]});
                         return [validatorKey, isValid, msg];
                     })
-                    .reduce((agg, [validatorKey, isValid, msg]) => {
+                    .reduce<ValidationResult>((agg, [validatorKey, isValid, msg]) => {
                         agg = {
                             isValid: agg.isValid && isValid,
                             errors: {
@@ -55,7 +55,7 @@ export function validateModel(modelMeta: ModelMeta, value: any): ValidationResul
         }, {
                 isValid: true,
                 errors: {},
-            });
+            } as {isValid: boolean, errors: any});
         
         return result;
 }

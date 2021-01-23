@@ -1,8 +1,8 @@
-import { ModelType } from "./modelDecorator";
+import { ModelType, Constructor} from "./modelDecorator";
 import { ModelMeta } from "./ModelMeta";
 
 
-export function deserialize<T extends ModelType<any>>(model: T, json: object) {
+export function deserialize<T extends ModelType<Constructor>>(model: T, json: object) {
     const meta: ModelMeta | undefined = model.modelMeta;
     if(!meta) {
         throw new Error('model is not a valid ghoti model.')

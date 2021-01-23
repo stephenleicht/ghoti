@@ -16,16 +16,18 @@ export function debounce<T extends Function>(func: T, delay: number = 50): T {
     } as unknown as T; // Because typescript said so.
 };
 
-export function omit<T extends {[key: string]: any}>(obj: T, ...fields: string[]): T {
-    const retVal = {} as T;
+export function omit<T extends {[key: string]: unknown}, U extends keyof T>(obj: T, ...fields: U[]): Omit<T, U> {
+    const retVal = {} as {[key: string]: unknown};
     Object.entries(obj)
-    .reduce((agg, [key, value]) => {
+    .reduce((agg, curr) => {
+        const key = curr[0] as U;
+        const value = curr[1];
         if(!fields.includes(key)) {
-            agg[key] = value;
+            agg[(key as string)] = value;
         }
         
         return agg;
     }, retVal)
 
-    return retVal;
+    return retVal as Omit<T, U>;
 }

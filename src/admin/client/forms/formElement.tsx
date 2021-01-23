@@ -8,7 +8,7 @@ export interface ValidatorMap {
     [key: string]: (props: any) => boolean
 }
 
-export interface FormElementProps<T = unknown> {
+export interface FormElementProps<T> {
     name: string,
     value?: T,
     onChange?: (newValue: T) => void,
@@ -26,14 +26,14 @@ export interface FormElementProps<T = unknown> {
 
 export interface FormElementOptions {
     defaultValue?: () => any
-    validators?: FormElementProps['validators']
+    validators?: FormElementProps<any>['validators']
 }
 
-export default function formElement<T extends FormElementProps<V>, V>(options: FormElementOptions = {}): (ComponentToWrap: React.ComponentType<T> | React.SFC<T>) => React.SFC<T> {
+export default function formElement<T extends FormElementProps<V>, V>(options: FormElementOptions = {}): (ComponentToWrap: React.ComponentType<T> | React.FunctionComponent<T>) => React.FunctionComponent<T> {
 
     return function wrapFormElement(ComponentToWrap){
         class WrappedComponent extends React.Component<T & ValueInterceptor & { formContext?: FormContextValue }, {}> {
-            static defaultProps: Partial<FormElementProps> = {
+            static defaultProps: Partial<FormElementProps<T>> = {
                 required: false,
                 validators: {}
             }
