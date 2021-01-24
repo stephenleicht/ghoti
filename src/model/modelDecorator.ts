@@ -7,12 +7,15 @@ import { ModelMeta } from './ModelMeta';
 
 import constants from './constants';
 
-export type ModelType<T extends {new(...args:any[]):{}}> = T & {
+export type Constructor = new (...args: any[]) => {};
+
+export type ModelType<T extends Constructor> = T & {
     modelMeta: ModelMeta
 }
 
+
 export default function Model() {
-    return function modelDecorator<T extends {new(...args:any[]):{}}>(target: T) : ModelType<T> {
+    return function modelDecorator<T extends Constructor>(target: T) : ModelType<T> {
         const rawModelMeta: ModelMeta = Reflect.getOwnMetadata(constants.MODEL_META_KEY, target) || {};
         const parentModelMeta: ModelMeta = target.prototype.constructor && target.prototype.constructor.modelMeta || {};
     

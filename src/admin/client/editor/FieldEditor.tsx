@@ -3,7 +3,7 @@ import * as React from 'react';
 import { FieldMeta } from '../../../model';
 
 import Form, { FormState, createFormState } from '../forms/Form';
-import formElement, { FormElementProps } from '../forms/FormElement';
+import formElement, { FormElementProps } from '../forms/formElement';
 import Select, { SelectProps } from '../components/inputs/Select';
 
 import PrimitiveEditor from './PrimitiveEditor';

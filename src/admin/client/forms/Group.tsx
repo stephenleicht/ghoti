@@ -1,17 +1,23 @@
 import * as React from 'react';
 
-import formElement, { FormElementProps } from './FormElement';
+import formElement, { FormElementProps } from './formElement';
 
 import { ValueInterceptorContext, ValueInterceptor } from './ValueInterceptor';
 
+
+
 export interface GroupValue {
-    [name: string]: unknown
+    [name: string]: any
 }
 
-class Group extends React.Component<FormElementProps<GroupValue>, {}> {
+export interface GroupProps extends FormElementProps<GroupValue> {
+    children: (props: any) => React.ReactNode
+}
+
+class Group extends React.Component<GroupProps, {}> {
     valueChildContext: ValueInterceptor
 
-    constructor(props: FormElementProps<GroupValue>) {
+    constructor(props: GroupProps) {
         super(props);
 
         this.valueChildContext = {
@@ -46,4 +52,4 @@ class Group extends React.Component<FormElementProps<GroupValue>, {}> {
 
 export default formElement({
     defaultValue: () => ({})
-})(Group);
+})(Group as any);

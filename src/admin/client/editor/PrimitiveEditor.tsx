@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { FormElementProps } from '../forms/FormElement';
+import { FormElementProps } from '../forms/formElement';
 
 import TextInput from '../components/inputs/TextInput';
 import NumberInput from '../components/inputs/NumberInput';

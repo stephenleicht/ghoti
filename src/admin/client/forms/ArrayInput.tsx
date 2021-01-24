@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import formElement, { FormElementProps } from './FormElement';
+import formElement, { FormElementProps } from './formElement';
 
 export interface ArrayInputRenderProps {
     idx: number,

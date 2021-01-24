@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import formElement, { FormElementProps } from '../../forms/FormElement';
+import formElement, { FormElementProps } from '../../forms/formElement';
 import ErrorMessages from '../../forms/errors/ErrorMessages';
 import Message from '../../forms/errors/Message';
 

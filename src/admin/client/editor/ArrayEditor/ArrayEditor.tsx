@@ -48,25 +48,25 @@ class ArrayEditor extends React.Component<ArrayEditorProps, object>{
         return (
             <div className={styles.wrapper}>
                 <button type="button" onClick={this.handleAdd}>Add</button>
-                <ArrayInput name="list" {...otherProps}>
+                <ArrayInput {...otherProps} name="list">
                     {({ removeSelf, key, idx, ...arrayProps }) => {
                         let component;
 
                         if (arrayOf._ghotiType === 'taggedUnion') {
-                            component = <TaggedUnionEditor unionMeta={arrayOf} name={name} {...arrayProps} />
+                            component = <TaggedUnionEditor unionMeta={arrayOf} {...arrayProps} />
                         }
                         else if (arrayOf._ghotiType === 'ref') {
-                            component = <ModelEditor modelMeta={arrayOf.modelMeta} name={name} {...arrayProps} />;
+                            component = <ModelEditor modelMeta={arrayOf.modelMeta} {...arrayProps} />;
                         }
                         else if (arrayOf._ghotiType === 'enumOf') {
                             const selectOptions = Object
                                 .entries(arrayOf.enumOf)
                                 .map(([valueKey, displayValue]) => ({ key: valueKey, displayValue }));
 
-                            component = <Select name={name} options={selectOptions} {...arrayProps} />
+                            component = <Select options={selectOptions} {...arrayProps} />
                         }
                         else if (arrayOf._ghotiType === 'primitive') {
-                            component = <PrimitiveEditor type={arrayOf.type} name={name} {...arrayProps} />;
+                            component = <PrimitiveEditor type={arrayOf.type} {...arrayProps} />;
                         }
                         else {
                             component = <span>Unsupported Type for ArrayEditor</span>

@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import {FormElementProps} from '../admin/client/forms/FormElement';
+import {FormElementProps} from '../admin/client/forms/formElement';
 import { GhotiType } from './GhotiType';
 
 
@@ -11,7 +11,7 @@ export interface FieldMeta {
     required: boolean,
     
     possibleValues?: {[key: string]: string},
-    Component?: ComponentType<FormElementProps>,
+    Component?: ComponentType<FormElementProps<any>>,
     componentProps?: {[key: string]: any},
     
     validators?: {
