@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Form, FormState, createFormState } from '../forms';
 import ModelEditor from '../editor/ModelEditor';
 
-import { getModelByID, updateModel } from '../api';
+import { getModelByID, updateModel } from '../../../client';
 
 export interface ViewModelPageParams {
     id: string

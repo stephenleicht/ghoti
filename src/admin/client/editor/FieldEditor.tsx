@@ -16,7 +16,7 @@ export interface FieldEditorProps extends FormElementProps<any> {
     fieldMeta: FieldMeta,
 }
 
-const FieldEditor: React.SFC<FieldEditorProps> = ({
+const FieldEditor: React.FunctionComponent<FieldEditorProps> = ({
     name,
     fieldMeta: f,
     ...otherProps

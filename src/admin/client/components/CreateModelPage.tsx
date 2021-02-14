@@ -4,7 +4,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Form, FormState, createFormState } from '../forms';
 import ModelEditor from '../editor/ModelEditor';
 
-import { createModel } from '../api';
+import { createModel } from '../../../client';
 
 export interface CreateModelPageProps extends RouteComponentProps<any> {
     model: any,

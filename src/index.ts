@@ -6,4 +6,6 @@ export {default as Select}  from './admin/client/components/inputs/Select';
 
 export {deserialize} from './model/serialization';
 
+export * as api from './client'
+
 export default ghoti;

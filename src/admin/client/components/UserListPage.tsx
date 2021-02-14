@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { RouteComponentProps, Link } from 'react-router-dom';
 
-import { getUsersList, deleteUserByID } from '../api';
+import { getUsersList, deleteUserByID } from '../../../client';
 import { ModelMeta } from '../../../model';
 import getIDKey from '../../../model/getIDKey';
 

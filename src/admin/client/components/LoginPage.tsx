@@ -5,7 +5,7 @@ import Form from '../forms/Form';
 import { createFormState, FormState } from '../forms/Form/FormState';
 import TextInput from './inputs/TextInput';
 
-import { authenticate } from '../api';
+import { authenticate } from '../../../client';
 
 export interface LoginPageState {
     formState: FormState,

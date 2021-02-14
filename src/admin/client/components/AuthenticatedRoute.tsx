@@ -3,7 +3,7 @@ import { withRouter, Route, RouteComponentProps, RouteProps } from 'react-router
 
 import { SessionSummary } from '../../../api/SessionSummary';
 
-import { getSessionInfo } from '../api';
+import { getSessionInfo } from '../../../client';
 
 export interface AuthenticatedRouteState {
     isAuthenticating: boolean,
