@@ -22,7 +22,7 @@ export interface ModelEditorProps extends FormElementProps<ModelEdtitorValue> {
 
 class ModelEditor extends React.Component<ModelEditorProps, {}> {
     onChange(newValue: unknown){
-        this.props.onChange??(newValue as ModelEdtitorValue)
+        this.props.onChange && this.props.onChange(newValue as ModelEdtitorValue)
     }
     render() {
         const { modelMeta, name, ...otherProps } = this.props;
@@ -54,7 +54,7 @@ class ModelEditor extends React.Component<ModelEditorProps, {}> {
 
         return (
             <div className={styles.wrapper}>
-                <Group name={name} {...otherProps} onChange={this.onChange}>
+                <Group name={name} {...otherProps} onChange={(newValue) => this.onChange(newValue)}>
                     {fields}
                 </Group>
             </div>

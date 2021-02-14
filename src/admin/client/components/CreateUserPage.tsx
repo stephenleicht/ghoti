@@ -8,7 +8,7 @@ import {
 } from '../forms';
 import TextInput from './inputs/TextInput'
 
-import { createUser } from '../api';
+import { createUser } from '../../../client';
 
 export interface CreateUserPageProps extends RouteComponentProps<any> {
 }

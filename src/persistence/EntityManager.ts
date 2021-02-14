@@ -30,7 +30,7 @@ export class EntityManager {
 
     async find(model: ModelType<any>, query: any) {
         const modelMeta: ModelMeta = model.modelMeta;
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
 
         const rawResult = await col.find(query).toArray();
 
@@ -51,7 +51,7 @@ export class EntityManager {
 
     async findOne(model: any, query: any = {}) {
         const modelMeta: ModelMeta = model.modelMeta;
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
 
         const rawResult = await col.findOne(query);
 
@@ -72,12 +72,12 @@ export class EntityManager {
 
     async findByID(model: any, id: string) {
         const modelMeta: ModelMeta = model.modelMeta;
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
 
         try {
             const rawResult = await col.findOne({ _id: new ObjectID(id) });
             const { _id, ...rest } = rawResult;
-            const retVal = new model();
+            const retVal = Reflect.construct(model, []);
             Object.assign(retVal, {
                 [modelMeta.idKey]: _id.toString(),
                 ...rest,
@@ -101,20 +101,20 @@ export class EntityManager {
 
         const toSave = pick(instance, Object.keys(modelMeta.fields));
 
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
         const result = await col.insertOne(toSave);
 
         if (result.insertedCount === 0) {
             return null;
         }
 
-        const savedInstance = await this.findByID(model, result.insertedId.toString());
+        const savedInstance = await this.findByID(model.type, result.insertedId.toString());
         return savedInstance;
     }
 
     async deleteByID(model: any, id: string) {
         const modelMeta: ModelMeta = model.modelMeta;
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
 
         try {
             const result = await col.findOneAndDelete({ _id: new ObjectID(id) });
@@ -134,7 +134,7 @@ export class EntityManager {
             throw new ValidationError("Validation failure while updating entity", validationResult)
         }
 
-        const col = this.db.collection(modelMeta.namePlural);
+        const col = this.db.collection(getCollectionName(modelMeta));
 
         const fields = Object.keys(modelMeta.fields).filter(f => !modelMeta.fields[f].isID);
 
@@ -152,3 +152,8 @@ export class EntityManager {
 }
 
 export default new EntityManager();
+
+function getCollectionName(modelMeta: ModelMeta): string {
+    return modelMeta.namePlural;
+}
+
